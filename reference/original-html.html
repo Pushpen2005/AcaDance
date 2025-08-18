@@ -1,0 +1,3831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HH310: Timetable Creator and Automated Attendance System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <h2>HH310 Academic System</h2>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+            <button class="nav-tab" data-tab="timetable">Timetable Management</button>
+            <button class="nav-tab" data-tab="attendance">Attendance Tracking</button>
+            <button class="nav-tab" data-tab="reports">Reports</button>
+            <button class="nav-tab" data-tab="settings">Settings</button>
+            
+        </div>
+    </nav>
+
+    <!-- Dashboard Module -->
+    <div class="module active" id="dashboard-module">
+        <div class="container">
+            <div class="module-header">
+                <h1>Dashboard</h1>
+                <div class="current-time">
+                    <span id="current-date"></span>
+                    <span id="current-time"></span>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-classes">0</div>
+                    <div class="metric-label">Total Classes Scheduled</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="attendance-rate">0%</div>
+                    <div class="metric-label">Overall Attendance Rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="active-teachers">0</div>
+                    <div class="metric-label">Active Teachers</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="total-students">0</div>
+                    <div class="metric-label">Total Students</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions and Today's Schedule -->
+            <div class="dashboard-content">
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-buttons">
+                        <button class="btn btn--primary" onclick="switchTab('timetable')">Generate Timetable</button>
+                        <button class="btn btn--secondary" onclick="switchTab('attendance')">Mark Attendance</button>
+                        <button class="btn btn--outline" onclick="switchTab('reports')">View Reports</button>
+                    </div>
+                </div>
+
+                <div class="todays-schedule">
+                    <h3>Today's Schedule</h3>
+                    <div id="schedule-list" class="schedule-list">
+                        <!-- Schedule items will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="recent-activities">
+                <h3>Recent Activities</h3>
+                <div class="activity-list" id="activity-list">
+                    <!-- Activities will be populated by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timetable Management Module -->
+    <div class="module" id="timetable-module">
+        <div class="container">
+            <div class="module-header">
+                <h1>Timetable Management</h1>
+                <button class="btn btn--primary" id="generate-timetable-btn">Generate Timetable</button>
+            </div>
+
+            <div class="timetable-tabs">
+                <button class="timetable-tab active" data-section="setup">Setup</button>
+                <button class="timetable-tab" data-section="constraints">Constraints</button>
+                <button class="timetable-tab" data-section="generation">Generation</button>
+                <button class="timetable-tab" data-section="view">View Timetable</button>
+            </div>
+
+            <!-- Setup Section -->
+            <div class="timetable-section active" id="setup-section">
+                <div class="setup-grid">
+                    <!-- Subjects Management -->
+                    <div class="setup-card">
+                        <h3>Subjects</h3>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="subject-name" placeholder="Subject Name">
+                            <input type="text" class="form-control" id="subject-code" placeholder="Subject Code">
+                            <input type="number" class="form-control" id="subject-credits" placeholder="Credits">
+                            <input type="number" class="form-control" id="subject-duration" placeholder="Duration (min)">
+                            <button class="btn btn--secondary" onclick="addSubject()">Add Subject</button>
+                        </div>
+                        <div class="data-list" id="subjects-list"></div>
+                    </div>
+
+                    <!-- Teachers Management -->
+                    <div class="setup-card">
+                        <h3>Teachers</h3>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="teacher-name" placeholder="Teacher Name">
+                            <input type="text" class="form-control" id="teacher-specialization" placeholder="Specialization">
+                            <input type="number" class="form-control" id="teacher-max-hours" placeholder="Max Hours/Week">
+                            <button class="btn btn--secondary" onclick="addTeacher()">Add Teacher</button>
+                        </div>
+                        <div class="data-list" id="teachers-list"></div>
+                    </div>
+
+                    <!-- Classrooms Management -->
+                    <div class="setup-card">
+                        <h3>Classrooms</h3>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="room-name" placeholder="Room Name">
+                            <input type="number" class="form-control" id="room-capacity" placeholder="Capacity">
+                            <input type="text" class="form-control" id="room-type" placeholder="Room Type">
+                            <button class="btn btn--secondary" onclick="addRoom()">Add Room</button>
+                        </div>
+                        <div class="data-list" id="rooms-list"></div>
+                    </div>
+
+                    <!-- Student Groups -->
+                    <div class="setup-card">
+                        <h3>Student Groups</h3>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="group-name" placeholder="Group Name">
+                            <input type="number" class="form-control" id="group-size" placeholder="Group Size">
+                            <input type="text" class="form-control" id="group-program" placeholder="Program">
+                            <button class="btn btn--secondary" onclick="addGroup()">Add Group</button>
+                        </div>
+                        <div class="data-list" id="groups-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Constraints Section -->
+            <div class="timetable-section" id="constraints-section">
+                <div class="constraints-content">
+                    <h3>Scheduling Constraints</h3>
+                    <div class="constraint-cards">
+                        <div class="constraint-card">
+                            <h4>Teacher Availability</h4>
+                            <div id="teacher-availability-list"></div>
+                        </div>
+                        <div class="constraint-card">
+                            <h4>Room Requirements</h4>
+                            <div id="room-requirements-list"></div>
+                        </div>
+                        <div class="constraint-card">
+                            <h4>Subject Frequency</h4>
+                            <div id="subject-frequency-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generation Section -->
+            <div class="timetable-section" id="generation-section">
+                <div class="generation-content">
+                    <h3>Timetable Generation</h3>
+                    <div class="algorithm-comparison">
+                        <h4>Algorithm Performance Comparison</h4>
+                        <img src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/04df722c09aed5dae4731d3d79bda432/4521d81a-246b-44de-95ec-eccfc3a45f63/8d50302d.png" alt="Algorithm Comparison" class="algorithm-chart">
+                    </div>
+                    <div class="generation-controls">
+                        <div class="algorithm-selection">
+                            <label class="form-label">Select Algorithm:</label>
+                            <select class="form-control" id="algorithm-select">
+                                <option value="genetic">Genetic Algorithm</option>
+                                <option value="csp">Constraint Satisfaction Problem</option>
+                                <option value="simulated">Simulated Annealing</option>
+                                <option value="tabu">Tabu Search</option>
+                                <option value="greedy">Greedy/Sequential</option>
+                            </select>
+                        </div>
+                        <button class="btn btn--primary" id="start-generation">Start Generation</button>
+                        <div class="generation-progress hidden" id="generation-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill"></div>
+                            </div>
+                            <div class="progress-text">Generating timetable...</div>
+                        </div>
+                    </div>
+                    <div class="conflicts-display" id="conflicts-display"></div>
+                </div>
+            </div>
+
+            <!-- View Timetable Section -->
+            <div class="timetable-section" id="view-section">
+                <div class="timetable-display">
+                    <div class="timetable-controls">
+                        <select class="form-control" id="view-group-select">
+                            <option value="">Select Group</option>
+                        </select>
+                        <button class="btn btn--outline" onclick="exportTimetable()">Export PDF</button>
+                        <button class="btn btn--outline" onclick="printTimetable()">Print</button>
+                    </div>
+                    <div class="timetable-grid" id="timetable-grid">
+                        <!-- Timetable grid will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Tracking Module -->
+    <div class="module" id="attendance-module">
+        <div class="container">
+            <div class="module-header">
+                <h1>Attendance Tracking</h1>
+                <div class="attendance-date">
+                    <input type="date" class="form-control" id="attendance-date" value="">
+                </div>
+            </div>
+
+            <div class="attendance-tabs">
+                <button class="attendance-tab active" data-section="mark">Mark Attendance</button>
+                <button class="attendance-tab" data-section="methods">Tracking Methods</button>
+                <button class="attendance-tab" data-section="analytics">Analytics</button>
+                <button class="attendance-tab" data-section="students">Student Management</button>
+            </div>
+
+            <!-- Mark Attendance Section -->
+            <div class="attendance-section active" id="mark-section">
+                <div class="attendance-controls">
+                    <div class="class-selector">
+                        <label class="form-label">Select Class:</label>
+                        <select class="form-control" id="class-select">
+                            <option value="">Choose a class</option>
+                        </select>
+                    </div>
+                    <div class="group-selector">
+                        <label class="form-label">Select Group:</label>
+                        <select class="form-control" id="attendance-group-select">
+                            <option value="">Choose a group</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="attendance-methods-buttons">
+                    <button class="btn btn--primary" onclick="generateQRCode()">Generate QR Code</button>
+                    <button class="btn btn--secondary" onclick="showManualAttendance()">Manual Attendance</button>
+                    <button class="btn btn--outline" onclick="bulkUpload()">Bulk Upload</button>
+                </div>
+
+                <div class="qr-code-section hidden" id="qr-code-section">
+                    <div class="qr-code-display">
+                        <div class="qr-code-placeholder">QR CODE</div>
+                        <p>Students scan this code to mark attendance</p>
+                        <div class="qr-stats">
+                            <span id="qr-scanned">0</span> students scanned
+                        </div>
+                    </div>
+                </div>
+
+                <div class="manual-attendance-section hidden" id="manual-attendance-section">
+                    <div class="attendance-actions">
+                        <button class="btn btn--sm" onclick="markAllPresent()">Mark All Present</button>
+                        <button class="btn btn--sm" onclick="markPreviousPattern()">Use Previous Pattern</button>
+                    </div>
+                    <div class="students-attendance-list" id="students-attendance-list">
+                        <!-- Student attendance list will be populated -->
+                    </div>
+                    <button class="btn btn--primary" onclick="saveAttendance()">Save Attendance</button>
+                </div>
+            </div>
+
+            <!-- Tracking Methods Section -->
+            <div class="attendance-section" id="methods-section">
+                <div class="methods-content">
+                    <h3>Attendance Tracking Methods Comparison</h3>
+                    <div class="methods-chart">
+                        <img src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/04df722c09aed5dae4731d3d79bda432/5d64a5f1-8f10-4741-bd33-58ac2c0a2b78/8e34fe6f.png" alt="Attendance Methods Comparison" class="attendance-methods-chart">
+                    </div>
+                    <div class="methods-grid">
+                        <div class="method-card">
+                            <h4>QR Code Scanning</h4>
+                            <div class="status status--success">Active</div>
+                            <p>Fast and contactless attendance marking</p>
+                        </div>
+                        <div class="method-card">
+                            <h4>Manual Marking</h4>
+                            <div class="status status--success">Active</div>
+                            <p>Traditional method with teacher control</p>
+                        </div>
+                        <div class="method-card">
+                            <h4>RFID Cards</h4>
+                            <div class="status status--warning">Planned</div>
+                            <p>Automatic scanning with student ID cards</p>
+                        </div>
+                        <div class="method-card">
+                            <h4>Biometric</h4>
+                            <div class="status status--info">Future</div>
+                            <p>Fingerprint or facial recognition</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div class="attendance-section" id="analytics-section">
+                <div class="analytics-content">
+                    <h3>Attendance Analytics</h3>
+                    <div class="analytics-filters">
+                        <select class="form-control" id="analytics-period">
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="semester">This Semester</option>
+                        </select>
+                        <select class="form-control" id="analytics-subject">
+                            <option value="">All Subjects</option>
+                        </select>
+                    </div>
+
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <h4>Overall Attendance Rate</h4>
+                            <div class="chart-container" style="position: relative; height: 200px;">
+                                <canvas id="attendance-rate-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Daily Trends</h4>
+                            <div class="chart-container" style="position: relative; height: 200px;">
+                                <canvas id="daily-trends-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Subject-wise Attendance</h4>
+                            <div class="chart-container" style="position: relative; height: 200px;">
+                                <canvas id="subject-attendance-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <h4>Low Attendance Alerts</h4>
+                            <div class="alerts-list" id="attendance-alerts">
+                                <!-- Alerts will be populated -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Management Section -->
+            <div class="attendance-section" id="students-section">
+                <div class="students-content">
+                    <h3>Student Management</h3>
+                    <div class="students-controls">
+                        <input type="text" class="form-control" id="student-search" placeholder="Search students...">
+                        <button class="btn btn--primary" onclick="addNewStudent()">Add Student</button>
+                    </div>
+                    <div class="students-grid" id="students-grid">
+                        <!-- Students will be populated -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Module -->
+    <div class="module" id="reports-module">
+        <div class="container">
+            <div class="module-header">
+                <h1>Reports</h1>
+                <div class="report-date-range">
+                    <input type="date" class="form-control" id="report-start-date">
+                    <span>to</span>
+                    <input type="date" class="form-control" id="report-end-date">
+                </div>
+            </div>
+
+            <div class="reports-tabs">
+                <button class="reports-tab active" data-section="timetable-reports">Timetable Reports</button>
+                <button class="reports-tab" data-section="attendance-reports">Attendance Reports</button>
+                <button class="reports-tab" data-section="analytics-reports">Analytics</button>
+            </div>
+
+            <!-- Timetable Reports -->
+            <div class="reports-section active" id="timetable-reports-section">
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <h3>Teacher Workload Distribution</h3>
+                        <div class="chart-container" style="position: relative; height: 250px;">
+                            <canvas id="teacher-workload-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <h3>Room Utilization Rates</h3>
+                        <div class="chart-container" style="position: relative; height: 250px;">
+                            <canvas id="room-utilization-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <h3>Schedule Conflicts</h3>
+                        <div class="conflicts-list" id="conflicts-list">
+                            <!-- Conflicts will be populated -->
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <h3>Empty Time Slots</h3>
+                        <div class="empty-slots-list" id="empty-slots-list">
+                            <!-- Empty slots will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Reports -->
+            <div class="reports-section" id="attendance-reports-section">
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <h3>Student Attendance Summary</h3>
+                        <div class="summary-table" id="student-summary-table">
+                            <!-- Summary table will be populated -->
+                        </div>
+                    </div>
+                    <div class="report-card">
+                        <h3>Defaulter Lists</h3>
+                        <div class="defaulters-list" id="defaulters-list">
+                            <!-- Defaulters will be populated -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Reports -->
+            <div class="reports-section" id="analytics-reports-section">
+                <div class="analytics-overview">
+                    <h3>System Analytics Overview</h3>
+                    <div class="overview-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="total-scheduled-hours">0</div>
+                            <div class="stat-label">Total Scheduled Hours</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="avg-attendance">0%</div>
+                            <div class="stat-label">Average Attendance</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="peak-attendance-day">-</div>
+                            <div class="stat-label">Peak Attendance Day</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Module -->
+    <div class="module" id="settings-module">
+        <div class="container">
+            <div class="module-header">
+                <h1>Settings</h1>
+                <button class="btn btn--primary" onclick="saveSettings()">Save Settings</button>
+            </div>
+
+            <div class="settings-content">
+                <div class="settings-section">
+                    <h3>Institution Configuration</h3>
+                    <div class="form-group">
+                        <label class="form-label">Institution Name</label>
+                        <input type="text" class="form-control" id="institution-name" value="HH310 Academic Institute">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Academic Year</label>
+                        <select class="form-control" id="academic-year">
+                            <option value="2024-25">2024-25</option>
+                            <option value="2025-26">2025-26</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Semester</label>
+                        <select class="form-control" id="current-semester">
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>System Preferences</h3>
+                    <div class="form-group">
+                        <label class="form-label">Default Timetable Algorithm</label>
+                        <select class="form-control" id="default-algorithm">
+                            <option value="genetic">Genetic Algorithm</option>
+                            <option value="csp">Constraint Satisfaction Problem</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Attendance Threshold (%)</label>
+                        <input type="number" class="form-control" id="attendance-threshold" value="75" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Auto-save Interval (minutes)</label>
+                        <input type="number" class="form-control" id="autosave-interval" value="5" min="1" max="60">
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Notification Settings</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="email-notifications" checked>
+                            Email Notifications
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="attendance-alerts" checked>
+                            Low Attendance Alerts
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="schedule-reminders" checked>
+                            Schedule Reminders
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Data Management</h3>
+                    <div class="data-actions">
+                        <button class="btn btn--outline" onclick="exportData()">Export Data</button>
+                        <button class="btn btn--outline" onclick="importData()">Import Data</button>
+                        <button class="btn btn--outline" onclick="backupData()">Backup System</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal hidden" id="student-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add/Edit Student</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="student-form">
+                    <div class="form-group">
+                        <label class="form-label">Student Name</label>
+                        <input type="text" class="form-control" id="modal-student-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Roll Number</label>
+                        <input type="text" class="form-control" id="modal-student-roll" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="modal-student-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Group</label>
+                        <select class="form-control" id="modal-student-group" required>
+                            <option value="">Select Group</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn--secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn--primary" onclick="saveStudent()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html> html code :root {
+  /* Primitive Color Tokens */
+  --color-white: rgba(255, 255, 255, 1);
+  --color-black: rgba(0, 0, 0, 1);
+  --color-cream-50: rgba(252, 252, 249, 1);
+  --color-cream-100: rgba(255, 255, 253, 1);
+  --color-gray-200: rgba(245, 245, 245, 1);
+  --color-gray-300: rgba(167, 169, 169, 1);
+  --color-gray-400: rgba(119, 124, 124, 1);
+  --color-slate-500: rgba(98, 108, 113, 1);
+  --color-brown-600: rgba(94, 82, 64, 1);
+  --color-charcoal-700: rgba(31, 33, 33, 1);
+  --color-charcoal-800: rgba(38, 40, 40, 1);
+  --color-slate-900: rgba(19, 52, 59, 1);
+  --color-teal-300: rgba(50, 184, 198, 1);
+  --color-teal-400: rgba(45, 166, 178, 1);
+  --color-teal-500: rgba(33, 128, 141, 1);
+  --color-teal-600: rgba(29, 116, 128, 1);
+  --color-teal-700: rgba(26, 104, 115, 1);
+  --color-teal-800: rgba(41, 150, 161, 1);
+  --color-red-400: rgba(255, 84, 89, 1);
+  --color-red-500: rgba(192, 21, 47, 1);
+  --color-orange-400: rgba(230, 129, 97, 1);
+  --color-orange-500: rgba(168, 75, 47, 1);
+
+  /* RGB versions for opacity control */
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  --color-slate-500-rgb: 98, 108, 113;
+  --color-red-500-rgb: 192, 21, 47;
+  --color-red-400-rgb: 255, 84, 89;
+  --color-orange-500-rgb: 168, 75, 47;
+  --color-orange-400-rgb: 230, 129, 97;
+
+  /* Background color tokens (Light Mode) */
+  --color-bg-1: rgba(59, 130, 246, 0.08); /* Light blue */
+  --color-bg-2: rgba(245, 158, 11, 0.08); /* Light yellow */
+  --color-bg-3: rgba(34, 197, 94, 0.08); /* Light green */
+  --color-bg-4: rgba(239, 68, 68, 0.08); /* Light red */
+  --color-bg-5: rgba(147, 51, 234, 0.08); /* Light purple */
+  --color-bg-6: rgba(249, 115, 22, 0.08); /* Light orange */
+  --color-bg-7: rgba(236, 72, 153, 0.08); /* Light pink */
+  --color-bg-8: rgba(6, 182, 212, 0.08); /* Light cyan */
+
+  /* Semantic Color Tokens (Light Mode) */
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+  --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+  /* Common style patterns */
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+  --focus-outline: 2px solid var(--color-primary);
+  --status-bg-opacity: 0.15;
+  --status-border-opacity: 0.25;
+  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+  /* RGB versions for opacity control */
+  --color-success-rgb: 33, 128, 141;
+  --color-error-rgb: 192, 21, 47;
+  --color-warning-rgb: 168, 75, 47;
+  --color-info-rgb: 98, 108, 113;
+
+  /* Typography */
+  --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, monospace;
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-base: 14px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 550;
+  --font-weight-bold: 600;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --letter-spacing-tight: -0.01em;
+
+  /* Spacing */
+  --space-0: 0;
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  /* Border Radius */
+  --radius-sm: 6px;
+  --radius-base: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04),
+    0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04),
+    0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+  /* Animation */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Layout */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+}
+
+/* Dark mode colors */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* RGB versions for opacity control (Dark Mode) */
+    --color-gray-400-rgb: 119, 124, 124;
+    --color-teal-300-rgb: 50, 184, 198;
+    --color-gray-300-rgb: 167, 169, 169;
+    --color-gray-200-rgb: 245, 245, 245;
+
+    /* Background color tokens (Dark Mode) */
+    --color-bg-1: rgba(29, 78, 216, 0.15); /* Dark blue */
+    --color-bg-2: rgba(180, 83, 9, 0.15); /* Dark yellow */
+    --color-bg-3: rgba(21, 128, 61, 0.15); /* Dark green */
+    --color-bg-4: rgba(185, 28, 28, 0.15); /* Dark red */
+    --color-bg-5: rgba(107, 33, 168, 0.15); /* Dark purple */
+    --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
+    --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
+    --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
+    
+    /* Semantic Color Tokens (Dark Mode) */
+    --color-background: var(--color-charcoal-700);
+    --color-surface: var(--color-charcoal-800);
+    --color-text: var(--color-gray-200);
+    --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+    --color-primary: var(--color-teal-300);
+    --color-primary-hover: var(--color-teal-400);
+    --color-primary-active: var(--color-teal-800);
+    --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+    --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+    --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+    --color-error: var(--color-red-400);
+    --color-success: var(--color-teal-300);
+    --color-warning: var(--color-orange-400);
+    --color-info: var(--color-gray-300);
+    --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+    --color-btn-primary-text: var(--color-slate-900);
+    --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+    --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    --button-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+    --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+
+    /* Common style patterns - updated for dark mode */
+    --focus-ring: 0 0 0 3px var(--color-focus-ring);
+    --focus-outline: 2px solid var(--color-primary);
+    --status-bg-opacity: 0.15;
+    --status-border-opacity: 0.25;
+    --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+    /* RGB versions for dark mode */
+    --color-success-rgb: var(--color-teal-300-rgb);
+    --color-error-rgb: var(--color-red-400-rgb);
+    --color-warning-rgb: var(--color-orange-400-rgb);
+    --color-info-rgb: var(--color-gray-300-rgb);
+  }
+}
+
+/* Data attribute for manual theme switching */
+[data-color-scheme="dark"] {
+  /* RGB versions for opacity control (dark mode) */
+  --color-gray-400-rgb: 119, 124, 124;
+  --color-teal-300-rgb: 50, 184, 198;
+  --color-gray-300-rgb: 167, 169, 169;
+  --color-gray-200-rgb: 245, 245, 245;
+
+  /* Colorful background palette - Dark Mode */
+  --color-bg-1: rgba(29, 78, 216, 0.15); /* Dark blue */
+  --color-bg-2: rgba(180, 83, 9, 0.15); /* Dark yellow */
+  --color-bg-3: rgba(21, 128, 61, 0.15); /* Dark green */
+  --color-bg-4: rgba(185, 28, 28, 0.15); /* Dark red */
+  --color-bg-5: rgba(107, 33, 168, 0.15); /* Dark purple */
+  --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
+  --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
+  --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
+  
+  /* Semantic Color Tokens (Dark Mode) */
+  --color-background: var(--color-charcoal-700);
+  --color-surface: var(--color-charcoal-800);
+  --color-text: var(--color-gray-200);
+  --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+  --color-primary: var(--color-teal-300);
+  --color-primary-hover: var(--color-teal-400);
+  --color-primary-active: var(--color-teal-800);
+  --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+  --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+  --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+  --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+  --color-error: var(--color-red-400);
+  --color-success: var(--color-teal-300);
+  --color-warning: var(--color-orange-400);
+  --color-info: var(--color-gray-300);
+  --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+  --color-btn-primary-text: var(--color-slate-900);
+  --color-card-border: rgba(var(--color-gray-400-rgb), 0.15);
+  --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+  --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+  --color-border-secondary: rgba(var(--color-gray-400-rgb), 0.2);
+  --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+
+  /* Common style patterns - updated for dark mode */
+  --focus-ring: 0 0 0 3px var(--color-focus-ring);
+  --focus-outline: 2px solid var(--color-primary);
+  --status-bg-opacity: 0.15;
+  --status-border-opacity: 0.25;
+  --select-caret-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23134252' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  --select-caret-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+
+  /* RGB versions for dark mode */
+  --color-success-rgb: var(--color-teal-300-rgb);
+  --color-error-rgb: var(--color-red-400-rgb);
+  --color-warning-rgb: var(--color-orange-400-rgb);
+  --color-info-rgb: var(--color-gray-300-rgb);
+}
+
+[data-color-scheme="light"] {
+  /* RGB versions for opacity control (light mode) */
+  --color-brown-600-rgb: 94, 82, 64;
+  --color-teal-500-rgb: 33, 128, 141;
+  --color-slate-900-rgb: 19, 52, 59;
+  
+  /* Semantic Color Tokens (Light Mode) */
+  --color-background: var(--color-cream-50);
+  --color-surface: var(--color-cream-100);
+  --color-text: var(--color-slate-900);
+  --color-text-secondary: var(--color-slate-500);
+  --color-primary: var(--color-teal-500);
+  --color-primary-hover: var(--color-teal-600);
+  --color-primary-active: var(--color-teal-700);
+  --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+  --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+  --color-btn-primary-text: var(--color-cream-50);
+  --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+  --color-error: var(--color-red-500);
+  --color-success: var(--color-teal-500);
+  --color-warning: var(--color-orange-500);
+  --color-info: var(--color-slate-500);
+  --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+
+  /* RGB versions for light mode */
+  --color-success-rgb: var(--color-teal-500-rgb);
+  --color-error-rgb: var(--color-red-500-rgb);
+  --color-warning-rgb: var(--color-orange-500-rgb);
+  --color-info-rgb: var(--color-slate-500-rgb);
+}
+
+/* Base styles */
+html {
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+h2 {
+  font-size: var(--font-size-3xl);
+}
+h3 {
+  font-size: var(--font-size-2xl);
+}
+h4 {
+  font-size: var(--font-size-xl);
+}
+h5 {
+  font-size: var(--font-size-lg);
+}
+h6 {
+  font-size: var(--font-size-md);
+}
+
+p {
+  margin: 0 0 var(--space-16) 0;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+a:hover {
+  color: var(--color-primary-hover);
+}
+
+code,
+pre {
+  font-family: var(--font-family-mono);
+  font-size: calc(var(--font-size-base) * 0.95);
+  background-color: var(--color-secondary);
+  border-radius: var(--radius-sm);
+}
+
+code {
+  padding: var(--space-1) var(--space-4);
+}
+
+pre {
+  padding: var(--space-16);
+  margin: var(--space-16) 0;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius-base);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-standard);
+  border: none;
+  text-decoration: none;
+  position: relative;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-btn-primary-text);
+}
+
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn--primary:active {
+  background: var(--color-primary-active);
+}
+
+.btn--secondary {
+  background: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.btn--secondary:hover {
+  background: var(--color-secondary-hover);
+}
+
+.btn--secondary:active {
+  background: var(--color-secondary-active);
+}
+
+.btn--outline {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--outline:hover {
+  background: var(--color-secondary);
+}
+
+.btn--sm {
+  padding: var(--space-4) var(--space-12);
+  font-size: var(--font-size-sm);
+  border-radius: var(--radius-sm);
+}
+
+.btn--lg {
+  padding: var(--space-10) var(--space-20);
+  font-size: var(--font-size-lg);
+  border-radius: var(--radius-md);
+}
+
+.btn--full-width {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Form elements */
+.form-control {
+  display: block;
+  width: 100%;
+  padding: var(--space-8) var(--space-12);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+textarea.form-control {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+}
+
+select.form-control {
+  padding: var(--space-8) var(--space-12);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: var(--select-caret-light);
+  background-repeat: no-repeat;
+  background-position: right var(--space-12) center;
+  background-size: 16px;
+  padding-right: var(--space-32);
+}
+
+/* Add a dark mode specific caret */
+@media (prefers-color-scheme: dark) {
+  select.form-control {
+    background-image: var(--select-caret-dark);
+  }
+}
+
+/* Also handle data-color-scheme */
+[data-color-scheme="dark"] select.form-control {
+  background-image: var(--select-caret-dark);
+}
+
+[data-color-scheme="light"] select.form-control {
+  background-image: var(--select-caret-light);
+}
+
+.form-control:focus {
+  border-color: var(--color-primary);
+  outline: var(--focus-outline);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--space-8);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.form-group {
+  margin-bottom: var(--space-16);
+}
+
+/* Card component */
+.card {
+  background-color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-card-border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--duration-normal) var(--ease-standard);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.card__body {
+  padding: var(--space-16);
+}
+
+.card__header,
+.card__footer {
+  padding: var(--space-16);
+  border-bottom: 1px solid var(--color-card-border-inner);
+}
+
+/* Status indicators - simplified with CSS variables */
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-6) var(--space-12);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+}
+
+.status--success {
+  background-color: rgba(
+    var(--color-success-rgb, 33, 128, 141),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-success);
+  border: 1px solid
+    rgba(var(--color-success-rgb, 33, 128, 141), var(--status-border-opacity));
+}
+
+.status--error {
+  background-color: rgba(
+    var(--color-error-rgb, 192, 21, 47),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-error);
+  border: 1px solid
+    rgba(var(--color-error-rgb, 192, 21, 47), var(--status-border-opacity));
+}
+
+.status--warning {
+  background-color: rgba(
+    var(--color-warning-rgb, 168, 75, 47),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-warning);
+  border: 1px solid
+    rgba(var(--color-warning-rgb, 168, 75, 47), var(--status-border-opacity));
+}
+
+.status--info {
+  background-color: rgba(
+    var(--color-info-rgb, 98, 108, 113),
+    var(--status-bg-opacity)
+  );
+  color: var(--color-info);
+  border: 1px solid
+    rgba(var(--color-info-rgb, 98, 108, 113), var(--status-border-opacity));
+}
+
+/* Container layout */
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: var(--space-16);
+  padding-left: var(--space-16);
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: var(--container-sm);
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: var(--container-md);
+  }
+}
+@media (min-width: 1024px) {
+  .container {
+    max-width: var(--container-lg);
+  }
+}
+@media (min-width: 1280px) {
+  .container {
+    max-width: var(--container-xl);
+  }
+}
+
+/* Utility classes */
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-4 {
+  gap: var(--space-4);
+}
+.gap-8 {
+  gap: var(--space-8);
+}
+.gap-16 {
+  gap: var(--space-16);
+}
+
+.m-0 {
+  margin: 0;
+}
+.mt-8 {
+  margin-top: var(--space-8);
+}
+.mb-8 {
+  margin-bottom: var(--space-8);
+}
+.mx-8 {
+  margin-left: var(--space-8);
+  margin-right: var(--space-8);
+}
+.my-8 {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-8);
+}
+
+.p-0 {
+  padding: 0;
+}
+.py-8 {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-8);
+}
+.px-8 {
+  padding-left: var(--space-8);
+  padding-right: var(--space-8);
+}
+.py-16 {
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-16);
+}
+.px-16 {
+  padding-left: var(--space-16);
+  padding-right: var(--space-16);
+}
+
+.block {
+  display: block;
+}
+.hidden {
+  display: none;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* Dark mode specifics */
+[data-color-scheme="dark"] .btn--outline {
+  border: 1px solid var(--color-border-secondary);
+}
+
+@font-face {
+  font-family: 'FKGroteskNeue';
+  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2')
+    format('woff2');
+}
+
+/* END PERPLEXITY DESIGN SYSTEM */
+/* Custom styles for HH310 Timetable and Attendance System */
+
+/* Navbar Styles */
+.navbar {
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-16) var(--space-24);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-brand h2 {
+    color: var(--color-primary);
+    margin: 0;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.nav-tabs {
+    display: flex;
+    gap: var(--space-8);
+}
+
+.nav-tab {
+    background: none;
+    border: none;
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.nav-tab:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+}
+
+.nav-tab.active {
+    background-color: var(--color-primary);
+    color: var(--color-btn-primary-text);
+}
+
+/* Module Display */
+.module {
+    display: none;
+    padding: var(--space-24);
+    min-height: calc(100vh - 80px);
+}
+
+.module.active {
+    display: block;
+}
+
+.module-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-32);
+    padding-bottom: var(--space-16);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.module-header h1 {
+    color: var(--color-text);
+    font-size: var(--font-size-3xl);
+}
+
+/* Dashboard Styles */
+.current-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-24);
+    margin-bottom: var(--space-32);
+}
+
+.metric-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-24);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.metric-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.metric-value {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin-bottom: var(--space-8);
+}
+
+.metric-label {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    font-weight: var(--font-weight-medium);
+}
+
+.dashboard-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-32);
+    margin-bottom: var(--space-32);
+}
+
+.quick-actions, .todays-schedule {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-24);
+    box-shadow: var(--shadow-sm);
+}
+
+.quick-actions h3, .todays-schedule h3 {
+    margin-bottom: var(--space-16);
+    color: var(--color-text);
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+}
+
+.schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.schedule-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-12);
+    background-color: var(--color-bg-1);
+    border-radius: var(--radius-base);
+    border: 1px solid var(--color-border);
+}
+
+.schedule-time {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+}
+
+.recent-activities {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-24);
+    box-shadow: var(--shadow-sm);
+}
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.activity-item {
+    padding: var(--space-12);
+    background-color: var(--color-bg-2);
+    border-radius: var(--radius-base);
+    border-left: 4px solid var(--color-primary);
+}
+
+/* Timetable Management Styles */
+.timetable-tabs, .attendance-tabs, .reports-tabs {
+    display: flex;
+    gap: var(--space-8);
+    margin-bottom: var(--space-24);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.timetable-tab, .attendance-tab, .reports-tab {
+    background: none;
+    border: none;
+    padding: var(--space-12) var(--space-20);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.timetable-tab:hover, .attendance-tab:hover, .reports-tab:hover {
+    color: var(--color-text);
+    border-bottom-color: var(--color-primary);
+}
+
+.timetable-tab.active, .attendance-tab.active, .reports-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+.timetable-section, .attendance-section, .reports-section {
+    display: none;
+}
+
+.timetable-section.active, .attendance-section.active, .reports-section.active {
+    display: block;
+}
+
+.setup-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-24);
+}
+
+.setup-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-20);
+    box-shadow: var(--shadow-sm);
+}
+
+.setup-card h3 {
+    margin-bottom: var(--space-16);
+    color: var(--color-text);
+    font-size: var(--font-size-lg);
+}
+
+.data-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: var(--space-16);
+}
+
+.data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-8) var(--space-12);
+    margin-bottom: var(--space-8);
+    background-color: var(--color-bg-3);
+    border-radius: var(--radius-base);
+    border: 1px solid var(--color-border);
+}
+
+.data-item-info {
+    flex: 1;
+}
+
+.data-item-name {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+}
+
+.data-item-details {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.data-item-actions {
+    display: flex;
+    gap: var(--space-8);
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    padding: var(--space-4);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.btn-icon:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+}
+
+/* Constraints Styles */
+.constraints-content {
+    padding: var(--space-20);
+}
+
+.constraint-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-24);
+}
+
+.constraint-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-20);
+    box-shadow: var(--shadow-sm);
+}
+
+.constraint-card h4 {
+    margin-bottom: var(--space-16);
+    color: var(--color-primary);
+}
+
+/* Generation Styles */
+.generation-content {
+    padding: var(--space-20);
+}
+
+.algorithm-comparison {
+    margin-bottom: var(--space-32);
+    text-align: center;
+}
+
+.algorithm-chart {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.generation-controls {
+    display: flex;
+    gap: var(--space-20);
+    align-items: center;
+    margin-bottom: var(--space-24);
+}
+
+.algorithm-selection {
+    min-width: 200px;
+}
+
+.generation-progress {
+    flex: 1;
+}
+
+.progress-bar {
+    height: 8px;
+    background-color: var(--color-secondary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--color-primary);
+    width: 0%;
+    transition: width var(--duration-normal) var(--ease-standard);
+    border-radius: var(--radius-full);
+}
+
+.progress-text {
+    margin-top: var(--space-8);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.conflicts-display {
+    background-color: var(--color-bg-4);
+    border: 1px solid rgba(var(--color-error-rgb), 0.3);
+    border-radius: var(--radius-lg);
+    padding: var(--space-20);
+    margin-top: var(--space-20);
+}
+
+/* Timetable Grid */
+.timetable-controls {
+    display: flex;
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+    align-items: center;
+}
+
+.timetable-grid {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.timetable-header {
+    display: grid;
+    grid-template-columns: 100px repeat(5, 1fr);
+    background-color: var(--color-primary);
+    color: var(--color-btn-primary-text);
+}
+
+.timetable-header-cell {
+    padding: var(--space-16);
+    font-weight: var(--font-weight-bold);
+    text-align: center;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.timetable-row {
+    display: grid;
+    grid-template-columns: 100px repeat(5, 1fr);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.timetable-time-cell {
+    padding: var(--space-16);
+    background-color: var(--color-bg-5);
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    border-right: 1px solid var(--color-border);
+}
+
+.timetable-cell {
+    padding: var(--space-8);
+    border-right: 1px solid var(--color-border);
+    min-height: 60px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.timetable-cell:hover {
+    background-color: var(--color-secondary);
+}
+
+.timetable-class {
+    background-color: var(--color-bg-1);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    font-size: var(--font-size-xs);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.class-subject {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text);
+}
+
+.class-teacher {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+/* Attendance Styles */
+.attendance-date {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.attendance-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-20);
+    margin-bottom: var(--space-24);
+}
+
+.attendance-methods-buttons {
+    display: flex;
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+}
+
+.qr-code-section {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-24);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.qr-code-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-16);
+}
+
+.qr-code-placeholder {
+    width: 200px;
+    height: 200px;
+    background-color: var(--color-bg-6);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-lg);
+}
+
+.qr-stats {
+    background-color: var(--color-bg-3);
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.manual-attendance-section {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-24);
+    box-shadow: var(--shadow-sm);
+}
+
+.attendance-actions {
+    display: flex;
+    gap: var(--space-12);
+    margin-bottom: var(--space-20);
+}
+
+.students-attendance-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-bottom: var(--space-20);
+}
+
+.student-attendance-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-12);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    margin-bottom: var(--space-8);
+    background-color: var(--color-background);
+}
+
+.student-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+}
+
+.student-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-btn-primary-text);
+    font-weight: var(--font-weight-bold);
+}
+
+.attendance-controls-student {
+    display: flex;
+    gap: var(--space-8);
+}
+
+.attendance-btn {
+    padding: var(--space-4) var(--space-12);
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.attendance-btn.present {
+    background-color: var(--color-success);
+    color: var(--color-btn-primary-text);
+}
+
+.attendance-btn.absent {
+    background-color: var(--color-error);
+    color: var(--color-btn-primary-text);
+}
+
+.attendance-btn.late {
+    background-color: var(--color-warning);
+    color: var(--color-btn-primary-text);
+}
+
+.attendance-btn:not(.present):not(.absent):not(.late) {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+}
+
+/* Methods Section */
+.methods-content {
+    padding: var(--space-20);
+}
+
+.methods-chart {
+    text-align: center;
+    margin-bottom: var(--space-32);
+}
+
+.attendance-methods-chart {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.methods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-24);
+}
+
+.method-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-20);
+    box-shadow: var(--shadow-sm);
+}
+
+.method-card h4 {
+    margin-bottom: var(--space-8);
+    color: var(--color-text);
+}
+
+/* Analytics Styles */
+.analytics-filters {
+    display: flex;
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-24);
+}
+
+.analytics-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-20);
+    box-shadow: var(--shadow-sm);
+}
+
+.analytics-card h4 {
+    margin-bottom: var(--space-16);
+    color: var(--color-text);
+}
+
+.chart-container {
+    margin-top: var(--space-16);
+}
+
+.alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+}
+
+.alert-item {
+    padding: var(--space-12);
+    background-color: var(--color-bg-4);
+    border: 1px solid rgba(var(--color-error-rgb), 0.3);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-sm);
+}
+
+/* Students Section */
+.students-controls {
+    display: flex;
+    gap: var(--space-16);
+    margin-bottom: var(--space-24);
+    align-items: center;
+}
+
+.students-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--space-20);
+}
+
+.student-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-16);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--duration-normal) var(--ease-standard);
+}
+
+.student-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.student-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    margin-bottom: var(--space-12);
+}
+
+.student-card-avatar {
+    width: 50px;
+    height: 50px;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-btn-primary-text);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+}
+
+.student-card-info h4 {
+    margin: 0;
+    color: var(--color-text);
+}
+
+.student-card-details {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.student-attendance-rate {
+    margin-top: var(--space-12);
+    padding: var(--space-8);
+    background-color: var(--color-bg-3);
+    border-radius: var(--radius-base);
+    text-align: center;
+    font-size: var(--font-size-sm);
+}
+
+/* Reports Styles */
+.report-date-range {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.report-date-range span {
+    color: var(--color-text-secondary);
+}
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--space-24);
+}
+
+.report-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-20);
+    box-shadow: var(--shadow-sm);
+}
+
+.report-card h3 {
+    margin-bottom: var(--space-16);
+    color: var(--color-text);
+}
+
+.summary-table {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.summary-table-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding: var(--space-8);
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--font-size-sm);
+}
+
+.summary-table-header {
+    font-weight: var(--font-weight-bold);
+    background-color: var(--color-bg-1);
+}
+
+.overview-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-20);
+}
+
+.stat-item {
+    text-align: center;
+    padding: var(--space-16);
+    background-color: var(--color-bg-7);
+    border-radius: var(--radius-lg);
+}
+
+.stat-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+    margin-bottom: var(--space-8);
+}
+
+.stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+/* Settings Styles */
+.settings-content {
+    max-width: 800px;
+}
+
+.settings-section {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-24);
+    margin-bottom: var(--space-24);
+    box-shadow: var(--shadow-sm);
+}
+
+.settings-section h3 {
+    margin-bottom: var(--space-20);
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-8);
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+    cursor: pointer;
+    font-size: var(--font-size-md);
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+}
+
+.data-actions {
+    display: flex;
+    gap: var(--space-16);
+    flex-wrap: wrap;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-lg);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+    padding: var(--space-20);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--color-text);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-2xl);
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    padding: var(--space-4);
+    border-radius: var(--radius-sm);
+    transition: all var(--duration-fast) var(--ease-standard);
+}
+
+.modal-close:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-text);
+}
+
+.modal-body {
+    padding: var(--space-20);
+}
+
+.modal-footer {
+    padding: var(--space-20);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: var(--space-12);
+    justify-content: flex-end;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.font-bold {
+    font-weight: var(--font-weight-bold);
+}
+
+.text-primary {
+    color: var(--color-primary);
+}
+
+.text-secondary {
+    color: var(--color-text-secondary);
+}
+
+.text-success {
+    color: var(--color-success);
+}
+
+.text-error {
+    color: var(--color-error);
+}
+
+.text-warning {
+    color: var(--color-warning);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: var(--space-16);
+        padding: var(--space-12);
+    }
+
+    .nav-tabs {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .module {
+        padding: var(--space-16);
+    }
+
+    .module-header {
+        flex-direction: column;
+        gap: var(--space-16);
+        align-items: flex-start;
+    }
+
+    .dashboard-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-20);
+    }
+
+    .metrics-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: var(--space-16);
+    }
+
+    .setup-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-20);
+    }
+
+    .timetable-header, .timetable-row {
+        grid-template-columns: 80px repeat(5, 1fr);
+    }
+
+    .timetable-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .attendance-controls {
+        grid-template-columns: 1fr;
+        gap: var(--space-16);
+    }
+
+    .attendance-methods-buttons {
+        flex-direction: column;
+    }
+
+    .analytics-filters {
+        flex-direction: column;
+    }
+
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-date-range {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-12);
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-tabs {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .nav-tab {
+        text-align: center;
+    }
+
+    .timetable-tabs, .attendance-tabs, .reports-tabs {
+        flex-wrap: wrap;
+    }
+
+    .data-actions {
+        flex-direction: column;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: var(--space-16);
+    }
+    
+} css code// HH310: Timetable Creator and Automated Attendance System
+
+// Sample Data (from provided JSON)
+let appData = {
+    subjects: [
+        {"id": 1, "name": "Mathematics", "code": "MATH101", "credits": 4, "duration": 60},
+        {"id": 2, "name": "Physics", "code": "PHYS101", "credits": 4, "duration": 60},
+        {"id": 3, "name": "Chemistry", "code": "CHEM101", "credits": 3, "duration": 60},
+        {"id": 4, "name": "English", "code": "ENG101", "credits": 2, "duration": 45},
+        {"id": 5, "name": "Computer Science", "code": "CS101", "credits": 4, "duration": 90}
+    ],
+    teachers: [
+        {"id": 1, "name": "Dr. Sarah Johnson", "specialization": "Mathematics", "availability": ["Monday", "Tuesday", "Wednesday", "Thursday"], "maxHours": 20},
+        {"id": 2, "name": "Prof. Michael Chen", "specialization": "Physics", "availability": ["Monday", "Tuesday", "Wednesday", "Friday"], "maxHours": 18},
+        {"id": 3, "name": "Dr. Emily Davis", "specialization": "Chemistry", "availability": ["Tuesday", "Wednesday", "Thursday", "Friday"], "maxHours": 16},
+        {"id": 4, "name": "Ms. Jennifer Wilson", "specialization": "English", "availability": ["Monday", "Wednesday", "Thursday", "Friday"], "maxHours": 15},
+        {"id": 5, "name": "Dr. Robert Taylor", "specialization": "Computer Science", "availability": ["Monday", "Tuesday", "Thursday", "Friday"], "maxHours": 22}
+    ],
+    classrooms: [
+        {"id": 1, "name": "Room A101", "capacity": 40, "equipment": ["Projector", "Whiteboard"], "type": "Lecture Hall"},
+        {"id": 2, "name": "Room B205", "capacity": 30, "equipment": ["Computers", "Projector"], "type": "Computer Lab"},
+        {"id": 3, "name": "Room C103", "capacity": 25, "equipment": ["Lab Equipment", "Fume Hood"], "type": "Chemistry Lab"}
+    ],
+    timeSlots: [
+        {"id": 1, "startTime": "09:00", "endTime": "10:00", "duration": 60},
+        {"id": 2, "startTime": "10:00", "endTime": "11:00", "duration": 60},
+        {"id": 3, "startTime": "11:00", "endTime": "12:00", "duration": 60},
+        {"id": 4, "startTime": "14:00", "endTime": "15:00", "duration": 60},
+        {"id": 5, "startTime": "15:00", "endTime": "16:00", "duration": 60},
+        {"id": 6, "startTime": "16:00", "endTime": "17:30", "duration": 90}
+    ],
+    studentGroups: [
+        {"id": 1, "name": "Group A", "size": 30, "program": "Engineering"},
+        {"id": 2, "name": "Group B", "size": 25, "program": "Science"}
+    ],
+    students: [
+        {"id": 1, "name": "Alice Brown", "rollNo": "2024001", "group": 1, "email": "alice@email.com"},
+        {"id": 2, "name": "Bob Smith", "rollNo": "2024002", "group": 1, "email": "bob@email.com"},
+        {"id": 3, "name": "Carol Davis", "rollNo": "2024003", "group": 2, "email": "carol@email.com"},
+        {"id": 4, "name": "David Wilson", "rollNo": "2024004", "group": 2, "email": "david@email.com"},
+        {"id": 5, "name": "Emma Johnson", "rollNo": "2024005", "group": 1, "email": "emma@email.com"},
+        {"id": 6, "name": "Frank Miller", "rollNo": "2024006", "group": 1, "email": "frank@email.com"},
+        {"id": 7, "name": "Grace Lee", "rollNo": "2024007", "group": 2, "email": "grace@email.com"},
+        {"id": 8, "name": "Henry Wang", "rollNo": "2024008", "group": 2, "email": "henry@email.com"}
+    ],
+    attendanceData: [
+        {"date": "2024-08-12", "class": "MATH101", "present": 28, "absent": 2, "late": 1},
+        {"date": "2024-08-11", "class": "PHYS101", "present": 24, "absent": 1, "late": 0},
+        {"date": "2024-08-10", "class": "CHEM101", "present": 23, "absent": 2, "late": 1}
+    ],
+    timetable: [],
+    activities: []
+};
+
+
+// Global state
+let currentModule = 'dashboard';
+let currentTimetableSection = 'setup';
+let currentAttendanceSection = 'mark';
+let currentReportsSection = 'timetable-reports';
+let generatedTimetable = {};
+let attendanceRecords = {};
+let charts = {};
+
+// Initialize Application
+document.addEventListener('DOMContentLoaded', function() {
+    initializeApp();
+});
+
+function initializeApp() {
+    setupEventListeners();
+    updateDashboard();
+    populateInitialData();
+    startClock();
+    setCurrentDate();
+    // Delay chart initialization to ensure DOM is ready
+    setTimeout(() => {
+        initializeCharts();
+    }, 500);
+}
+
+function setupEventListeners() {
+    // Navigation tabs
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const tabName = e.target.getAttribute('data-tab');
+            switchTab(tabName);
+        });
+    });
+
+    // Timetable tabs
+    document.querySelectorAll('.timetable-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const section = e.target.getAttribute('data-section');
+            switchTimetableSection(section);
+        });
+    });
+
+    // Attendance tabs
+    document.querySelectorAll('.attendance-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const section = e.target.getAttribute('data-section');
+            switchAttendanceSection(section);
+        });
+    });
+
+    // Reports tabs
+    document.querySelectorAll('.reports-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            const section = e.target.getAttribute('data-section');
+            switchReportsSection(section);
+        });
+    });
+
+    // Timetable generation
+    const startGenerationBtn = document.getElementById('start-generation');
+    if (startGenerationBtn) {
+        startGenerationBtn.addEventListener('click', generateTimetable);
+    }
+
+    const generateTimetableBtn = document.getElementById('generate-timetable-btn');
+    if (generateTimetableBtn) {
+        generateTimetableBtn.addEventListener('click', () => {
+            switchTab('timetable');
+            setTimeout(() => switchTimetableSection('generation'), 100);
+        });
+    }
+
+    // Modal close
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', closeModal);
+    });
+
+    // Click outside modal to close
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    });
+
+    // Group selector change events
+    const viewGroupSelect = document.getElementById('view-group-select');
+    if (viewGroupSelect) {
+        viewGroupSelect.addEventListener('change', displayTimetable);
+    }
+
+    const attendanceGroupSelect = document.getElementById('attendance-group-select');
+    if (attendanceGroupSelect) {
+        attendanceGroupSelect.addEventListener('change', displayStudentAttendanceList);
+    }
+}
+
+// Navigation Functions
+function switchTab(tabName) {
+    console.log('Switching to tab:', tabName);
+    
+    // Update active nav tab
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const activeTab = document.querySelector(`[data-tab="${tabName}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    // Show corresponding module
+    document.querySelectorAll('.module').forEach(module => {
+        module.classList.remove('active');
+    });
+    
+    const targetModule = document.getElementById(`${tabName}-module`);
+    if (targetModule) {
+        targetModule.classList.add('active');
+    }
+
+    currentModule = tabName;
+
+    // Initialize module-specific content
+    setTimeout(() => {
+        if (tabName === 'attendance') {
+            populateAttendanceData();
+        } else if (tabName === 'reports') {
+            generateReports();
+        } else if (tabName === 'timetable') {
+            populateTimetableData();
+        }
+    }, 100);
+}
+
+function switchTimetableSection(section) {
+    console.log('Switching timetable section to:', section);
+    
+    document.querySelectorAll('.timetable-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const activeTab = document.querySelector(`[data-section="${section}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    document.querySelectorAll('.timetable-section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    
+    const targetSection = document.getElementById(`${section}-section`);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    currentTimetableSection = section;
+
+    setTimeout(() => {
+        if (section === 'constraints') {
+            populateConstraints();
+        } else if (section === 'view') {
+            displayTimetable();
+            populateGroupSelectors();
+        }
+    }, 100);
+}
+
+function switchAttendanceSection(section) {
+    console.log('Switching attendance section to:', section);
+    
+    document.querySelectorAll('.attendance-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const activeTab = document.querySelector(`.attendance-tab[data-section="${section}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    document.querySelectorAll('.attendance-section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    
+    const targetSection = document.getElementById(`${section}-section`);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    currentAttendanceSection = section;
+
+    setTimeout(() => {
+        if (section === 'analytics') {
+            updateAttendanceCharts();
+        } else if (section === 'students') {
+            displayStudents();
+        }
+    }, 100);
+}
+
+function switchReportsSection(section) {
+    console.log('Switching reports section to:', section);
+    
+    document.querySelectorAll('.reports-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const activeTab = document.querySelector(`.reports-tab[data-section="${section}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    document.querySelectorAll('.reports-section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    
+    const targetSection = document.getElementById(`${section}-section`);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    currentReportsSection = section;
+}
+
+// Dashboard Functions
+function updateDashboard() {
+    // Update metrics
+    const totalClasses = generatedTimetable && Object.keys(generatedTimetable).length > 0 ? 15 : 0;
+    document.getElementById('total-classes').textContent = totalClasses;
+    document.getElementById('active-teachers').textContent = appData.teachers.length;
+    document.getElementById('total-students').textContent = appData.students.length;
+    
+    // Calculate attendance rate
+    const totalAttendance = appData.attendanceData.reduce((sum, record) => sum + record.present, 0);
+    const totalPossible = appData.attendanceData.reduce((sum, record) => sum + record.present + record.absent + record.late, 0);
+    const attendanceRate = totalPossible > 0 ? Math.round((totalAttendance / totalPossible) * 100) : 0;
+    document.getElementById('attendance-rate').textContent = `${attendanceRate}%`;
+
+    // Update today's schedule
+    updateTodaysSchedule();
+    
+    // Update recent activities
+    updateRecentActivities();
+}
+
+function updateTodaysSchedule() {
+    const scheduleList = document.getElementById('schedule-list');
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    
+    // Sample schedule for today
+    const todaysSchedule = [
+        { time: '09:00 - 10:00', subject: 'Mathematics', teacher: 'Dr. Sarah Johnson', room: 'Room A101' },
+        { time: '10:00 - 11:00', subject: 'Physics', teacher: 'Prof. Michael Chen', room: 'Room A101' },
+        { time: '14:00 - 15:00', subject: 'Chemistry', teacher: 'Dr. Emily Davis', room: 'Room C103' }
+    ];
+
+    scheduleList.innerHTML = todaysSchedule.map(item => `
+        <div class="schedule-item">
+            <div>
+                <div class="schedule-time">${item.time}</div>
+                <div>${item.subject} - ${item.teacher}</div>
+                <div style="font-size: 12px; color: var(--color-text-secondary);">${item.room}</div>
+            </div>
+            <button class="btn btn--sm btn--outline" onclick="switchTab('attendance')">Mark Attendance</button>
+        </div>
+    `).join('');
+}
+
+function updateRecentActivities() {
+    const activityList = document.getElementById('activity-list');
+    const activities = appData.activities.length > 0 ? appData.activities.map(a => a.text) : [
+        'System initialized successfully',
+        'Sample data loaded',
+        'Dashboard updated',
+        'Charts initialized',
+        'Ready for timetable generation'
+    ];
+
+    activityList.innerHTML = activities.slice(0, 5).map(activity => `
+        <div class="activity-item">${activity}</div>
+    `).join('');
+}
+
+function startClock() {
+    function updateClock() {
+        const now = new Date();
+        const currentDate = now.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        const currentTime = now.toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        const dateEl = document.getElementById('current-date');
+        const timeEl = document.getElementById('current-time');
+        
+        if (dateEl) dateEl.textContent = currentDate;
+        if (timeEl) timeEl.textContent = currentTime;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+function setCurrentDate() {
+    const today = new Date().toISOString().split('T')[0];
+    const attendanceDateEl = document.getElementById('attendance-date');
+    const reportStartEl = document.getElementById('report-start-date');
+    const reportEndEl = document.getElementById('report-end-date');
+    
+    if (attendanceDateEl) attendanceDateEl.value = today;
+    if (reportStartEl) reportStartEl.value = new Date(Date.now() - 7*24*60*60*1000).toISOString().split('T')[0];
+    if (reportEndEl) reportEndEl.value = today;
+}
+
+// Timetable Management Functions
+function populateInitialData() {
+    displaySubjects();
+    displayTeachers();
+    displayRooms();
+    displayGroups();
+    populateSelectors();
+}
+
+function populateTimetableData() {
+    displaySubjects();
+    displayTeachers();
+    displayRooms();
+    displayGroups();
+    populateSelectors();
+}
+
+function displaySubjects() {
+    const container = document.getElementById('subjects-list');
+    if (!container) return;
+    
+    container.innerHTML = appData.subjects.map(subject => `
+        <div class="data-item">
+            <div class="data-item-info">
+                <div class="data-item-name">${subject.name} (${subject.code})</div>
+                <div class="data-item-details">${subject.credits} credits, ${subject.duration}min</div>
+            </div>
+            <div class="data-item-actions">
+                <button class="btn-icon" onclick="editSubject(${subject.id})">✏️</button>
+                <button class="btn-icon" onclick="deleteSubject(${subject.id})">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayTeachers() {
+    const container = document.getElementById('teachers-list');
+    if (!container) return;
+    
+    container.innerHTML = appData.teachers.map(teacher => `
+        <div class="data-item">
+            <div class="data-item-info">
+                <div class="data-item-name">${teacher.name}</div>
+                <div class="data-item-details">${teacher.specialization}, Max: ${teacher.maxHours}h/week</div>
+            </div>
+            <div class="data-item-actions">
+                <button class="btn-icon" onclick="editTeacher(${teacher.id})">✏️</button>
+                <button class="btn-icon" onclick="deleteTeacher(${teacher.id})">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayRooms() {
+    const container = document.getElementById('rooms-list');
+    if (!container) return;
+    
+    container.innerHTML = appData.classrooms.map(room => `
+        <div class="data-item">
+            <div class="data-item-info">
+                <div class="data-item-name">${room.name}</div>
+                <div class="data-item-details">${room.type}, Capacity: ${room.capacity}</div>
+            </div>
+            <div class="data-item-actions">
+                <button class="btn-icon" onclick="editRoom(${room.id})">✏️</button>
+                <button class="btn-icon" onclick="deleteRoom(${room.id})">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function displayGroups() {
+    const container = document.getElementById('groups-list');
+    if (!container) return;
+    
+    container.innerHTML = appData.studentGroups.map(group => `
+        <div class="data-item">
+            <div class="data-item-info">
+                <div class="data-item-name">${group.name}</div>
+                <div class="data-item-details">${group.program}, Size: ${group.size}</div>
+            </div>
+            <div class="data-item-actions">
+                <button class="btn-icon" onclick="editGroup(${group.id})">✏️</button>
+                <button class="btn-icon" onclick="deleteGroup(${group.id})">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// CRUD Functions
+function addSubject() {
+    const name = document.getElementById('subject-name').value;
+    const code = document.getElementById('subject-code').value;
+    const credits = parseInt(document.getElementById('subject-credits').value);
+    const duration = parseInt(document.getElementById('subject-duration').value);
+
+    if (name && code && credits && duration) {
+        const newSubject = {
+            id: Math.max(...appData.subjects.map(s => s.id), 0) + 1,
+            name, code, credits, duration
+        };
+        appData.subjects.push(newSubject);
+        displaySubjects();
+        clearSubjectForm();
+        addActivity(`Subject ${name} added`);
+    }
+}
+
+function addTeacher() {
+    const name = document.getElementById('teacher-name').value;
+    const specialization = document.getElementById('teacher-specialization').value;
+    const maxHours = parseInt(document.getElementById('teacher-max-hours').value);
+
+    if (name && specialization && maxHours) {
+        const newTeacher = {
+            id: Math.max(...appData.teachers.map(t => t.id), 0) + 1,
+            name, specialization, maxHours,
+            availability: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+        };
+        appData.teachers.push(newTeacher);
+        displayTeachers();
+        clearTeacherForm();
+        addActivity(`Teacher ${name} added`);
+    }
+}
+
+function addRoom() {
+    const name = document.getElementById('room-name').value;
+    const capacity = parseInt(document.getElementById('room-capacity').value);
+    const type = document.getElementById('room-type').value;
+
+    if (name && capacity && type) {
+        const newRoom = {
+            id: Math.max(...appData.classrooms.map(r => r.id), 0) + 1,
+            name, capacity, type,
+            equipment: ['Projector', 'Whiteboard']
+        };
+        appData.classrooms.push(newRoom);
+        displayRooms();
+        clearRoomForm();
+        addActivity(`Room ${name} added`);
+    }
+}
+
+function addGroup() {
+    const name = document.getElementById('group-name').value;
+    const size = parseInt(document.getElementById('group-size').value);
+    const program = document.getElementById('group-program').value;
+
+    if (name && size && program) {
+        const newGroup = {
+            id: Math.max(...appData.studentGroups.map(g => g.id), 0) + 1,
+            name, size, program
+        };
+        appData.studentGroups.push(newGroup);
+        displayGroups();
+        clearGroupForm();
+        addActivity(`Group ${name} added`);
+    }
+}
+
+function clearSubjectForm() {
+    document.getElementById('subject-name').value = '';
+    document.getElementById('subject-code').value = '';
+    document.getElementById('subject-credits').value = '';
+    document.getElementById('subject-duration').value = '';
+}
+
+function clearTeacherForm() {
+    document.getElementById('teacher-name').value = '';
+    document.getElementById('teacher-specialization').value = '';
+    document.getElementById('teacher-max-hours').value = '';
+}
+
+function clearRoomForm() {
+    document.getElementById('room-name').value = '';
+    document.getElementById('room-capacity').value = '';
+    document.getElementById('room-type').value = '';
+}
+
+function clearGroupForm() {
+    document.getElementById('group-name').value = '';
+    document.getElementById('group-size').value = '';
+    document.getElementById('group-program').value = '';
+}
+
+function deleteSubject(id) {
+    if (confirm('Are you sure you want to delete this subject?')) {
+        appData.subjects = appData.subjects.filter(s => s.id !== id);
+        displaySubjects();
+        addActivity('Subject deleted');
+    }
+}
+
+function deleteTeacher(id) {
+    if (confirm('Are you sure you want to delete this teacher?')) {
+        appData.teachers = appData.teachers.filter(t => t.id !== id);
+        displayTeachers();
+        addActivity('Teacher deleted');
+    }
+}
+
+function deleteRoom(id) {
+    if (confirm('Are you sure you want to delete this room?')) {
+        appData.classrooms = appData.classrooms.filter(r => r.id !== id);
+        displayRooms();
+        addActivity('Room deleted');
+    }
+}
+
+function deleteGroup(id) {
+    if (confirm('Are you sure you want to delete this group?')) {
+        appData.studentGroups = appData.studentGroups.filter(g => g.id !== id);
+        displayGroups();
+        addActivity('Group deleted');
+    }
+}
+
+// Timetable Generation
+function generateTimetable() {
+    const algorithm = document.getElementById('algorithm-select').value;
+    const progressSection = document.getElementById('generation-progress');
+    const progressFill = progressSection.querySelector('.progress-fill');
+    const progressText = progressSection.querySelector('.progress-text');
+
+    progressSection.classList.remove('hidden');
+    let progress = 0;
+
+    const interval = setInterval(() => {
+        progress += Math.random() * 20;
+        if (progress > 100) progress = 100;
+
+        progressFill.style.width = `${progress}%`;
+        
+        if (progress < 30) {
+            progressText.textContent = 'Analyzing constraints...';
+        } else if (progress < 60) {
+            progressText.textContent = 'Optimizing schedule...';
+        } else if (progress < 90) {
+            progressText.textContent = 'Resolving conflicts...';
+        } else {
+            progressText.textContent = 'Finalizing timetable...';
+        }
+
+        if (progress >= 100) {
+            clearInterval(interval);
+            progressText.textContent = 'Timetable generated successfully!';
+            setTimeout(() => {
+                progressSection.classList.add('hidden');
+                createSampleTimetable();
+                switchTimetableSection('view');
+                addActivity('Timetable generated successfully');
+                updateDashboard();
+            }, 1000);
+        }
+    }, 200);
+}
+
+function createSampleTimetable() {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    generatedTimetable = {};
+
+    appData.studentGroups.forEach(group => {
+        generatedTimetable[group.id] = {};
+        
+        days.forEach(day => {
+            generatedTimetable[group.id][day] = {};
+            
+            // Sample timetable generation
+            const daySubjects = appData.subjects.slice(0, 3); // First 3 subjects per day
+            daySubjects.forEach((subject, index) => {
+                const timeSlot = appData.timeSlots[index];
+                const teacher = appData.teachers.find(t => 
+                    t.specialization.toLowerCase().includes(subject.name.toLowerCase()) ||
+                    subject.name.toLowerCase().includes(t.specialization.toLowerCase())
+                ) || appData.teachers[0];
+                const room = appData.classrooms[index % appData.classrooms.length];
+                
+                generatedTimetable[group.id][day][timeSlot.startTime] = {
+                    subject: subject,
+                    teacher: teacher,
+                    room: room,
+                    timeSlot: timeSlot
+                };
+            });
+        });
+    });
+}
+
+function displayTimetable() {
+    const grid = document.getElementById('timetable-grid');
+    if (!grid) return;
+    
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    
+    let html = `
+        <div class="timetable-header">
+            <div class="timetable-header-cell">Time</div>
+            ${days.map(day => `<div class="timetable-header-cell">${day}</div>`).join('')}
+        </div>
+    `;
+
+    appData.timeSlots.forEach(timeSlot => {
+        html += `<div class="timetable-row">
+            <div class="timetable-time-cell">${timeSlot.startTime}<br>${timeSlot.endTime}</div>
+            ${days.map(day => {
+                const selectedGroup = document.getElementById('view-group-select').value;
+                let cellContent = '';
+                
+                if (selectedGroup && generatedTimetable[selectedGroup] && generatedTimetable[selectedGroup][day] && generatedTimetable[selectedGroup][day][timeSlot.startTime]) {
+                    const classInfo = generatedTimetable[selectedGroup][day][timeSlot.startTime];
+                    cellContent = `
+                        <div class="timetable-class">
+                            <div class="class-subject">${classInfo.subject.name}</div>
+                            <div class="class-teacher">${classInfo.teacher.name}</div>
+                            <div class="class-teacher">${classInfo.room.name}</div>
+                        </div>
+                    `;
+                }
+                
+                return `<div class="timetable-cell">${cellContent}</div>`;
+            }).join('')}
+        </div>`;
+    });
+
+    grid.innerHTML = html;
+}
+
+function populateGroupSelectors() {
+    const selectors = ['view-group-select', 'attendance-group-select', 'modal-student-group'];
+    
+    selectors.forEach(selectorId => {
+        const selector = document.getElementById(selectorId);
+        if (selector) {
+            const currentValue = selector.value;
+            selector.innerHTML = '<option value="">Select Group</option>' +
+                appData.studentGroups.map(group => 
+                    `<option value="${group.id}" ${currentValue == group.id ? 'selected' : ''}>${group.name}</option>`
+                ).join('');
+        }
+    });
+}
+
+function populateSelectors() {
+    populateGroupSelectors();
+    
+    // Populate class selector for attendance
+    const classSelector = document.getElementById('class-select');
+    if (classSelector) {
+        classSelector.innerHTML = '<option value="">Choose a class</option>' +
+            appData.subjects.map(subject => 
+                `<option value="${subject.code}">${subject.name} (${subject.code})</option>`
+            ).join('');
+    }
+
+    // Populate analytics subject selector
+    const analyticsSelector = document.getElementById('analytics-subject');
+    if (analyticsSelector) {
+        analyticsSelector.innerHTML = '<option value="">All Subjects</option>' +
+            appData.subjects.map(subject => 
+                `<option value="${subject.code}">${subject.name}</option>`
+            ).join('');
+    }
+}
+
+function populateConstraints() {
+    // Teacher availability
+    const teacherAvailability = document.getElementById('teacher-availability-list');
+    if (teacherAvailability) {
+        teacherAvailability.innerHTML = appData.teachers.map(teacher => `
+            <div class="data-item">
+                <div class="data-item-info">
+                    <div class="data-item-name">${teacher.name}</div>
+                    <div class="data-item-details">Available: ${teacher.availability.join(', ')}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Room requirements
+    const roomRequirements = document.getElementById('room-requirements-list');
+    if (roomRequirements) {
+        roomRequirements.innerHTML = appData.classrooms.map(room => `
+            <div class="data-item">
+                <div class="data-item-info">
+                    <div class="data-item-name">${room.name}</div>
+                    <div class="data-item-details">Capacity: ${room.capacity}, Type: ${room.type}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Subject frequency
+    const subjectFrequency = document.getElementById('subject-frequency-list');
+    if (subjectFrequency) {
+        subjectFrequency.innerHTML = appData.subjects.map(subject => `
+            <div class="data-item">
+                <div class="data-item-info">
+                    <div class="data-item-name">${subject.name}</div>
+                    <div class="data-item-details">Suggested: ${Math.ceil(subject.credits / 2)} times/week</div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// Attendance Functions
+function populateAttendanceData() {
+    populateSelectors();
+}
+
+function generateQRCode() {
+    document.getElementById('qr-code-section').classList.remove('hidden');
+    document.getElementById('manual-attendance-section').classList.add('hidden');
+    
+    // Simulate QR code scanning
+    let scannedCount = 0;
+    const maxStudents = 30;
+    
+    const interval = setInterval(() => {
+        scannedCount += Math.floor(Math.random() * 3) + 1;
+        if (scannedCount > maxStudents) scannedCount = maxStudents;
+        
+        document.getElementById('qr-scanned').textContent = scannedCount;
+        
+        if (scannedCount >= maxStudents) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
+function showManualAttendance() {
+    document.getElementById('manual-attendance-section').classList.remove('hidden');
+    document.getElementById('qr-code-section').classList.add('hidden');
+    
+    displayStudentAttendanceList();
+}
+
+function displayStudentAttendanceList() {
+    const selectedGroup = document.getElementById('attendance-group-select').value;
+    const container = document.getElementById('students-attendance-list');
+    
+    if (!selectedGroup || !container) {
+        if (container) container.innerHTML = '<p>Please select a group to view students.</p>';
+        return;
+    }
+    
+    const groupStudents = appData.students.filter(s => s.group == selectedGroup);
+    
+    container.innerHTML = groupStudents.map(student => `
+        <div class="student-attendance-item">
+            <div class="student-info">
+                <div class="student-avatar">${student.name.charAt(0)}</div>
+                <div>
+                    <div class="data-item-name">${student.name}</div>
+                    <div class="data-item-details">Roll: ${student.rollNo}</div>
+                </div>
+            </div>
+            <div class="attendance-controls-student">
+                <button class="attendance-btn" onclick="markAttendance(${student.id}, 'present')">Present</button>
+                <button class="attendance-btn" onclick="markAttendance(${student.id}, 'absent')">Absent</button>
+                <button class="attendance-btn" onclick="markAttendance(${student.id}, 'late')">Late</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function markAttendance(studentId, status) {
+    const buttons = event.target.parentElement.querySelectorAll('.attendance-btn');
+    buttons.forEach(btn => btn.classList.remove('present', 'absent', 'late'));
+    event.target.classList.add(status);
+    
+    // Store attendance data
+    if (!attendanceRecords[studentId]) {
+        attendanceRecords[studentId] = {};
+    }
+    attendanceRecords[studentId][new Date().toISOString().split('T')[0]] = status;
+}
+
+function markAllPresent() {
+    document.querySelectorAll('.attendance-controls-student').forEach(controls => {
+        const presentBtn = controls.querySelector('.attendance-btn');
+        if (presentBtn) presentBtn.click();
+    });
+}
+
+function markPreviousPattern() {
+    // Simulate using previous attendance pattern
+    const buttons = document.querySelectorAll('.attendance-controls-student');
+    buttons.forEach((controls, index) => {
+        const status = Math.random() > 0.1 ? 'present' : (Math.random() > 0.5 ? 'late' : 'absent');
+        const targetBtn = controls.children[status === 'present' ? 0 : (status === 'absent' ? 1 : 2)];
+        if (targetBtn) targetBtn.click();
+    });
+}
+
+function saveAttendance() {
+    const selectedClass = document.getElementById('class-select').value;
+    const selectedGroup = document.getElementById('attendance-group-select').value;
+    const date = document.getElementById('attendance-date').value;
+    
+    if (selectedClass && selectedGroup && date) {
+        addActivity(`Attendance saved for ${selectedClass} on ${date}`);
+        alert('Attendance saved successfully!');
+        
+        // Update attendance data
+        const presentCount = Object.values(attendanceRecords).filter(records => 
+            records[date] === 'present'
+        ).length || Math.floor(Math.random() * 5) + 25;
+        
+        appData.attendanceData.push({
+            date: date,
+            class: selectedClass,
+            present: presentCount,
+            absent: 2,
+            late: 1
+        });
+        
+        updateDashboard();
+    } else {
+        alert('Please select class, group, and date before saving.');
+    }
+}
+
+function bulkUpload() {
+    alert('Bulk upload feature: Select a CSV file with student attendance data.\n\nFormat: Student ID, Status (Present/Absent/Late)');
+}
+
+// Student Management
+function displayStudents() {
+    const container = document.getElementById('students-grid');
+    if (!container) return;
+    
+    container.innerHTML = appData.students.map(student => {
+        const group = appData.studentGroups.find(g => g.id === student.group);
+        const attendanceRate = Math.floor(Math.random() * 20) + 80; // Simulate attendance rate
+        
+        return `
+            <div class="student-card">
+                <div class="student-card-header">
+                    <div class="student-card-avatar">${student.name.charAt(0)}</div>
+                    <div class="student-card-info">
+                        <h4>${student.name}</h4>
+                        <div class="student-card-details">Roll: ${student.rollNo}</div>
+                        <div class="student-card-details">Group: ${group ? group.name : 'N/A'}</div>
+                        <div class="student-card-details">${student.email}</div>
+                    </div>
+                </div>
+                <div class="student-attendance-rate">
+                    <strong>Attendance: ${attendanceRate}%</strong>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function addNewStudent() {
+    populateGroupSelectors(); // Ensure group options are populated
+    document.getElementById('student-modal').classList.remove('hidden');
+}
+
+function saveStudent() {
+    const name = document.getElementById('modal-student-name').value;
+    const rollNo = document.getElementById('modal-student-roll').value;
+    const email = document.getElementById('modal-student-email').value;
+    const group = parseInt(document.getElementById('modal-student-group').value);
+
+    if (name && rollNo && email && group) {
+        const newStudent = {
+            id: Math.max(...appData.students.map(s => s.id), 0) + 1,
+            name, rollNo, email, group
+        };
+        appData.students.push(newStudent);
+        displayStudents();
+        closeModal();
+        addActivity(`Student ${name} added`);
+        updateDashboard();
+    } else {
+        alert('Please fill in all fields.');
+    }
+}
+
+function closeModal() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.add('hidden');
+    });
+    
+    // Clear form fields
+    document.getElementById('modal-student-name').value = '';
+    document.getElementById('modal-student-roll').value = '';
+    document.getElementById('modal-student-email').value = '';
+    document.getElementById('modal-student-group').value = '';
+}
+
+// Charts and Analytics
+function initializeCharts() {
+    createAttendanceRateChart();
+    createDailyTrendsChart();
+    createSubjectAttendanceChart();
+    createTeacherWorkloadChart();
+    createRoomUtilizationChart();
+}
+
+function createAttendanceRateChart() {
+    const ctx = document.getElementById('attendance-rate-chart');
+    if (!ctx || !window.Chart) return;
+    
+    if (charts.attendanceRate) {
+        charts.attendanceRate.destroy();
+    }
+    
+    try {
+        charts.attendanceRate = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Present', 'Absent', 'Late'],
+                datasets: [{
+                    data: [85, 10, 5],
+                    backgroundColor: ['#1FB8CD', '#B4413C', '#FFC185']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error creating attendance rate chart:', error);
+    }
+}
+
+function createDailyTrendsChart() {
+    const ctx = document.getElementById('daily-trends-chart');
+    if (!ctx || !window.Chart) return;
+    
+    if (charts.dailyTrends) {
+        charts.dailyTrends.destroy();
+    }
+    
+    try {
+        charts.dailyTrends = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+                datasets: [{
+                    label: 'Attendance %',
+                    data: [88, 92, 85, 90, 87],
+                    borderColor: '#1FB8CD',
+                    backgroundColor: 'rgba(31, 184, 205, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error creating daily trends chart:', error);
+    }
+}
+
+function createSubjectAttendanceChart() {
+    const ctx = document.getElementById('subject-attendance-chart');
+    if (!ctx || !window.Chart) return;
+    
+    if (charts.subjectAttendance) {
+        charts.subjectAttendance.destroy();
+    }
+    
+    try {
+        charts.subjectAttendance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Math', 'Physics', 'Chemistry', 'English', 'CS'],
+                datasets: [{
+                    label: 'Attendance %',
+                    data: [92, 88, 85, 95, 90],
+                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C', '#ECEBD5', '#5D878F']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error creating subject attendance chart:', error);
+    }
+}
+
+function createTeacherWorkloadChart() {
+    const ctx = document.getElementById('teacher-workload-chart');
+    if (!ctx || !window.Chart) return;
+    
+    if (charts.teacherWorkload) {
+        charts.teacherWorkload.destroy();
+    }
+    
+    try {
+        const teacherNames = appData.teachers.map(t => t.name.split(' ').slice(-1)[0]);
+        const workloadData = appData.teachers.map(t => Math.floor(Math.random() * t.maxHours));
+        
+        charts.teacherWorkload = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: teacherNames,
+                datasets: [{
+                    label: 'Hours/Week',
+                    data: workloadData,
+                    backgroundColor: '#1FB8CD'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y'
+            }
+        });
+    } catch (error) {
+        console.error('Error creating teacher workload chart:', error);
+    }
+}
+
+function createRoomUtilizationChart() {
+    const ctx = document.getElementById('room-utilization-chart');
+    if (!ctx || !window.Chart) return;
+    
+    if (charts.roomUtilization) {
+        charts.roomUtilization.destroy();
+    }
+    
+    try {
+        charts.roomUtilization = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: appData.classrooms.map(r => r.name),
+                datasets: [{
+                    data: [75, 68, 82],
+                    backgroundColor: ['#1FB8CD', '#FFC185', '#B4413C']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error creating room utilization chart:', error);
+    }
+}
+
+function updateAttendanceCharts() {
+    setTimeout(() => {
+        createAttendanceRateChart();
+        createDailyTrendsChart();
+        createSubjectAttendanceChart();
+        
+        // Update alerts
+        const alertsContainer = document.getElementById('attendance-alerts');
+        if (alertsContainer) {
+            alertsContainer.innerHTML = `
+                <div class="alert-item">John Doe - Attendance below 75% (68%)</div>
+                <div class="alert-item">Math101 - Class average below threshold (72%)</div>
+                <div class="alert-item">Group B - 5 consecutive absences detected</div>
+            `;
+        }
+    }, 100);
+}
+
+// Reports Functions
+function generateReports() {
+    setTimeout(() => {
+        createTeacherWorkloadChart();
+        createRoomUtilizationChart();
+        generateConflictsList();
+        generateEmptySlotsList();
+        generateStudentSummaryTable();
+        generateDefaultersList();
+        updateAnalyticsOverview();
+    }, 100);
+}
+
+function generateConflictsList() {
+    const container = document.getElementById('conflicts-list');
+    if (!container) return;
+    
+    const conflicts = [
+        'Dr. Sarah Johnson: Double booking on Monday 10:00 AM',
+        'Room A101: Capacity exceeded for CS101 (35 students, capacity 30)',
+        'Group A: Overlapping classes - Math and Physics at 2:00 PM'
+    ];
+    
+    container.innerHTML = conflicts.map(conflict => 
+        `<div class="alert-item">${conflict}</div>`
+    ).join('');
+}
+
+function generateEmptySlotsList() {
+    const container = document.getElementById('empty-slots-list');
+    if (!container) return;
+    
+    const emptySlots = [
+        'Monday 11:00 AM - Room C103 available',
+        'Wednesday 3:00 PM - All rooms available',
+        'Friday 4:00 PM - Room B205 available'
+    ];
+    
+    container.innerHTML = emptySlots.map(slot => 
+        `<div class="data-item"><div class="data-item-name">${slot}</div></div>`
+    ).join('');
+}
+
+function generateStudentSummaryTable() {
+    const container = document.getElementById('student-summary-table');
+    if (!container) return;
+    
+    let html = `
+        <div class="summary-table-row summary-table-header">
+            <div>Student Name</div>
+            <div>Total Classes</div>
+            <div>Present</div>
+            <div>Attendance %</div>
+        </div>
+    `;
+    
+    appData.students.slice(0, 10).forEach(student => {
+        const totalClasses = 25;
+        const present = Math.floor(Math.random() * 5) + 20;
+        const percentage = Math.round((present / totalClasses) * 100);
+        
+        html += `
+            <div class="summary-table-row">
+                <div>${student.name}</div>
+                <div>${totalClasses}</div>
+                <div>${present}</div>
+                <div class="${percentage < 75 ? 'text-error' : 'text-success'}">${percentage}%</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function generateDefaultersList() {
+    const container = document.getElementById('defaulters-list');
+    if (!container) return;
+    
+    const defaulters = [
+        { name: 'John Doe', attendance: '68%', absences: 8 },
+        { name: 'Jane Smith', attendance: '72%', absences: 7 },
+        { name: 'Bob Johnson', attendance: '74%', absences: 6 }
+    ];
+    
+    container.innerHTML = defaulters.map(student => `
+        <div class="alert-item">
+            ${student.name} - ${student.attendance} attendance, ${student.absences} absences
+        </div>
+    `).join('');
+}
+
+function updateAnalyticsOverview() {
+    const totalHoursEl = document.getElementById('total-scheduled-hours');
+    const avgAttendanceEl = document.getElementById('avg-attendance');
+    const peakDayEl = document.getElementById('peak-attendance-day');
+    
+    if (totalHoursEl) totalHoursEl.textContent = '120';
+    if (avgAttendanceEl) avgAttendanceEl.textContent = '87%';
+    if (peakDayEl) peakDayEl.textContent = 'Tuesday';
+}
+
+// Settings Functions
+function saveSettings() {
+    const institutionName = document.getElementById('institution-name').value;
+    const academicYear = document.getElementById('academic-year').value;
+    const semester = document.getElementById('current-semester').value;
+    const defaultAlgorithm = document.getElementById('default-algorithm').value;
+    const attendanceThreshold = document.getElementById('attendance-threshold').value;
+    const autosaveInterval = document.getElementById('autosave-interval').value;
+
+    // Simulate saving settings
+    addActivity('Settings updated successfully');
+    alert('Settings saved successfully!');
+}
+
+function exportData() {
+    try {
+        const dataStr = JSON.stringify(appData, null, 2);
+        const dataBlob = new Blob([dataStr], {type: 'application/json'});
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = 'hh310_data.json';
+        link.click();
+        
+        addActivity('Data exported successfully');
+    } catch (error) {
+        alert('Error exporting data: ' + error.message);
+    }
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    appData = importedData;
+                    populateInitialData();
+                    updateDashboard();
+                    addActivity('Data imported successfully');
+                    alert('Data imported successfully!');
+                } catch (error) {
+                    alert('Error importing data. Please check the file format.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    };
+    input.click();
+}
+
+function backupData() {
+    exportData();
+    addActivity('System backup created');
+    alert('System backup created and downloaded!');
+}
+
+function exportTimetable() {
+    alert('Timetable export: This would generate a PDF of the current timetable.');
+    addActivity('Timetable exported to PDF');
+}
+
+function printTimetable() {
+    window.print();
+    addActivity('Timetable sent to printer');
+}
+
+// Utility Functions
+function addActivity(activity) {
+    if (!appData.activities) {
+        appData.activities = [];
+    }
+    
+    appData.activities.unshift({
+        text: activity,
+        timestamp: new Date().toLocaleString()
+    });
+    
+    // Keep only last 10 activities
+    appData.activities = appData.activities.slice(0, 10);
+    
+    updateRecentActivities();
+}
+
+// Edit functions (placeholder implementations)
+function editSubject(id) {
+    const subject = appData.subjects.find(s => s.id === id);
+    if (subject) {
+        document.getElementById('subject-name').value = subject.name;
+        document.getElementById('subject-code').value = subject.code;
+        document.getElementById('subject-credits').value = subject.credits;
+        document.getElementById('subject-duration').value = subject.duration;
+    }
+}
+
+function editTeacher(id) {
+    const teacher = appData.teachers.find(t => t.id === id);
+    if (teacher) {
+        document.getElementById('teacher-name').value = teacher.name;
+        document.getElementById('teacher-specialization').value = teacher.specialization;
+        document.getElementById('teacher-max-hours').value = teacher.maxHours;
+    }
+}
+
+function editRoom(id) {
+    const room = appData.classrooms.find(r => r.id === id);
+    if (room) {
+        document.getElementById('room-name').value = room.name;
+        document.getElementById('room-capacity').value = room.capacity;
+        document.getElementById('room-type').value = room.type;
+    }
+}
+
+function editGroup(id) {
+    const group = appData.studentGroups.find(g => g.id === id);
+    if (group) {
+        document.getElementById('group-name').value = group.name;
+        document.getElementById('group-size').value = group.size;
+        document.getElementById('group-program').value = group.program;
+    }
+}
+
+// Make functions globally available
+window.switchTab = switchTab;
+window.switchTimetableSection = switchTimetableSection;
+window.switchAttendanceSection = switchAttendanceSection;
+window.switchReportsSection = switchReportsSection;
+window.addSubject = addSubject;
+window.addTeacher = addTeacher;
+window.addRoom = addRoom;
+window.addGroup = addGroup;
+window.deleteSubject = deleteSubject;
+window.deleteTeacher = deleteTeacher;
+window.deleteRoom = deleteRoom;
+window.deleteGroup = deleteGroup;
+window.editSubject = editSubject;
+window.editTeacher = editTeacher;
+window.editRoom = editRoom;
+window.editGroup = editGroup;
+window.generateQRCode = generateQRCode;
+window.showManualAttendance = showManualAttendance;
+window.markAttendance = markAttendance;
+window.markAllPresent = markAllPresent;
+window.markPreviousPattern = markPreviousPattern;
+window.saveAttendance = saveAttendance;
+window.bulkUpload = bulkUpload;
+window.addNewStudent = addNewStudent;
+window.saveStudent = saveStudent;
+window.closeModal = closeModal;
+window.saveSettings = saveSettings;
+window.exportData = exportData;
+window.importData = importData;
+window.backupData = backupData;
+window.exportTimetable = exportTimetable;
+window.printTimetable = printTimetable; convert the project to react
