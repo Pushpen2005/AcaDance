@@ -190,7 +190,7 @@ export default function AuthPage() {
 
         <div
           ref={containerRef}
-          className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 flex items-center justify-center p-4 relative overflow-hidden"
+          className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden"
         >
           <div className="absolute inset-0 pointer-events-none">
             {particles.map((particle) => (
@@ -214,7 +214,7 @@ export default function AuthPage() {
           />
 
           <div
-            className={`w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center relative z-10 ${isFlipping ? "flip-animation" : ""}`}
+            className={`w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 items-center relative z-10 ${isFlipping ? "flip-animation" : ""}`}
           >
             <div className="hidden lg:flex flex-col items-center justify-center space-y-8 animate-fade-in-up">
               <div className="relative group">
@@ -265,7 +265,7 @@ export default function AuthPage() {
 
             <div className="w-full max-w-md mx-auto">
               <Card
-                className={`shadow-2xl border-0 transition-all duration-500 bg-white/90 backdrop-blur-sm hover:shadow-3xl ${isLogin ? "animate-slide-in-right" : "animate-slide-in-left"}`}
+                className={`shadow-2xl border-0 transition-all duration-500 bg-white/90 backdrop-blur-sm hover:shadow-3xl ${isLogin ? "animate-slide-in-right" : "animate-slide-in-left"} px-2 sm:px-6 py-4 sm:py-8`}
                 style={{
                   transform: `perspective(1000px) rotateY(${mousePosition.x * 2}deg) rotateX(${mousePosition.y * 2}deg)`,
                 }}
