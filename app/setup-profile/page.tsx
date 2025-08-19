@@ -1,8 +1,9 @@
 "use client";
+export const dynamic = 'force-dynamic'
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../../lib/supabaseClient';
+import { getSupabase } from '../../lib/supabaseClient';
 
 const steps = [
   'Account',
@@ -27,27 +28,40 @@ export default function SetupProfilePage() {
   // Progress bar calculation
   const progress = (step / steps.length) * 100;
 
+  // Auth guard: unauthenticated users go to login
+  useEffect(() => {
+    (async () => {
+      const { data } = await getSupabase().auth.getUser();
+      if (!data.user) {
+        router.replace('/login');
+      }
+    })();
+  }, [router]);
+
   // Handle image upload to Supabase Storage
   const handleAvatarUpload = async () => {
-    if (!avatarFile) return;
+    if (!avatarFile) return undefined;
     setLoading(true);
     setErrorMsg('');
     try {
       const fileExt = avatarFile.name.split('.').pop();
       const fileName = `${Date.now()}.${fileExt}`;
-      const { data, error } = await supabase.storage
+      const { data, error } = await getSupabase().storage
         .from('avatars')
         .upload(fileName, avatarFile);
       if (error) throw error;
       if (data) {
-        const url = supabase.storage.from('avatars').getPublicUrl(fileName).data.publicUrl;
+        const { data: publicData } = getSupabase().storage.from('avatars').getPublicUrl(fileName);
+        const url = publicData.publicUrl;
         setAvatarUrl(url);
+        return url;
       }
     } catch (err: any) {
       setErrorMsg('Image upload failed. Try again.');
     } finally {
       setLoading(false);
     }
+    return undefined;
   };
 
   // Handle profile save
@@ -55,15 +69,15 @@ export default function SetupProfilePage() {
     setLoading(true);
     setErrorMsg('');
     try {
-      await handleAvatarUpload();
-      const user = await supabase.auth.getUser();
-      const { error } = await supabase.from('profiles').upsert({
+      const uploadedUrl = await handleAvatarUpload();
+      const user = await getSupabase().auth.getUser();
+      const { error } = await getSupabase().from('profiles').upsert({
         id: user.data.user?.id,
         full_name: fullName,
         role,
         department,
         phone,
-        avatar_url: avatarUrl,
+        avatar_url: uploadedUrl || avatarUrl || null,
         theme,
         notification,
       });

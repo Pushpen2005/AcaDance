@@ -2,150 +2,123 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { supabase } from "@/lib/supabaseClient"
+import { getSupabase } from "@/lib/supabaseClient"
+
+type Subject = { id?: number; name: any; code: any; credits: any; duration: any }
+type Teacher = { id?: number; name: any; specialization: any; maxHours: any }
+type Constraint = { id?: number; type: any; value: any }
+type TimetableRow = { id?: number; subject: string; teacher: string; slot: string }
 
 export default function TimetableManagement() {
   const [activeSection, setActiveSection] = useState("setup")
-  const [subjects, setSubjects] = useState<any[]>([])
-  const [teachers, setTeachers] = useState<any[]>([])
-  const [rooms, setRooms] = useState<any[]>([])
-  const [groups, setGroups] = useState<any[]>([])
+  const [subjects, setSubjects] = useState<Subject[]>([])
+  const [teachers, setTeachers] = useState<Teacher[]>([])
+  const [constraints, setConstraints] = useState<Constraint[]>([])
+  const [generatedTimetable, setGeneratedTimetable] = useState<TimetableRow[]>([])
 
-  // Constraints State
-  const [constraints, setConstraints] = useState<any[]>([]);
-  const addConstraint = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const constraint = {
-      id: Date.now(),
-      type: formData.get("constraintType"),
-      value: formData.get("constraintValue"),
-    };
-    setConstraints([...constraints, constraint]);
-    (e.target as HTMLFormElement).reset();
-  };
-
-  // Timetable Generation State
-  const [generatedTimetable, setGeneratedTimetable] = useState<any[]>([]);
-  const generateTimetable = () => {
-    // Simple demo: assign each subject to a teacher and a slot
-    const timetable = subjects.map((subject, idx) => ({
-      subject: subject.name,
-      teacher: teachers[idx % teachers.length]?.name || "Unassigned",
-      slot: `Day ${1 + (idx % 5)}, 10:00-11:00`,
-    }));
-    setGeneratedTimetable(timetable);
-    setActiveSection("view");
-  };
-
-  // Fetch data from Supabase on mount
   useEffect(() => {
     async function fetchData() {
-      const { data: subjectsData } = await supabase.from("subjects").select("*");
-      setSubjects(subjectsData || []);
-      const { data: teachersData } = await supabase.from("teachers").select("*");
-      setTeachers(teachersData || []);
-      const { data: constraintsData } = await supabase.from("constraints").select("*");
-      setConstraints(constraintsData || []);
-      const { data: timetableData } = await supabase.from("timetables").select("*");
-      setGeneratedTimetable(timetableData || []);
+      const { data: subjectsData } = await getSupabase().from("subjects").select("*")
+      setSubjects(subjectsData || [])
+      const { data: teachersData } = await getSupabase().from("teachers").select("*")
+      setTeachers(teachersData || [])
+      const { data: constraintsData } = await getSupabase().from("constraints").select("*")
+      setConstraints(constraintsData || [])
+      const { data: timetableData } = await getSupabase().from("timetables").select("*")
+      setGeneratedTimetable((timetableData as TimetableRow[]) || [])
     }
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
-  // Add Subject (Supabase)
-  const addSubject = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const subject = {
+  const addSubject = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const subject: Subject = {
       name: formData.get("subjectName"),
       code: formData.get("subjectCode"),
       credits: formData.get("subjectCredits"),
       duration: formData.get("subjectDuration"),
-    };
-    const { data, error } = await supabase.from("subjects").insert([subject]).select();
-    if (!error && data && data.length > 0) setSubjects((prev) => [...prev, { ...subject, id: data[0].id }]);
-    (e.target as HTMLFormElement).reset();
-  };
+    }
+    const { data, error } = await getSupabase().from("subjects").insert([subject]).select()
+    if (!error && data && data.length > 0) setSubjects((prev) => [...prev, { ...subject, id: data[0].id }])
+    e.currentTarget.reset()
+  }
 
-  // Remove Subject (Supabase)
-  const removeSubject = async (id: number) => {
-    await supabase.from("subjects").delete().eq("id", id);
-    setSubjects(subjects.filter((s) => s.id !== id));
-  };
+  const removeSubject = async (id?: number) => {
+    if (id == null) return
+    await getSupabase().from("subjects").delete().eq("id", id)
+    setSubjects((prev) => prev.filter((s) => s.id !== id))
+  }
 
-  // Add Teacher (Supabase)
-  const addTeacher = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const teacher = {
+  const addTeacher = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const teacher: Teacher = {
       name: formData.get("teacherName"),
       specialization: formData.get("teacherSpecialization"),
       maxHours: formData.get("teacherMaxHours"),
-    };
-    const { data, error } = await supabase.from("teachers").insert([teacher]).select();
-    if (!error && data && data.length > 0) setTeachers((prev) => [...prev, { ...teacher, id: data[0].id }]);
-    (e.target as HTMLFormElement).reset();
-  };
+    }
+    const { data, error } = await getSupabase().from("teachers").insert([teacher]).select()
+    if (!error && data && data.length > 0) setTeachers((prev) => [...prev, { ...teacher, id: data[0].id }])
+    e.currentTarget.reset()
+  }
 
-  // Remove Teacher (Supabase)
-  const removeTeacher = async (id: number) => {
-    await supabase.from("teachers").delete().eq("id", id);
-    setTeachers(teachers.filter((t) => t.id !== id));
-  };
+  const removeTeacher = async (id?: number) => {
+    if (id == null) return
+    await getSupabase().from("teachers").delete().eq("id", id)
+    setTeachers((prev) => prev.filter((t) => t.id !== id))
+  }
 
-  // Add Constraint (Supabase)
-  const addConstraint = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const constraint = {
+  const addConstraint = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const constraint: Constraint = {
       type: formData.get("constraintType"),
       value: formData.get("constraintValue"),
-    };
-    const { data, error } = await supabase.from("constraints").insert([constraint]).select();
-    if (!error && data && data.length > 0) setConstraints((prev) => [...prev, { ...constraint, id: data[0].id }]);
-    (e.target as HTMLFormElement).reset();
-  };
+    }
+    const { data, error } = await getSupabase().from("constraints").insert([constraint]).select()
+    if (!error && data && data.length > 0) setConstraints((prev) => [...prev, { ...constraint, id: data[0].id }])
+    e.currentTarget.reset()
+  }
 
-  // Remove Constraint (Supabase)
-  const removeConstraint = async (id: number) => {
-    await supabase.from("constraints").delete().eq("id", id);
-    setConstraints(constraints.filter((c) => c.id !== id));
-  };
+  const removeConstraint = async (id?: number) => {
+    if (id == null) return
+    await getSupabase().from("constraints").delete().eq("id", id)
+    setConstraints((prev) => prev.filter((c) => c.id !== id))
+  }
 
-  // Timetable Generation (Supabase)
   const generateTimetable = async () => {
-    const timetable = subjects.map((subject, idx) => ({
-      subject: subject.name,
-      teacher: teachers[idx % teachers.length]?.name || "Unassigned",
+    const timetable: TimetableRow[] = subjects.map((subject, idx) => ({
+      subject: String(subject.name),
+      teacher: String(teachers[idx % Math.max(teachers.length, 1)]?.name || "Unassigned"),
       slot: `Day ${1 + (idx % 5)}, 10:00-11:00`,
-    }));
-    const { data, error } = await supabase.from("timetables").insert(timetable).select();
-    if (!error && data) setGeneratedTimetable(data);
-    setActiveSection("view");
-  };
+    }))
+    const { data } = await getSupabase().from("timetables").insert(timetable).select()
+    setGeneratedTimetable((data as TimetableRow[]) || timetable)
+    setActiveSection("view")
+  }
 
-  // Section definition
   const sections: { id: string; label: string }[] = [
     { id: "setup", label: "Setup" },
     { id: "constraints", label: "Constraints" },
     { id: "generation", label: "Generation" },
     { id: "view", label: "View Timetable" },
-  ];
+  ]
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-900">Timetable Management</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700" onClick={generateTimetable}>Generate Timetable</Button>
+        <Button className="bg-blue-600 hover:bg-blue-700" onClick={generateTimetable}>
+          Generate Timetable
+        </Button>
       </div>
 
-      {/* Section Tabs */}
       <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
         {sections.map((section) => (
           <button
@@ -160,188 +133,147 @@ export default function TimetableManagement() {
         ))}
       </div>
 
-      {/* Setup Section */}
       {activeSection === "setup" && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Subjects Management */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Subjects</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={addSubject} className="space-y-4">
+              <form className="space-y-2" onSubmit={addSubject}>
                 <div>
-                  <Label htmlFor="subjectName">Subject Name</Label>
-                  <Input id="subjectName" name="subjectName" placeholder="Subject Name" required />
+                  <Label htmlFor="subjectName">Name</Label>
+                  <Input id="subjectName" name="subjectName" required />
                 </div>
                 <div>
-                  <Label htmlFor="subjectCode">Subject Code</Label>
-                  <Input id="subjectCode" name="subjectCode" placeholder="Subject Code" required />
+                  <Label htmlFor="subjectCode">Code</Label>
+                  <Input id="subjectCode" name="subjectCode" required />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2">
                   <div>
                     <Label htmlFor="subjectCredits">Credits</Label>
-                    <Input id="subjectCredits" name="subjectCredits" type="number" placeholder="Credits" required />
+                    <Input id="subjectCredits" name="subjectCredits" required />
                   </div>
                   <div>
-                    <Label htmlFor="subjectDuration">Duration (min)</Label>
-                    <Input id="subjectDuration" name="subjectDuration" type="number" placeholder="Duration" required />
+                    <Label htmlFor="subjectDuration">Duration</Label>
+                    <Input id="subjectDuration" name="subjectDuration" required />
                   </div>
                 </div>
-                <Button type="submit" variant="outline" className="w-full bg-transparent">
-                  Add Subject
-                </Button>
+                <Button type="submit">Add Subject</Button>
               </form>
-
-              <div className="mt-6 space-y-2">
-                {subjects.map((subject) => (
-                  <div key={subject.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="font-medium">{subject.name}</div>
-                      <div className="text-sm text-gray-600">
-                        {subject.code} • {subject.credits} credits • {subject.duration} min
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeSubject(subject.id)}
-                    >
+              <ul className="mt-4 space-y-2">
+                {subjects.map((s) => (
+                  <li key={s.id ?? `${s.name}-${s.code}`} className="flex justify-between items-center">
+                    <span>
+                      {String(s.name)} ({String(s.code)})
+                    </span>
+                    <Button variant="outline" onClick={() => removeSubject(s.id)}>
                       Remove
                     </Button>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </CardContent>
           </Card>
 
-          {/* Teachers Management */}
           <Card>
             <CardHeader>
               <CardTitle>Teachers</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={addTeacher} className="space-y-4">
+              <form className="space-y-2" onSubmit={addTeacher}>
                 <div>
-                  <Label htmlFor="teacherName">Teacher Name</Label>
-                  <Input id="teacherName" name="teacherName" placeholder="Teacher Name" required />
+                  <Label htmlFor="teacherName">Name</Label>
+                  <Input id="teacherName" name="teacherName" required />
                 </div>
                 <div>
                   <Label htmlFor="teacherSpecialization">Specialization</Label>
-                  <Input
-                    id="teacherSpecialization"
-                    name="teacherSpecialization"
-                    placeholder="Specialization"
-                    required
-                  />
+                  <Input id="teacherSpecialization" name="teacherSpecialization" required />
                 </div>
                 <div>
-                  <Label htmlFor="teacherMaxHours">Max Hours/Week</Label>
-                  <Input id="teacherMaxHours" name="teacherMaxHours" type="number" placeholder="Max Hours" required />
+                  <Label htmlFor="teacherMaxHours">Max Hours</Label>
+                  <Input id="teacherMaxHours" name="teacherMaxHours" required />
                 </div>
-                <Button type="submit" variant="outline" className="w-full bg-transparent">
-                  Add Teacher
-                </Button>
+                <Button type="submit">Add Teacher</Button>
               </form>
-
-              <div className="mt-6 space-y-2">
-                {teachers.map((teacher) => (
-                  <div key={teacher.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <div className="font-medium">{teacher.name}</div>
-                      <div className="text-sm text-gray-600">
-                        {teacher.specialization} • Max {teacher.maxHours}h/week
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removeTeacher(teacher.id)}
-                    >
+              <ul className="mt-4 space-y-2">
+                {teachers.map((t) => (
+                  <li key={t.id ?? `${t.name}-${t.specialization}`} className="flex justify-between items-center">
+                    <span>{String(t.name)}</span>
+                    <Button variant="outline" onClick={() => removeTeacher(t.id)}>
                       Remove
                     </Button>
-                  </div>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </CardContent>
           </Card>
         </div>
       )}
 
-      {/* Constraints Section */}
       {activeSection === "constraints" && (
         <Card>
           <CardHeader>
-            <CardTitle>Scheduling Constraints</CardTitle>
+            <CardTitle>Constraints</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={addConstraint} className="space-y-4 mb-4">
+            <form className="space-y-2" onSubmit={addConstraint}>
               <div>
-                <Label htmlFor="constraintType">Constraint Type</Label>
-                <Input id="constraintType" name="constraintType" placeholder="e.g. Teacher Unavailable" required />
+                <Label htmlFor="constraintType">Type</Label>
+                <Input id="constraintType" name="constraintType" required />
               </div>
               <div>
                 <Label htmlFor="constraintValue">Value</Label>
-                <Input id="constraintValue" name="constraintValue" placeholder="e.g. Monday" required />
+                <Input id="constraintValue" name="constraintValue" required />
               </div>
-              <Button type="submit" variant="outline" className="w-full bg-transparent">Add Constraint</Button>
+              <Button type="submit">Add Constraint</Button>
             </form>
-            <div className="space-y-2">
+            <ul className="mt-4 space-y-2">
               {constraints.map((c) => (
-                <div key={c.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                  <div>
-                    <div className="font-medium">{c.type}</div>
-                    <div className="text-sm text-gray-600">{c.value}</div>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={() => removeConstraint(c.id)}>Remove</Button>
-                </div>
+                <li key={c.id ?? `${c.type}-${c.value}`} className="flex justify-between items-center">
+                  <span>
+                    {String(c.type)}: {String(c.value)}
+                  </span>
+                  <Button variant="outline" onClick={() => removeConstraint(c.id)}>
+                    Remove
+                  </Button>
+                </li>
               ))}
-            </div>
+            </ul>
           </CardContent>
         </Card>
       )}
 
-      {/* Timetable Generation Section */}
       {activeSection === "generation" && (
         <Card>
           <CardHeader>
-            <CardTitle>Timetable Generation</CardTitle>
+            <CardTitle>Generate</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">Generate and optimize timetables using advanced algorithms.</p>
-            <Button className="bg-green-600 hover:bg-green-700" onClick={generateTimetable}>Generate Timetable</Button>
+            <p className="text-sm text-gray-600 mb-4">Generate a simple timetable based on current subjects and teachers.</p>
+            <Button onClick={generateTimetable}>Generate Timetable</Button>
           </CardContent>
         </Card>
       )}
 
-      {/* View Timetable Section */}
       {activeSection === "view" && (
         <Card>
           <CardHeader>
-            <CardTitle>View Generated Timetable</CardTitle>
+            <CardTitle>Generated Timetable</CardTitle>
           </CardHeader>
           <CardContent>
             {generatedTimetable.length === 0 ? (
-              <p className="text-gray-600">No timetable generated yet.</p>
+              <p className="text-sm text-gray-500">No timetable generated yet.</p>
             ) : (
-              <table className="w-full border mt-2">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2">Subject</th>
-                    <th className="p-2">Teacher</th>
-                    <th className="p-2">Slot</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {generatedTimetable.map((row, idx) => (
-                    <tr key={idx} className="border-t">
-                      <td className="p-2">{row.subject}</td>
-                      <td className="p-2">{row.teacher}</td>
-                      <td className="p-2">{row.slot}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <ul className="space-y-2">
+                {generatedTimetable.map((row, idx) => (
+                  <li key={row.id ?? idx} className="flex items-center justify-between border rounded p-2">
+                    <span className="font-medium">{row.subject}</span>
+                    <span className="text-gray-600">{row.teacher}</span>
+                    <span className="text-gray-500">{row.slot}</span>
+                  </li>
+                ))}
+              </ul>
             )}
           </CardContent>
         </Card>
@@ -349,3 +281,4 @@ export default function TimetableManagement() {
     </div>
   )
 }
+

@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useEffect, useState, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { useToast } from "../hooks/use-toast"
 import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose } from "./ui/toast"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,12 +11,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Eye, EyeOff, Mail, Lock, User, Sparkles, Star, Zap } from "lucide-react"
-import { supabase } from "@/lib/supabaseClient"
+import { getSupabase } from "@/lib/supabaseClient"
 import StudentDashboard from "./StudentDashboard"
 import FacultyDashboard from "./FacultyDashboard"
 import AdminDashboard from "./AdminDashboard"
 
 export default function AuthPage() {
+  const router = useRouter()
   const [isLogin, setIsLogin] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -116,9 +118,9 @@ export default function AuthPage() {
 
     let result
     if (isLogin) {
-      result = await supabase.auth.signInWithPassword({ email, password })
+      result = await getSupabase().auth.signInWithPassword({ email, password })
     } else {
-      result = await supabase.auth.signUp({ email, password, options: { data: { name } } })
+      result = await getSupabase().auth.signUp({ email, password, options: { data: { name } } })
     }
 
     setIsLoading(false)
@@ -130,7 +132,30 @@ export default function AuthPage() {
         title: isLogin ? "Login Successful" : "Sign Up Successful",
         description: isLogin ? "Welcome back!" : "Your account has been created.",
       })
-      setUser({ name, email }) // Simulate login
+      setUser({ name, email })
+
+      // Redirect flow
+      if (!isLogin) {
+        // New signup -> go to setup profile immediately
+        router.push("/setup-profile")
+      } else {
+        // Existing login -> check profile completeness
+        const {
+          data: { user },
+        } = await getSupabase().auth.getUser()
+        if (user?.id) {
+          const { data: profile } = await getSupabase()
+            .from("profiles")
+            .select("id, full_name, role")
+            .eq("id", user.id)
+            .maybeSingle()
+          if (!profile || !profile.full_name || !profile.role) {
+            router.push("/setup-profile")
+          } else {
+            router.push("/home")
+          }
+        }
+      }
     }
   }
 
@@ -164,18 +189,45 @@ export default function AuthPage() {
     const fetchRole = async () => {
       const {
         data: { user },
-      } = await supabase.auth.getUser()
+      } = await getSupabase().auth.getUser()
       if (user) {
-        const { data, error } = await supabase
-          .from("users")
+        const { data } = await getSupabase()
+          .from("profiles")
           .select("role")
           .eq("id", user.id)
-          .single()
-        if (data && data.role) setUserRole(data.role)
+          .maybeSingle()
+        if (data && data.role) {
+          const titleCase = data.role.charAt(0).toUpperCase() + data.role.slice(1)
+          setUserRole(titleCase)
+        }
       }
     }
     fetchRole()
   }, [])
+
+  // Handle OAuth or existing sessions: send users to setup-profile on first login, else home
+  useEffect(() => {
+    const { data: authListener } = getSupabase().auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_IN") {
+        const userId = session?.user?.id
+        if (userId) {
+          const { data: profile } = await getSupabase()
+            .from("profiles")
+            .select("id, full_name, role")
+            .eq("id", userId)
+            .maybeSingle()
+          if (!profile || !profile.full_name || !profile.role) {
+            router.push("/setup-profile")
+          } else {
+            router.push("/home")
+          }
+        }
+      }
+    })
+    return () => {
+      authListener.subscription.unsubscribe()
+    }
+  }, [router])
 
   return (
     <ToastProvider>
