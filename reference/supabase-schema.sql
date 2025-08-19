@@ -1,4 +1,4 @@
--- Users table
+-- Users table (legacy demo)
 CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   email text UNIQUE NOT NULL,
@@ -80,3 +80,36 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO attendance (id, class_id, student_id, status, timestamp) VALUES
   ('20000000-0000-0000-0000-000000000001', 'C101', '00000000-0000-0000-0000-000000000003', 'Present', now())
 ON CONFLICT (id) DO NOTHING;
+
+-- Profiles table for auth.users linkage
+create table if not exists profiles (
+  id uuid references auth.users on delete cascade primary key,
+  full_name text not null,
+  role text check (role in ('student','faculty','admin')) not null,
+  department text,
+  phone text,
+  avatar_url text,
+  theme text default 'light',
+  notification text default 'email',
+  created_at timestamp default now()
+);
+
+-- Enable RLS on profiles
+alter table profiles enable row level security;
+
+-- Students can only read their own profile
+create policy if not exists "Students read own profile"
+on profiles for select
+using (auth.uid() = id);
+
+-- Admins can view all
+create policy if not exists "Admins read all"
+on profiles for select
+using (exists(select 1 from profiles p where p.id = auth.uid() and p.role = 'admin'));
+
+-- Users can upsert their own profile
+create policy if not exists "Users upsert own profile"
+on profiles for insert with check (auth.uid() = id);
+
+create policy if not exists "Users update own profile"
+on profiles for update using (auth.uid() = id);

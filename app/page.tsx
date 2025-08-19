@@ -1,5 +1,7 @@
 "use client"
 
+export const dynamic = 'force-dynamic'
+
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { BarChart3, Calendar, Users, FileText, Settings, GraduationCap, BookOpen } from "lucide-react"
@@ -11,9 +13,11 @@ import SettingsComponent from "@/components/settings"
 import AdminDashboard from "../components/AdminDashboard";
 import FacultyDashboard from "../components/FacultyDashboard";
 import StudentDashboard from "../components/StudentDashboard";
-import { supabase } from "@/lib/supabaseClient"
+import { getSupabase } from "@/lib/supabaseClient"
+import { useRouter } from "next/navigation"
 
 export default function AcademicSystem() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState("dashboard")
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [particles, setParticles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([])
@@ -49,21 +53,24 @@ export default function AcademicSystem() {
     async function fetchUserRole() {
       const {
         data: { user },
-      } = await supabase.auth.getUser()
+      } = await getSupabase().auth.getUser()
       if (!user) {
         setUserRole(null)
         return
       }
-      const { data, error } = await supabase
-        .from("users")
-        .select("role")
+      const { data } = await getSupabase()
+        .from("profiles")
+        .select("role, full_name")
         .eq("id", user.id)
-        .single()
-      if (data && data.role) setUserRole(data.role)
-      else setUserRole(null)
+        .maybeSingle()
+      if (!data || !data.role) {
+        router.replace("/setup-profile")
+        return
+      }
+      setUserRole(data.role)
     }
     fetchUserRole()
-  }, [])
+  }, [router])
 
   const tabs = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3, component: Dashboard },

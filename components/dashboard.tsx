@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, Calendar, AlertTriangle, Clock, BookOpen, GraduationCap, Target } from "lucide-react"
 import Skeleton from "@/app/htbyjn/components/skeleton"
-import { supabase } from "@/lib/supabaseClient"
+import { getSupabase } from "@/lib/supabaseClient"
 
 function ClientDateTime() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
@@ -84,15 +84,14 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchProfile() {
       setLoadingProfile(true)
-      const user = await supabase.auth.getUser()
+      const user = await getSupabase().auth.getUser()
       if (user.data.user?.id) {
-        const { data } = await supabase
+        const { data } = await getSupabase()
           .from('profiles')
           .select('*')
           .eq('id', user.data.user.id)
-          .single()
+          .maybeSingle()
         setProfile(data)
-        // Set sidebar items based on role
         if (data?.role === 'admin') {
           setSidebarItems([
             'Manage Timetables',
