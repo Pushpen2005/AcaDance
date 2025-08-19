@@ -1,5 +1,8 @@
 import React from 'react';
 
+// Environment variables for Supabase connection
+// NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY should be set in your .env.local or Vercel project settings
+
 interface TimetableEntry {
   id: number;
   batch: string;
