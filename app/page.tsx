@@ -83,7 +83,7 @@ export default function AcademicSystem() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-gradient-to-br from-white via-white to-blue-900 relative overflow-hidden"
+      className="min-h-screen bg-gradient-to-br from-white via-white to-blue-900 relative overflow-hidden flex flex-col"
     >
       <div className="absolute inset-0 pointer-events-none">
         {particles.map((particle) => (
@@ -107,9 +107,9 @@ export default function AcademicSystem() {
       />
 
       <nav className="relative z-10 glass-effect border-b border-white/20 backdrop-blur-lg bg-blue-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-4 animate-fade-in-up">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-20">
+            <div className="flex items-center space-x-2 sm:space-x-4 animate-fade-in-up mb-4 sm:mb-0">
               <div className="relative group">
                 <div
                   className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center animate-float shadow-lg transition-all duration-300 group-hover:scale-110"
@@ -130,8 +130,7 @@ export default function AcademicSystem() {
                 <p className="text-sm text-blue-100">Modern Education Management</p>
               </div>
             </div>
-
-            <div className="flex space-x-2 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+            <div className="flex flex-wrap space-x-0 sm:space-x-2 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
               {tabs.map((tab) => {
                 const Icon = tab.icon
                 return (
@@ -175,24 +174,28 @@ export default function AcademicSystem() {
           </div>
         </div>
       </nav>
-
-      <main className="relative z-10 max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-white rounded-xl shadow-xl">
+      <main className="relative z-10 w-full max-w-7xl mx-auto py-4 px-2 sm:py-8 sm:px-4 lg:px-8 bg-white rounded-xl shadow-xl">
         <div className="animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
           {activeTab === "dashboard" ? <DashboardComponent /> : <ActiveComponent />}
         </div>
       </main>
-
       <style jsx>{`
-        .animate-hover {
-          transition: box-shadow 0.3s, transform 0.3s;
-        }
-        .animate-press {
-          animation: pressBtn 0.2s;
-        }
-        @keyframes pressBtn {
-          0% { transform: scale(1); }
-          50% { transform: scale(0.95); }
-          100% { transform: scale(1.05); }
+        @media (max-width: 640px) {
+          .max-w-7xl {
+            max-width: 100vw;
+            padding: 0;
+          }
+          .rounded-xl {
+            border-radius: 0.5rem;
+          }
+          .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+          }
+          .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+          }
         }
       `}</style>
     </div>
