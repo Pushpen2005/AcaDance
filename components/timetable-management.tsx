@@ -18,30 +18,9 @@ export default function TimetableManagement() {
 
   // Constraints State
   const [constraints, setConstraints] = useState<any[]>([]);
-  const addConstraint = (e: React.FormEvent) => {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const constraint = {
-      id: Date.now(),
-      type: formData.get("constraintType"),
-      value: formData.get("constraintValue"),
-    };
-    setConstraints([...constraints, constraint]);
-    (e.target as HTMLFormElement).reset();
-  };
 
   // Timetable Generation State
   const [generatedTimetable, setGeneratedTimetable] = useState<any[]>([]);
-  const generateTimetable = () => {
-    // Simple demo: assign each subject to a teacher and a slot
-    const timetable = subjects.map((subject, idx) => ({
-      subject: subject.name,
-      teacher: teachers[idx % teachers.length]?.name || "Unassigned",
-      slot: `Day ${1 + (idx % 5)}, 10:00-11:00`,
-    }));
-    setGeneratedTimetable(timetable);
-    setActiveSection("view");
-  };
 
   // Fetch data from Supabase on mount
   useEffect(() => {

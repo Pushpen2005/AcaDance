@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, Calendar, AlertTriangle, Clock, BookOpen, GraduationCap, Target } from "lucide-react"
 import Skeleton from "@/app/htbyjn/components/skeleton"
 import { supabase } from "@/lib/supabaseClient"
+import TimetableManagement from "./timetable-management"
+import EnhancedInteractiveDashboard from "./EnhancedInteractiveDashboard"
 
 function ClientDateTime() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
@@ -146,6 +148,12 @@ export default function Dashboard() {
     }
   }, [profile])
 
+  // If user has a profile, show the new role-based dashboard
+  if (profile) {
+    return <EnhancedInteractiveDashboard />
+  }
+
+  // Fallback to existing dashboard for backward compatibility
   return (
     <div className="space-y-8">
       {/* Welcome Tour Modal */}
@@ -228,11 +236,21 @@ export default function Dashboard() {
           {/* Role-based dashboard widgets */}
           {profile?.role === 'admin' && (
             <div>
-              {/* Admin widgets: Timetable CRUD, Attendance Reports, etc. */}
-              <div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up"
-                style={{ animationDelay: "0.2s" }}
-              >
+              {/* Timetable Management Section */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2 text-lg">
+                    <Calendar className="w-5 h-5 text-blue-600" />
+                    <span>Timetable Management</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {/* Features: Setup, Constraints, Generation, View Timetable */}
+                  <TimetableManagement />
+                </CardContent>
+              </Card>
+              {/* Existing Admin widgets: Timetable CRUD, Attendance Reports, etc. */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
                 {loading
                   ? Array.from({ length: 4 }).map((_, i) => (
                       <Skeleton key={i} className="h-40 w-full" />
