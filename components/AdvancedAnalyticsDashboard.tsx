@@ -366,7 +366,7 @@ export default function AdvancedAnalyticsDashboard() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Analytics Dashboard
           </h1>
-          <p className="text-gray-600 mt-1">Comprehensive attendance insights and performance metrics</p>
+          <p className="text-green-700 mt-1">Comprehensive attendance insights and performance metrics</p>
         </div>
         
         <div className="flex items-center space-x-3">
@@ -423,11 +423,11 @@ export default function AdvancedAnalyticsDashboard() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-600 text-sm font-medium">Total Students</p>
+                    <p className="text-green-600 text-sm font-medium">Total Students</p>
                     <p className="text-3xl font-bold text-blue-800">{analyticsData.totalStudents}</p>
                   </div>
-                  <div className="w-12 h-12 bg-blue-200 rounded-full flex items-center justify-center">
-                    <Users className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-green-200 rounded-full flex items-center justify-center">
+                    <Users className="w-6 h-6 text-green-600" />
                   </div>
                 </div>
               </CardContent>
@@ -513,7 +513,7 @@ export default function AdvancedAnalyticsDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center space-x-2">
-              <BarChart3 className="w-6 h-6 text-blue-600" />
+              <BarChart3 className="w-6 h-6 text-green-600" />
               <span>Detailed Analytics</span>
             </CardTitle>
             
@@ -561,7 +561,7 @@ export default function AdvancedAnalyticsDashboard() {
                               </div>
                               <div>
                                 <p className="font-medium">{student.student_name}</p>
-                                <p className="text-sm text-gray-600">{student.department}</p>
+                                <p className="text-sm text-green-700">{student.department}</p>
                               </div>
                             </div>
                             <Badge className="bg-green-100 text-green-800">
@@ -593,7 +593,7 @@ export default function AdvancedAnalyticsDashboard() {
                               </div>
                               <div>
                                 <p className="font-medium">{student.student_name}</p>
-                                <p className="text-sm text-gray-600">{student.department}</p>
+                                <p className="text-sm text-green-700">{student.department}</p>
                               </div>
                             </div>
                             <Badge variant="destructive">
@@ -612,7 +612,7 @@ export default function AdvancedAnalyticsDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
-                      <GraduationCap className="w-5 h-5 text-blue-600" />
+                      <GraduationCap className="w-5 h-5 text-green-600" />
                       <span>Class Attendance Rates</span>
                     </CardTitle>
                   </CardHeader>
@@ -625,7 +625,7 @@ export default function AdvancedAnalyticsDashboard() {
                           <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                             <div>
                               <p className="font-medium">{cls.class_name}</p>
-                              <p className="text-sm text-gray-600">{cls.total_sessions} sessions</p>
+                              <p className="text-sm text-green-700">{cls.total_sessions} sessions</p>
                             </div>
                             <div className="flex items-center space-x-3">
                               <div className="w-32 bg-gray-200 rounded-full h-2">
@@ -667,7 +667,7 @@ export default function AdvancedAnalyticsDashboard() {
                           <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                             <div>
                               <p className="font-medium">{new Date(day.date).toLocaleDateString()}</p>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-green-700">
                                 {day.attendance_count} of {day.total_expected} present
                               </p>
                             </div>

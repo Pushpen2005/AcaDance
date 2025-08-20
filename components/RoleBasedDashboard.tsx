@@ -150,7 +150,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Attendance Rate</p>
+                  <p className="text-sm font-medium text-green-700">Attendance Rate</p>
                   <p className="text-3xl font-bold text-green-600">{stats.attendanceRate}%</p>
                 </div>
                 <TrendingUp className="w-8 h-8 text-green-600" />
@@ -164,10 +164,10 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Classes Today</p>
-                  <p className="text-3xl font-bold text-blue-600">4</p>
+                  <p className="text-sm font-medium text-green-700">Classes Today</p>
+                  <p className="text-3xl font-bold text-green-600">4</p>
                 </div>
-                <Calendar className="w-8 h-8 text-blue-600" />
+                <Calendar className="w-8 h-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
@@ -178,7 +178,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Shortage Alerts</p>
+                  <p className="text-sm font-medium text-green-700">Shortage Alerts</p>
                   <p className="text-3xl font-bold text-red-600">2</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-red-600" />
@@ -210,9 +210,9 @@ export default function RoleBasedDashboard() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="p-4 border rounded-lg bg-blue-50">
-                    <div className="font-semibold text-blue-900">Mathematics</div>
-                    <div className="text-sm text-blue-600">9:00 AM - 10:00 AM</div>
-                    <div className="text-sm text-blue-600">Room A101</div>
+                    <div className="font-semibold text-green-800">Mathematics</div>
+                    <div className="text-sm text-green-600">9:00 AM - 10:00 AM</div>
+                    <div className="text-sm text-green-600">Room A101</div>
                   </div>
                   <div className="p-4 border rounded-lg bg-green-50">
                     <div className="font-semibold text-green-900">Physics Lab</div>
@@ -243,7 +243,7 @@ export default function RoleBasedDashboard() {
                 {notifications.map((notif, idx) => (
                   <div key={idx} className="p-3 border rounded-lg">
                     <div className="font-medium">{notif.title}</div>
-                    <div className="text-sm text-gray-600">{notif.message}</div>
+                    <div className="text-sm text-green-700">{notif.message}</div>
                     <div className="text-xs text-gray-400 mt-1">
                       {new Date(notif.created_at).toLocaleString()}
                     </div>
@@ -301,10 +301,10 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">My Classes</p>
-                  <p className="text-3xl font-bold text-blue-600">6</p>
+                  <p className="text-sm font-medium text-green-700">My Classes</p>
+                  <p className="text-3xl font-bold text-green-600">6</p>
                 </div>
-                <BookOpen className="w-8 h-8 text-blue-600" />
+                <BookOpen className="w-8 h-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
@@ -315,7 +315,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Students</p>
+                  <p className="text-sm font-medium text-green-700">Students</p>
                   <p className="text-3xl font-bold text-green-600">{stats.studentsCount}</p>
                 </div>
                 <Users className="w-8 h-8 text-green-600" />
@@ -329,7 +329,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Avg Attendance</p>
+                  <p className="text-sm font-medium text-green-700">Avg Attendance</p>
                   <p className="text-3xl font-bold text-orange-600">{stats.attendanceRate}%</p>
                 </div>
                 <BarChart3 className="w-8 h-8 text-orange-600" />
@@ -343,7 +343,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Pending Approvals</p>
+                  <p className="text-sm font-medium text-green-700">Pending Approvals</p>
                   <p className="text-3xl font-bold text-red-600">3</p>
                 </div>
                 <Clock className="w-8 h-8 text-red-600" />
@@ -376,9 +376,9 @@ export default function RoleBasedDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 border rounded-lg">
                     <div className="font-semibold">Mathematics - Section A</div>
-                    <div className="text-sm text-gray-600">Monday, Wednesday, Friday</div>
-                    <div className="text-sm text-gray-600">9:00 AM - 10:00 AM</div>
-                    <div className="text-sm text-gray-600">Room A101</div>
+                    <div className="text-sm text-green-700">Monday, Wednesday, Friday</div>
+                    <div className="text-sm text-green-700">9:00 AM - 10:00 AM</div>
+                    <div className="text-sm text-green-700">Room A101</div>
                     <Button size="sm" className="mt-2">
                       <QrCode className="w-4 h-4 mr-1" />
                       Start Attendance
@@ -386,9 +386,9 @@ export default function RoleBasedDashboard() {
                   </div>
                   <div className="p-4 border rounded-lg">
                     <div className="font-semibold">Physics Lab - Section B</div>
-                    <div className="text-sm text-gray-600">Tuesday, Thursday</div>
-                    <div className="text-sm text-gray-600">2:00 PM - 4:00 PM</div>
-                    <div className="text-sm text-gray-600">Lab B205</div>
+                    <div className="text-sm text-green-700">Tuesday, Thursday</div>
+                    <div className="text-sm text-green-700">2:00 PM - 4:00 PM</div>
+                    <div className="text-sm text-green-700">Lab B205</div>
                     <Button size="sm" className="mt-2">
                       <QrCode className="w-4 h-4 mr-1" />
                       Start Attendance
@@ -414,13 +414,13 @@ export default function RoleBasedDashboard() {
                   <Button variant="outline" className="p-4 h-auto">
                     <div className="text-left">
                       <div className="font-medium">Class Attendance Report</div>
-                      <div className="text-sm text-gray-600">Download attendance for all classes</div>
+                      <div className="text-sm text-green-700">Download attendance for all classes</div>
                     </div>
                   </Button>
                   <Button variant="outline" className="p-4 h-auto">
                     <div className="text-left">
                       <div className="font-medium">Student Performance</div>
-                      <div className="text-sm text-gray-600">Individual student reports</div>
+                      <div className="text-sm text-green-700">Individual student reports</div>
                     </div>
                   </Button>
                 </div>
@@ -436,7 +436,7 @@ export default function RoleBasedDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-green-700">
                   Manage students in your classes and view their attendance records.
                 </div>
               </div>
@@ -457,10 +457,10 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Students</p>
-                  <p className="text-3xl font-bold text-blue-600">{stats.studentsCount}</p>
+                  <p className="text-sm font-medium text-green-700">Total Students</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.studentsCount}</p>
                 </div>
-                <Users className="w-8 h-8 text-blue-600" />
+                <Users className="w-8 h-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
@@ -471,7 +471,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Faculty</p>
+                  <p className="text-sm font-medium text-green-700">Faculty</p>
                   <p className="text-3xl font-bold text-green-600">{stats.facultyCount}</p>
                 </div>
                 <BookOpen className="w-8 h-8 text-green-600" />
@@ -485,7 +485,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Attendance Rate</p>
+                  <p className="text-sm font-medium text-green-700">Attendance Rate</p>
                   <p className="text-3xl font-bold text-orange-600">{stats.attendanceRate}%</p>
                 </div>
                 <BarChart3 className="w-8 h-8 text-orange-600" />
@@ -499,7 +499,7 @@ export default function RoleBasedDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Low Attendance Alerts</p>
+                  <p className="text-sm font-medium text-green-700">Low Attendance Alerts</p>
                   <p className="text-3xl font-bold text-red-600">{stats.lowAttendanceAlerts}</p>
                 </div>
                 <AlertTriangle className="w-8 h-8 text-red-600" />
@@ -547,7 +547,7 @@ export default function RoleBasedDashboard() {
                     Bulk Import
                   </Button>
                 </div>
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-green-700">
                   Manage all users, roles, and permissions from this section.
                 </div>
               </div>
@@ -569,19 +569,19 @@ export default function RoleBasedDashboard() {
                   <Button variant="outline" className="p-4 h-auto">
                     <div className="text-left">
                       <div className="font-medium">Institution Report</div>
-                      <div className="text-sm text-gray-600">Overall attendance & analytics</div>
+                      <div className="text-sm text-green-700">Overall attendance & analytics</div>
                     </div>
                   </Button>
                   <Button variant="outline" className="p-4 h-auto">
                     <div className="text-left">
                       <div className="font-medium">Faculty Workload</div>
-                      <div className="text-sm text-gray-600">Teaching load distribution</div>
+                      <div className="text-sm text-green-700">Teaching load distribution</div>
                     </div>
                   </Button>
                   <Button variant="outline" className="p-4 h-auto">
                     <div className="text-left">
                       <div className="font-medium">Defaulters List</div>
-                      <div className="text-sm text-gray-600">Students below 75%</div>
+                      <div className="text-sm text-green-700">Students below 75%</div>
                     </div>
                   </Button>
                 </div>
@@ -632,7 +632,7 @@ export default function RoleBasedDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-green-700">
                   Configure system-wide settings, attendance policies, and integrations.
                 </div>
               </div>
@@ -657,7 +657,7 @@ export default function RoleBasedDashboard() {
               <h1 className="text-3xl font-bold text-gray-900">
                 {profile?.role === 'admin' ? 'Admin' : profile?.role === 'faculty' ? 'Faculty' : 'Student'} Dashboard
               </h1>
-              <p className="text-gray-600">Welcome back, {profile?.full_name || 'User'}</p>
+              <p className="text-green-700">Welcome back, {profile?.full_name || 'User'}</p>
             </div>
             <div className="flex items-center gap-4">
               <Badge 

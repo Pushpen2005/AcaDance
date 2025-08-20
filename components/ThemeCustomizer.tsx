@@ -35,7 +35,7 @@ const themePreferences: ThemePreference[] = [
     description: 'Calm and professional blue theme',
     primary: 'bg-blue-500',
     secondary: 'bg-blue-100',
-    accent: 'bg-blue-200'
+    accent: 'bg-green-200'
   },
   {
     id: 'green',
@@ -76,25 +76,27 @@ export default function ThemeCustomizer() {
     setMounted(true);
     
     // Check system theme preference
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
-    
-    const handleChange = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? 'dark' : 'light');
-      if (autoSwitchEnabled) {
-        setTheme('system');
-      }
-    };
-    
-    mediaQuery.addEventListener('change', handleChange);
-    
-    // Check for reduced motion preference
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    setReducedMotion(motionQuery.matches);
-    
-    return () => {
-      mediaQuery.removeEventListener('change', handleChange);
-    };
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      setSystemTheme(mediaQuery.matches ? 'dark' : 'light');
+      
+      const handleChange = (e: MediaQueryListEvent) => {
+        setSystemTheme(e.matches ? 'dark' : 'light');
+        if (autoSwitchEnabled) {
+          setTheme('system');
+        }
+      };
+      
+      mediaQuery.addEventListener('change', handleChange);
+      
+      // Check for reduced motion preference
+      const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      setReducedMotion(motionQuery.matches);
+      
+      return () => {
+        mediaQuery.removeEventListener('change', handleChange);
+      };
+    }
   }, [autoSwitchEnabled, setTheme]);
 
   // Don't render until mounted to avoid hydration mismatch

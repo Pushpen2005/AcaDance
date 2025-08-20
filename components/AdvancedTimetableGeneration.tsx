@@ -585,7 +585,7 @@ export default function AdvancedTimetableGeneration() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Advanced Timetable Generation
           </h1>
-          <p className="text-gray-600 mt-1">AI-powered smart scheduling with conflict resolution</p>
+          <p className="text-green-700 mt-1">AI-powered smart scheduling with conflict resolution</p>
         </div>
         
         <div className="flex items-center space-x-3">
@@ -627,13 +627,13 @@ export default function AdvancedTimetableGeneration() {
         <Card className="bg-blue-50 border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-center space-x-4">
-              <RefreshCw className="w-5 h-5 text-blue-600 animate-spin" />
+              <RefreshCw className="w-5 h-5 text-green-600 animate-spin" />
               <div className="flex-1">
                 <div className="flex justify-between text-sm mb-1">
                   <span>Generating Smart Timetable...</span>
                   <span>{Math.round(generationProgress)}%</span>
                 </div>
-                <div className="w-full bg-blue-200 rounded-full h-2">
+                <div className="w-full bg-green-200 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${generationProgress}%` }}
@@ -685,10 +685,10 @@ export default function AdvancedTimetableGeneration() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-600 text-sm font-medium">Total Subjects</p>
+                    <p className="text-green-600 text-sm font-medium">Total Subjects</p>
                     <p className="text-3xl font-bold text-blue-800">{subjects.length}</p>
                   </div>
-                  <BookOpen className="w-12 h-12 text-blue-600" />
+                  <BookOpen className="w-12 h-12 text-green-600" />
                 </div>
               </CardContent>
             </Card>
@@ -825,7 +825,7 @@ export default function AdvancedTimetableGeneration() {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Calendar className="w-5 h-5 text-blue-600" />
+                  <Calendar className="w-5 h-5 text-green-600" />
                   <span>Interactive Timetable (Drag & Drop)</span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -875,14 +875,14 @@ export default function AdvancedTimetableGeneration() {
                               <motion.div
                                 draggable
                                 onDragStart={() => handleDragStart(classEntry)}
-                                className="bg-blue-100 border border-blue-300 rounded p-2 cursor-move hover:bg-blue-200 transition-colors h-full"
+                                className="bg-blue-100 border border-blue-300 rounded p-2 cursor-move hover:bg-green-200 transition-colors h-full"
                                 whileHover={{ scale: 1.02 }}
                                 whileDrag={{ scale: 1.05, zIndex: 1000 }}
                               >
                                 <div className="text-xs font-semibold text-blue-800 truncate">
                                   {subjects.find(s => s.id === classEntry.subject_id)?.name}
                                 </div>
-                                <div className="text-xs text-blue-600 truncate">
+                                <div className="text-xs text-green-600 truncate">
                                   {faculty.find(f => f.id === classEntry.faculty_id)?.name}
                                 </div>
                                 <div className="text-xs text-blue-500 truncate">

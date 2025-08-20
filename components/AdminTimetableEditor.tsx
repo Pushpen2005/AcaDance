@@ -51,31 +51,56 @@ export default function AdminTimetableEditor() {
   });
 
   useEffect(() => {
-    supabase.from('timetable').select('*').then(({ data }) => setEntries(data || []));
+    const fetchData = async () => {
+      try {
+        const { data, error } = await supabase.from('timetable').select('*');
+        if (error) throw error;
+        setEntries(data || []);
+      } catch (error) {
+        console.error('Error fetching timetable:', error);
+      }
+    };
+    fetchData();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Convert semester and credits to numbers
-    const newEntry = {
-      ...form,
-      semester: Number(form.semester),
-      credits: Number(form.credits)
-    };
-    await supabase.from('timetable').insert([newEntry]);
-    const { data } = await supabase.from('timetable').select('*');
-    setEntries(data || []);
-    setForm({
-      batch: '', semester: '', course: '', faculty_id: '', room: '', room_type: '',
-      day: '', start_time: '', end_time: '', credits: ''
-    });
+    try {
+      // Convert semester and credits to numbers
+      const newEntry = {
+        ...form,
+        semester: Number(form.semester),
+        credits: Number(form.credits)
+      };
+      
+      const { error: insertError } = await supabase.from('timetable').insert([newEntry]);
+      if (insertError) throw insertError;
+      
+      const { data, error: fetchError } = await supabase.from('timetable').select('*');
+      if (fetchError) throw fetchError;
+      
+      setEntries(data || []);
+      setForm({
+        batch: '', semester: '', course: '', faculty_id: '', room: '', room_type: '',
+        day: '', start_time: '', end_time: '', credits: ''
+      });
+    } catch (error) {
+      console.error('Error adding timetable entry:', error);
+      alert('Error adding timetable entry. Please try again.');
+    }
   };
 
   const handleDelete = async (id: number) => {
-    await supabase.from('timetable').delete().eq('id', id);
-    setEntries(entries.filter((entry) => entry.id !== id));
+    try {
+      const { error } = await supabase.from('timetable').delete().eq('id', id);
+      if (error) throw error;
+      setEntries(entries.filter((entry) => entry.id !== id));
+    } catch (error) {
+      console.error('Error deleting timetable entry:', error);
+      alert('Error deleting timetable entry. Please try again.');
+    }
   };
 
   return (

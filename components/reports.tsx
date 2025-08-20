@@ -33,7 +33,7 @@ export default function Reports() {
             key={section.id}
             onClick={() => setActiveSection(section.id)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeSection === section.id ? "bg-white text-blue-700 shadow-sm" : "text-gray-600 hover:text-gray-900"
+              activeSection === section.id ? "bg-white text-green-700 shadow-sm" : "text-green-700 hover:text-gray-900"
             }`}
           >
             {section.label}
@@ -92,11 +92,11 @@ export default function Reports() {
               <div className="space-y-2">
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <div className="font-medium text-blue-800">Room 201 Available</div>
-                  <div className="text-sm text-blue-600">Wednesday 11:00 AM - 12:00 PM</div>
+                  <div className="text-sm text-green-600">Wednesday 11:00 AM - 12:00 PM</div>
                 </div>
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <div className="font-medium text-blue-800">Lab 301 Available</div>
-                  <div className="text-sm text-blue-600">Friday 3:00 PM - 4:00 PM</div>
+                  <div className="text-sm text-green-600">Friday 3:00 PM - 4:00 PM</div>
                 </div>
               </div>
             </CardContent>
@@ -116,21 +116,21 @@ export default function Reports() {
                 <div className="flex justify-between items-center p-3 border-b">
                   <div>
                     <div className="font-medium">John Doe</div>
-                    <div className="text-sm text-gray-600">CS001</div>
+                    <div className="text-sm text-green-700">CS001</div>
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-red-600">65%</div>
-                    <div className="text-sm text-gray-600">13/20 classes</div>
+                    <div className="text-sm text-green-700">13/20 classes</div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center p-3 border-b">
                   <div>
                     <div className="font-medium">Jane Smith</div>
-                    <div className="text-sm text-gray-600">CS002</div>
+                    <div className="text-sm text-green-700">CS002</div>
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-green-600">95%</div>
-                    <div className="text-sm text-gray-600">19/20 classes</div>
+                    <div className="text-sm text-green-700">19/20 classes</div>
                   </div>
                 </div>
               </div>
@@ -166,8 +166,8 @@ export default function Reports() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">1,247</div>
-                <div className="text-sm text-blue-600">Total Attendance Records</div>
+                <div className="text-2xl font-bold text-green-600">1,247</div>
+                <div className="text-sm text-green-600">Total Attendance Records</div>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <div className="text-2xl font-bold text-green-600">87%</div>

@@ -378,7 +378,7 @@ export default function TimetableAnalyticsAndReports() {
     return (
       <div className="w-full max-w-7xl mx-auto p-4">
         <div className="flex items-center justify-center h-64">
-          <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+          <RefreshCw className="w-8 h-8 animate-spin text-green-600" />
           <span className="ml-2 text-lg">Loading analytics...</span>
         </div>
       </div>
@@ -393,7 +393,7 @@ export default function TimetableAnalyticsAndReports() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             Timetable Analytics & Reports
           </h1>
-          <p className="text-gray-600 mt-1">Comprehensive insights and utilization reports</p>
+          <p className="text-green-700 mt-1">Comprehensive insights and utilization reports</p>
         </div>
         
         <div className="flex items-center space-x-3">
@@ -485,12 +485,12 @@ export default function TimetableAnalyticsAndReports() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-blue-600 text-sm font-medium">Total Classes</p>
+                    <p className="text-green-600 text-sm font-medium">Total Classes</p>
                     <p className="text-3xl font-bold text-blue-800">
                       {analyticsData?.departmentStats.reduce((sum, dept) => sum + dept.totalClasses, 0) || 0}
                     </p>
                   </div>
-                  <Calendar className="w-12 h-12 text-blue-600" />
+                  <Calendar className="w-12 h-12 text-green-600" />
                 </div>
               </CardContent>
             </Card>
@@ -565,7 +565,7 @@ export default function TimetableAnalyticsAndReports() {
                         {day.utilization > 20 && `${day.utilization}%`}
                       </motion.div>
                     </div>
-                    <div className="w-16 text-sm text-gray-600 text-right">
+                    <div className="w-16 text-sm text-green-700 text-right">
                       {day.totalClasses} classes
                     </div>
                   </div>
@@ -640,7 +640,7 @@ export default function TimetableAnalyticsAndReports() {
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <h3 className="font-semibold">{faculty.name}</h3>
-                        <p className="text-sm text-gray-600">{faculty.department}</p>
+                        <p className="text-sm text-green-700">{faculty.department}</p>
                       </div>
                       <Badge 
                         variant={faculty.utilization > 80 ? "destructive" : faculty.utilization > 60 ? "default" : "secondary"}
@@ -651,15 +651,15 @@ export default function TimetableAnalyticsAndReports() {
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                       <div>
-                        <span className="text-gray-600">Classes:</span>
+                        <span className="text-green-700">Classes:</span>
                         <span className="ml-2 font-medium">{faculty.classes}</span>
                       </div>
                       <div>
-                        <span className="text-gray-600">Hours:</span>
+                        <span className="text-green-700">Hours:</span>
                         <span className="ml-2 font-medium">{faculty.totalHours}/{faculty.maxHours}</span>
                       </div>
                       <div>
-                        <span className="text-gray-600">Peak Days:</span>
+                        <span className="text-green-700">Peak Days:</span>
                         <span className="ml-2 font-medium">{faculty.peakDays.join(', ')}</span>
                       </div>
                       <div className="flex-1 bg-gray-200 rounded-full h-2 mt-2">

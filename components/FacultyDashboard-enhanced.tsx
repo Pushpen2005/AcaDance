@@ -3,11 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Users, BarChart3, Clock, CheckCircle, AlertTriangle, QrCode } from "lucide-react";
+import { Calendar, Users, BarChart3, Clock, CheckCircle, AlertTriangle, QrCode, Camera, Brain } from "lucide-react";
 import ColorCodedTimetableView from './ColorCodedTimetableView';
+import FacultyFaceDetectionAttendance from './FacultyFaceDetectionAttendance';
 
 const FacultyDashboard = () => {
-  const [activeView, setActiveView] = useState<'overview' | 'timetable' | 'attendance'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'timetable' | 'attendance' | 'face-detection'>('overview');
 
   const todayClasses = [
     { time: '09:00 AM', subject: 'Computer Science 101', room: 'Room A-205', students: 45, status: 'upcoming' },
@@ -43,6 +44,23 @@ const FacultyDashboard = () => {
           </Button>
         </div>
         <ColorCodedTimetableView />
+      </div>
+    );
+  }
+
+  if (activeView === 'face-detection') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="outline" 
+            onClick={() => setActiveView('overview')}
+            className="mb-4"
+          >
+            ← Back to Dashboard
+          </Button>
+        </div>
+        <FacultyFaceDetectionAttendance />
       </div>
     );
   }
@@ -164,7 +182,7 @@ const FacultyDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-4">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -179,6 +197,29 @@ const FacultyDashboard = () => {
             <Button className="w-full">Start New Session</Button>
             <Button variant="outline" className="w-full">View Active Sessions</Button>
             <Button variant="outline" className="w-full">Session History</Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="w-5 h-5" />
+              Face Detection
+            </CardTitle>
+            <CardDescription>
+              AI-powered student counting
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button 
+              className="w-full bg-purple-600 hover:bg-purple-700"
+              onClick={() => setActiveView('face-detection')}
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              Count Students
+            </Button>
+            <Button variant="outline" className="w-full">Detection History</Button>
+            <Button variant="outline" className="w-full">AI Settings</Button>
           </CardContent>
         </Card>
 

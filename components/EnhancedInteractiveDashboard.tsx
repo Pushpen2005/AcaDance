@@ -445,7 +445,7 @@ export default function InteractiveDashboard() {
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">{title}</p>
+              <p className="text-sm font-medium text-green-700">{title}</p>
               <p className={`text-3xl font-bold ${color}`}>{value}</p>
               {description && <p className="text-xs text-gray-500 mt-1">{description}</p>}
             </div>
@@ -464,7 +464,7 @@ export default function InteractiveDashboard() {
           <h1 className="text-3xl font-bold text-gray-900">
             {profile?.role ? profile.role.charAt(0).toUpperCase() + profile.role.slice(1) : 'User'} Dashboard
           </h1>
-          <p className="text-gray-600">Welcome back, {profile?.full_name}!</p>
+          <p className="text-green-700">Welcome back, {profile?.full_name}!</p>
         </div>
         <div className="flex gap-2">
           <Button 
@@ -489,7 +489,7 @@ export default function InteractiveDashboard() {
               title="Total Students" 
               value={stats.totalStudents} 
               icon={Users} 
-              color="text-blue-600"
+              color="text-green-600"
               description="Active enrollments"
             />
             <StatCard 
@@ -522,7 +522,7 @@ export default function InteractiveDashboard() {
               title="Today's Classes" 
               value={stats.todaysClasses} 
               icon={Calendar} 
-              color="text-blue-600"
+              color="text-green-600"
               description="Scheduled for today"
             />
             <StatCard 
@@ -555,7 +555,7 @@ export default function InteractiveDashboard() {
               title="Today's Classes" 
               value={stats.todaysClasses} 
               icon={Calendar} 
-              color="text-blue-600"
+              color="text-green-600"
               description="Your schedule"
             />
             <StatCard 
@@ -648,7 +648,7 @@ export default function InteractiveDashboard() {
                     <div className="flex justify-between items-start">
                       <div>
                         <h4 className="font-semibold">{notification.title}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                        <p className="text-sm text-green-700 mt-1">{notification.message}</p>
                         <p className="text-xs text-gray-400 mt-2">
                           {new Date(notification.created_at).toLocaleString()}
                         </p>
@@ -689,10 +689,10 @@ export default function InteractiveDashboard() {
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-semibold">Class: {session.class_id}</h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-green-700">
                           Expires: {new Date(session.expiry_time).toLocaleString()}
                         </p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-green-700">
                           Location: {session.location_lat ? 'Required' : 'Not required'}
                         </p>
                       </div>
@@ -832,8 +832,8 @@ export default function InteractiveDashboard() {
                     <div key={student.id} className="flex justify-between items-center p-4 border rounded-lg">
                       <div>
                         <h3 className="font-semibold">{student.full_name}</h3>
-                        <p className="text-sm text-gray-600">{student.email}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-green-700">{student.email}</p>
+                        <p className="text-sm text-green-700">
                           {student.department} - Semester {student.semester}
                         </p>
                       </div>

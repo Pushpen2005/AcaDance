@@ -3,16 +3,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Calendar, Users, Settings, BookOpen, Clock, AlertCircle } from "lucide-react";
+import { BarChart3, Calendar, Users, Settings, BookOpen, Clock, AlertCircle, Shield, Globe } from "lucide-react";
 import AdvancedTimetableGeneration from './AdvancedTimetableGeneration';
 import TimetableAnalyticsAndReports from './TimetableAnalyticsAndReports';
 import SmartSchedulingAlgorithms from './SmartSchedulingAlgorithms';
 import RoleBasedTimetableAccess from './RoleBasedTimetableAccess';
 import ColorCodedTimetableView from './ColorCodedTimetableView';
 import ComprehensiveTimetableManagement from './ComprehensiveTimetableManagement';
+import AdminAuditLogs from './AdminAuditLogs';
+import AdminSystemAnalytics from './AdminSystemAnalytics';
+import AdminGlobalSettings from './AdminGlobalSettings';
 
 const AdminDashboard = () => {
-  const [activeSection, setActiveSection] = useState<'overview' | 'timetable-generator' | 'analytics' | 'smart-scheduling' | 'access-control' | 'color-view' | 'crud-management'>('overview');
+  const [activeSection, setActiveSection] = useState<'overview' | 'timetable-generator' | 'analytics' | 'smart-scheduling' | 'access-control' | 'color-view' | 'crud-management' | 'audit-logs' | 'system-analytics' | 'global-settings'>('overview');
 
   const stats = [
     { label: 'Total Students', value: '1,247', icon: Users, color: 'blue' },
@@ -34,7 +37,10 @@ const AdminDashboard = () => {
       'smart-scheduling': <SmartSchedulingAlgorithms />,
       'access-control': <RoleBasedTimetableAccess />,
       'color-view': <ColorCodedTimetableView />,
-      'crud-management': <ComprehensiveTimetableManagement />
+      'crud-management': <ComprehensiveTimetableManagement />,
+      'audit-logs': <AdminAuditLogs />,
+      'system-analytics': <AdminSystemAnalytics />,
+      'global-settings': <AdminGlobalSettings />
     };
 
     return (
@@ -168,7 +174,7 @@ const AdminDashboard = () => {
               System Management
             </CardTitle>
             <CardDescription>
-              User management and access control
+              User management, analytics, and access control
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -179,13 +185,29 @@ const AdminDashboard = () => {
               <Users className="w-4 h-4 mr-2" />
               Access Control
             </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <Settings className="w-4 h-4 mr-2" />
-              System Settings
+            <Button 
+              onClick={() => setActiveSection('system-analytics')} 
+              variant="outline" 
+              className="w-full justify-start"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              System Analytics
             </Button>
-            <Button variant="outline" className="w-full justify-start">
-              <AlertCircle className="w-4 h-4 mr-2" />
+            <Button 
+              onClick={() => setActiveSection('audit-logs')} 
+              variant="outline" 
+              className="w-full justify-start"
+            >
+              <Shield className="w-4 h-4 mr-2" />
               Audit Logs
+            </Button>
+            <Button 
+              onClick={() => setActiveSection('global-settings')} 
+              variant="outline" 
+              className="w-full justify-start"
+            >
+              <Globe className="w-4 h-4 mr-2" />
+              Global Settings
             </Button>
           </CardContent>
         </Card>

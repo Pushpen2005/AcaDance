@@ -51,28 +51,34 @@ export default function MobileResponsivenessChecker() {
 
   useEffect(() => {
     const updateDeviceInfo = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-      
-      let type: 'mobile' | 'tablet' | 'desktop' = 'desktop';
-      if (width < 768) type = 'mobile';
-      else if (width < 1024) type = 'tablet';
-      
-      setDeviceInfo({
-        type,
-        width,
-        height,
-        orientation: width > height ? 'landscape' : 'portrait',
-        userAgent: navigator.userAgent,
-        touchSupport: 'ontouchstart' in window,
-        pixelRatio: window.devicePixelRatio || 1
-      });
+      if (typeof window !== 'undefined') {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        let type: 'mobile' | 'tablet' | 'desktop' = 'desktop';
+        if (width < 768) type = 'mobile';
+        else if (width < 1024) type = 'tablet';
+        
+        setDeviceInfo({
+          type,
+          width,
+          height,
+          orientation: width > height ? 'landscape' : 'portrait',
+          userAgent: navigator.userAgent,
+          touchSupport: 'ontouchstart' in window,
+          pixelRatio: window.devicePixelRatio || 1
+        });
+      }
     };
 
-    const updateOnlineStatus = () => setIsOnline(navigator.onLine);
+    const updateOnlineStatus = () => {
+      if (typeof navigator !== 'undefined') {
+        setIsOnline(navigator.onLine);
+      }
+    };
     
     const updateBatteryInfo = async () => {
-      if ('getBattery' in navigator) {
+      if (typeof navigator !== 'undefined' && 'getBattery' in navigator) {
         try {
           // @ts-ignore
           const battery = await navigator.getBattery();
@@ -87,17 +93,19 @@ export default function MobileResponsivenessChecker() {
     updateOnlineStatus();
     updateBatteryInfo();
 
-    window.addEventListener('resize', updateDeviceInfo);
-    window.addEventListener('orientationchange', updateDeviceInfo);
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateDeviceInfo);
+      window.addEventListener('orientationchange', updateDeviceInfo);
+      window.addEventListener('online', updateOnlineStatus);
+      window.addEventListener('offline', updateOnlineStatus);
 
-    return () => {
-      window.removeEventListener('resize', updateDeviceInfo);
-      window.removeEventListener('orientationchange', updateDeviceInfo);
-      window.removeEventListener('online', updateOnlineStatus);
-      window.removeEventListener('offline', updateOnlineStatus);
-    };
+      return () => {
+        window.removeEventListener('resize', updateDeviceInfo);
+        window.removeEventListener('orientationchange', updateDeviceInfo);
+        window.removeEventListener('online', updateOnlineStatus);
+        window.removeEventListener('offline', updateOnlineStatus);
+      };
+    }
   }, []);
 
   const getResponsivenessTests = (): ResponsivenessTest[] => {

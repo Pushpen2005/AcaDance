@@ -349,7 +349,7 @@ export default function RealTimeNotificationSystem() {
       case 'announcement':
         return <MessageSquare className="w-5 h-5 text-purple-600" />
       default:
-        return <Info className="w-5 h-5 text-blue-600" />
+        return <Info className="w-5 h-5 text-green-600" />
     }
   }
 
@@ -386,7 +386,7 @@ export default function RealTimeNotificationSystem() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Notification Center
           </h1>
-          <p className="text-gray-600 mt-1">Real-time notifications and announcements</p>
+          <p className="text-green-700 mt-1">Real-time notifications and announcements</p>
         </div>
         
         {(currentUser?.role === 'admin' || currentUser?.role === 'faculty') && (

@@ -8,7 +8,7 @@ export default function LoginPage() {
       <div className="absolute top-6 left-6 z-20">
         <Link
           href="/"
-          className="px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-blue-700 font-semibold shadow-lg hover:bg-white hover:shadow-xl transition-all duration-200"
+          className="px-4 py-2 rounded-full bg-green-50/90 backdrop-blur-sm text-green-700 font-semibold shadow-lg hover:bg-green-100 hover:shadow-xl transition-all duration-200 border border-green-200"
         >
           ← Back to Home
         </Link>

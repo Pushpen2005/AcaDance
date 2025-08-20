@@ -648,7 +648,7 @@ export default function SmartSchedulingAlgorithms() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             Smart Scheduling Algorithms
           </h1>
-          <p className="text-gray-600 mt-1">AI-powered optimization for perfect timetables</p>
+          <p className="text-green-700 mt-1">AI-powered optimization for perfect timetables</p>
         </div>
         
         <div className="flex items-center space-x-3">
@@ -737,7 +737,7 @@ export default function SmartSchedulingAlgorithms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Settings className="w-5 h-5 text-blue-600" />
+                <Settings className="w-5 h-5 text-green-600" />
                 <span>Algorithm Configuration</span>
               </CardTitle>
             </CardHeader>
@@ -773,7 +773,7 @@ export default function SmartSchedulingAlgorithms() {
                     step={10}
                     className="mt-2"
                   />
-                  <div className="text-sm text-gray-600 mt-1">{settings.populationSize}</div>
+                  <div className="text-sm text-green-700 mt-1">{settings.populationSize}</div>
                 </div>
                 
                 <div>
@@ -786,7 +786,7 @@ export default function SmartSchedulingAlgorithms() {
                     step={50}
                     className="mt-2"
                   />
-                  <div className="text-sm text-gray-600 mt-1">{settings.generations}</div>
+                  <div className="text-sm text-green-700 mt-1">{settings.generations}</div>
                 </div>
               </div>
 
@@ -808,7 +808,7 @@ export default function SmartSchedulingAlgorithms() {
                         step={0.05}
                         className="mt-1"
                       />
-                      <div className="text-xs text-gray-600">{(value * 100).toFixed(0)}%</div>
+                      <div className="text-xs text-green-700">{(value * 100).toFixed(0)}%</div>
                     </div>
                   ))}
                 </div>
@@ -853,7 +853,7 @@ export default function SmartSchedulingAlgorithms() {
                 <CardContent className="space-y-4">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-600">{result.metrics.overallScore}/100</div>
-                    <div className="text-sm text-gray-600">Overall Score</div>
+                    <div className="text-sm text-green-700">Overall Score</div>
                   </div>
                   
                   <div className="space-y-3">
@@ -927,7 +927,7 @@ export default function SmartSchedulingAlgorithms() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Activity className="w-5 h-5 text-blue-600" />
+                <Activity className="w-5 h-5 text-green-600" />
                 <span>Quick Stats</span>
               </CardTitle>
             </CardHeader>

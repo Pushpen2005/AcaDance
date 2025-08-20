@@ -1,0 +1,47 @@
+{
+  "name": "academic-system-tests",
+  "version": "1.0.0",
+  "description": "Test suite for Academic Management System",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:api": "newman run tests/api/academic-system.postman_collection.json"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/user-event": "^14.4.3",
+    "@playwright/test": "^1.40.0",
+    "@types/jest": "^29.5.5",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "newman": "^6.0.0",
+    "ts-jest": "^29.1.1"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"],
+    "moduleNameMapping": {
+      "^@/(.*)$": "<rootDir>/$1",
+      "^@/components/(.*)$": "<rootDir>/components/$1",
+      "^@/lib/(.*)$": "<rootDir>/lib/$1"
+    },
+    "collectCoverageFrom": [
+      "components/**/*.{ts,tsx}",
+      "lib/**/*.{ts,tsx}",
+      "!components/**/*.stories.{ts,tsx}",
+      "!**/*.d.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    }
+  }
+}

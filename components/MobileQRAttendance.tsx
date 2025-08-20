@@ -487,11 +487,11 @@ export default function MobileQRAttendance() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-blue-600" />
+                <User className="w-5 h-5 text-green-600" />
               </div>
               <div>
                 <h3 className="font-semibold">{currentUser.full_name}</h3>
-                <p className="text-sm text-gray-600 capitalize">{userRole} • {currentUser.department}</p>
+                <p className="text-sm text-green-700 capitalize">{userRole} • {currentUser.department}</p>
               </div>
             </div>
             
@@ -522,7 +522,7 @@ export default function MobileQRAttendance() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <QrCode className="w-6 h-6 text-blue-600" />
+            <QrCode className="w-6 h-6 text-green-600" />
             <span>QR Attendance System</span>
           </CardTitle>
         </CardHeader>
@@ -561,12 +561,12 @@ export default function MobileQRAttendance() {
                 {!isScanning ? (
                   <div className="space-y-4">
                     <div className="w-32 h-32 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto">
-                      <QrCode className="w-16 h-16 text-blue-600" />
+                      <QrCode className="w-16 h-16 text-green-600" />
                     </div>
                     
                     <div>
                       <h3 className="text-xl font-semibold mb-2">Ready to Scan</h3>
-                      <p className="text-gray-600 mb-4">
+                      <p className="text-green-700 mb-4">
                         Point your camera at the QR code displayed by your instructor
                       </p>
                     </div>
@@ -617,7 +617,7 @@ export default function MobileQRAttendance() {
                     
                     <div>
                       <h3 className="text-xl font-semibold mb-2">Scanning...</h3>
-                      <p className="text-gray-600 mb-4">
+                      <p className="text-green-700 mb-4">
                         Align the QR code within the frame
                       </p>
                     </div>
@@ -743,7 +743,7 @@ export default function MobileQRAttendance() {
                           }`} />
                           <div>
                             <h4 className="font-medium">{(record as any).qr_attendance_sessions?.class_name}</h4>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-green-700">
                               {(record as any).qr_attendance_sessions?.faculty_name} • {(record as any).qr_attendance_sessions?.room_number}
                             </p>
                           </div>
@@ -799,11 +799,11 @@ export default function MobileQRAttendance() {
                       
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <p className="text-gray-600">Started</p>
+                          <p className="text-green-700">Started</p>
                           <p className="font-medium">{new Date(currentSession.start_time).toLocaleTimeString()}</p>
                         </div>
                         <div>
-                          <p className="text-gray-600">Expires</p>
+                          <p className="text-green-700">Expires</p>
                           <p className="font-medium">{new Date(currentSession.expiry_time).toLocaleTimeString()}</p>
                         </div>
                       </div>

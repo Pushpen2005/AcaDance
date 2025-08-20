@@ -25,14 +25,25 @@ export default function TimetableManagement() {
   // Fetch data from Supabase on mount
   useEffect(() => {
     async function fetchData() {
-      const { data: subjectsData } = await supabase.from("subjects").select("*");
-      setSubjects(subjectsData || []);
-      const { data: teachersData } = await supabase.from("teachers").select("*");
-      setTeachers(teachersData || []);
-      const { data: constraintsData } = await supabase.from("constraints").select("*");
-      setConstraints(constraintsData || []);
-      const { data: timetableData } = await supabase.from("timetables").select("*");
-      setGeneratedTimetable(timetableData || []);
+      try {
+        const { data: subjectsData, error: subjectsError } = await supabase.from("subjects").select("*");
+        if (subjectsError) throw subjectsError;
+        setSubjects(subjectsData || []);
+        
+        const { data: teachersData, error: teachersError } = await supabase.from("teachers").select("*");
+        if (teachersError) throw teachersError;
+        setTeachers(teachersData || []);
+        
+        const { data: constraintsData, error: constraintsError } = await supabase.from("constraints").select("*");
+        if (constraintsError) throw constraintsError;
+        setConstraints(constraintsData || []);
+        
+        const { data: timetableData, error: timetableError } = await supabase.from("timetables").select("*");
+        if (timetableError) throw timetableError;
+        setGeneratedTimetable(timetableData || []);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     }
     fetchData();
   }, []);
@@ -120,7 +131,7 @@ export default function TimetableManagement() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Timetable Management</h1>
+        <h1 className="text-3xl font-bold text-green-800 dark:text-green-200">Timetable Management</h1>
         <Button className="bg-blue-600 hover:bg-blue-700" onClick={generateTimetable}>Generate Timetable</Button>
       </div>
 
@@ -131,7 +142,7 @@ export default function TimetableManagement() {
             key={section.id}
             onClick={() => setActiveSection(section.id)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeSection === section.id ? "bg-white text-blue-700 shadow-sm" : "text-gray-600 hover:text-gray-900"
+              activeSection === section.id ? "bg-green-100 text-green-800 shadow-sm border-green-200" : "text-green-700 hover:text-green-900 hover:bg-green-50"
             }`}
           >
             {section.label}
@@ -177,7 +188,7 @@ export default function TimetableManagement() {
                   <div key={subject.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                     <div>
                       <div className="font-medium">{subject.name}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-green-700">
                         {subject.code} • {subject.credits} credits • {subject.duration} min
                       </div>
                     </div>
@@ -228,7 +239,7 @@ export default function TimetableManagement() {
                   <div key={teacher.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                     <div>
                       <div className="font-medium">{teacher.name}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-green-700">
                         {teacher.specialization} • Max {teacher.maxHours}h/week
                       </div>
                     </div>
@@ -270,7 +281,7 @@ export default function TimetableManagement() {
                 <div key={c.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                   <div>
                     <div className="font-medium">{c.type}</div>
-                    <div className="text-sm text-gray-600">{c.value}</div>
+                    <div className="text-sm text-green-700">{c.value}</div>
                   </div>
                   <Button variant="outline" size="sm" onClick={() => removeConstraint(c.id)}>Remove</Button>
                 </div>
@@ -287,7 +298,7 @@ export default function TimetableManagement() {
             <CardTitle>Timetable Generation</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600 mb-4">Generate and optimize timetables using advanced algorithms.</p>
+            <p className="text-green-700 mb-4">Generate and optimize timetables using advanced algorithms.</p>
             <Button className="bg-green-600 hover:bg-green-700" onClick={generateTimetable}>Generate Timetable</Button>
           </CardContent>
         </Card>
@@ -301,7 +312,7 @@ export default function TimetableManagement() {
           </CardHeader>
           <CardContent>
             {generatedTimetable.length === 0 ? (
-              <p className="text-gray-600">No timetable generated yet.</p>
+              <p className="text-green-700">No timetable generated yet.</p>
             ) : (
               <table className="w-full border mt-2">
                 <thead>

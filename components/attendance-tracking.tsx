@@ -48,7 +48,7 @@ export default function AttendanceTracking() {
             key={section.id}
             onClick={() => setActiveSection(section.id)}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-              activeSection === section.id ? "bg-white text-blue-700 shadow-sm" : "text-gray-600 hover:text-gray-900"
+              activeSection === section.id ? "bg-white text-green-700 shadow-sm" : "text-green-700 hover:text-gray-900"
             }`}
           >
             {section.label}
@@ -104,8 +104,8 @@ export default function AttendanceTracking() {
                 <div className="w-48 h-48 bg-gray-200 mx-auto mb-4 flex items-center justify-center rounded-lg">
                   <div className="text-gray-500 font-mono text-sm">QR CODE</div>
                 </div>
-                <p className="text-gray-600 mb-2">Students scan this code to mark attendance</p>
-                <div className="text-lg font-semibold text-blue-600">
+                <p className="text-green-700 mb-2">Students scan this code to mark attendance</p>
+                <div className="text-lg font-semibold text-green-600">
                   <span>0</span> students scanned
                 </div>
               </CardContent>
@@ -131,7 +131,7 @@ export default function AttendanceTracking() {
                     <div key={student.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div>
                         <div className="font-medium">{student.name}</div>
-                        <div className="text-sm text-gray-600">{student.rollNo}</div>
+                        <div className="text-sm text-green-700">{student.rollNo}</div>
                       </div>
                       <div className="flex gap-2">
                         <Button
@@ -170,17 +170,17 @@ export default function AttendanceTracking() {
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold text-green-600">QR Code Scanning</h4>
                 <div className="text-sm text-green-600 mb-2">Active</div>
-                <p className="text-sm text-gray-600">Fast and contactless attendance marking</p>
+                <p className="text-sm text-green-700">Fast and contactless attendance marking</p>
               </div>
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold">Manual Entry</h4>
-                <div className="text-sm text-gray-600 mb-2">Available</div>
-                <p className="text-sm text-gray-600">Traditional roll call method</p>
+                <div className="text-sm text-green-700 mb-2">Available</div>
+                <p className="text-sm text-green-700">Traditional roll call method</p>
               </div>
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold">Bulk Upload</h4>
-                <div className="text-sm text-gray-600 mb-2">Available</div>
-                <p className="text-sm text-gray-600">Upload attendance from spreadsheet</p>
+                <div className="text-sm text-green-700 mb-2">Available</div>
+                <p className="text-sm text-green-700">Upload attendance from spreadsheet</p>
               </div>
             </div>
           </CardContent>
@@ -193,7 +193,7 @@ export default function AttendanceTracking() {
             <CardTitle>Attendance Analytics</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">View detailed attendance analytics and trends.</p>
+            <p className="text-green-700">View detailed attendance analytics and trends.</p>
           </CardContent>
         </Card>
       )}
@@ -204,7 +204,7 @@ export default function AttendanceTracking() {
             <CardTitle>Student Management</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-gray-600">Manage student information and attendance records.</p>
+            <p className="text-green-700">Manage student information and attendance records.</p>
           </CardContent>
         </Card>
       )}

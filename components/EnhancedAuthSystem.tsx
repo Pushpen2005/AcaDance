@@ -331,10 +331,10 @@ export default function EnhancedAuthSystem({ onAuthSuccess }: AuthProps) {
           <Card className="shadow-2xl border-0">
             <CardHeader className="text-center pb-6">
               <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Shield className="w-8 h-8 text-blue-600" />
+                <Shield className="w-8 h-8 text-green-600" />
               </div>
               <CardTitle className="text-2xl font-bold">Two-Factor Authentication</CardTitle>
-              <p className="text-gray-600 mt-2">Enter the verification code sent to your device</p>
+              <p className="text-green-700 mt-2">Enter the verification code sent to your device</p>
             </CardHeader>
             
             <CardContent className="space-y-6">
@@ -660,7 +660,7 @@ export default function EnhancedAuthSystem({ onAuthSuccess }: AuthProps) {
               </form>
               
               <div className="text-center pt-4 border-t">
-                <p className="text-sm text-gray-600 flex items-center justify-center space-x-2">
+                <p className="text-sm text-green-700 flex items-center justify-center space-x-2">
                   <Fingerprint className="w-4 h-4" />
                   <span>Secured with device fingerprinting and audit logging</span>
                 </p>

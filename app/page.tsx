@@ -100,13 +100,13 @@ export default function AcademicSystem() {
         ))}
       </div>
 
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-blue-900/10 to-blue-700/10 rounded-full blur-3xl animate-pulse-slow" />
+      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-r from-green-800/10 to-green-600/10 rounded-full blur-3xl animate-pulse-slow" />
       <div
-        className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-blue-700/10 to-blue-900/10 rounded-full blur-3xl animate-pulse-slow"
+        className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-green-600/10 to-green-800/10 rounded-full blur-3xl animate-pulse-slow"
         style={{ animationDelay: "2s" }}
       />
 
-      <nav className="relative z-10 glass-effect border-b border-white/20 backdrop-blur-lg bg-blue-900 text-white">
+      <nav className="relative z-10 glass-effect border-b border-white/20 backdrop-blur-lg bg-green-800 text-white">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center h-auto sm:h-20">
             <div className="flex items-center space-x-2 sm:space-x-4 animate-fade-in-up mb-4 sm:mb-0">
@@ -124,10 +124,10 @@ export default function AcademicSystem() {
                 </div>
               </div>
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-900 to-blue-700 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-green-100 to-white bg-clip-text text-transparent">
                   HH310 Academic System
                 </h2>
-                <p className="text-sm text-blue-100">Modern Education Management</p>
+                <p className="text-sm text-green-100">Modern Education Management</p>
               </div>
             </div>
             <div className="flex flex-wrap space-x-0 sm:space-x-2 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
@@ -140,11 +140,11 @@ export default function AcademicSystem() {
                     variant={activeTab === tab.id ? "default" : "ghost"}
                     className={`relative px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl group
                       ${activeTab === tab.id
-                        ? "bg-blue-900 text-white shadow-lg shadow-blue-900/25 animate-press"
-                        : "text-blue-900 hover:text-white hover:bg-blue-900 animate-hover"}
+                        ? "bg-green-600 text-white shadow-lg shadow-green-600/25 animate-press"
+                        : "text-green-100 hover:text-white hover:bg-green-600 animate-hover"}
                     `}
                     style={{
-                      boxShadow: activeTab === tab.id ? "0 4px 24px 0 rgba(30,64,175,0.15)" : undefined,
+                      boxShadow: activeTab === tab.id ? "0 4px 24px 0 rgba(34,197,94,0.15)" : undefined,
                       transform: activeTab === tab.id ? "scale(1.05)" : undefined,
                     }}
                     onMouseDown={e => e.currentTarget.classList.add('animate-press')}

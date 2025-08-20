@@ -80,7 +80,7 @@ const colorSchemes: Record<string, ColorScheme> = {
     seminar: 'bg-gradient-to-r from-orange-400 to-orange-600 text-white'
   },
   pastel: {
-    lecture: 'bg-blue-50 border-blue-200 text-blue-700',
+    lecture: 'bg-blue-50 border-blue-200 text-green-700',
     lab: 'bg-green-50 border-green-200 text-green-700',
     tutorial: 'bg-purple-50 border-purple-200 text-purple-700',
     seminar: 'bg-orange-50 border-orange-200 text-orange-700'
@@ -267,7 +267,7 @@ export default function ColorCodedTimetableView() {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5 text-blue-600" />
+            <Calendar className="w-5 h-5 text-green-600" />
             <span>Weekly Timetable Grid</span>
           </div>
           <div className="flex items-center space-x-2">
@@ -476,7 +476,7 @@ export default function ColorCodedTimetableView() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Color-Coded Timetable
           </h1>
-          <p className="text-gray-600 mt-1">Visual timetable with advanced color coding and filtering</p>
+          <p className="text-green-700 mt-1">Visual timetable with advanced color coding and filtering</p>
         </div>
         
         <div className="flex items-center space-x-3">
@@ -615,26 +615,26 @@ export default function ColorCodedTimetableView() {
         <CardContent className="p-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
             <div>
-              <div className="text-2xl font-bold text-blue-600">{filteredData.length}</div>
-              <div className="text-sm text-gray-600">Total Classes</div>
+              <div className="text-2xl font-bold text-green-600">{filteredData.length}</div>
+              <div className="text-sm text-green-700">Total Classes</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {new Set(filteredData.map(entry => entry.department)).size}
               </div>
-              <div className="text-sm text-gray-600">Departments</div>
+              <div className="text-sm text-green-700">Departments</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
                 {filteredData.filter(entry => hasConflict(entry)).length}
               </div>
-              <div className="text-sm text-gray-600">Conflicts</div>
+              <div className="text-sm text-green-700">Conflicts</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-orange-600">
                 {new Set(filteredData.map(entry => entry.room_id)).size}
               </div>
-              <div className="text-sm text-gray-600">Rooms Used</div>
+              <div className="text-sm text-green-700">Rooms Used</div>
             </div>
           </div>
         </CardContent>

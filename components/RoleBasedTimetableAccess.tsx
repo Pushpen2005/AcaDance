@@ -218,7 +218,7 @@ export default function RoleBasedTimetableAccess() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <Calendar className="w-5 h-5 text-blue-600" />
+            <Calendar className="w-5 h-5 text-green-600" />
             <span>My Timetable</span>
           </CardTitle>
         </CardHeader>
@@ -227,7 +227,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Current Semester Schedule</h3>
-                <p className="text-sm text-gray-600">View your class timings and locations</p>
+                <p className="text-sm text-green-700">View your class timings and locations</p>
               </div>
               <Button>
                 <Eye className="w-4 h-4 mr-2" />
@@ -238,7 +238,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Attendance Overview</h3>
-                <p className="text-sm text-gray-600">Track your attendance by subject</p>
+                <p className="text-sm text-green-700">Track your attendance by subject</p>
               </div>
               <Button variant="outline">
                 <UserCheck className="w-4 h-4 mr-2" />
@@ -249,7 +249,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Export Schedule</h3>
-                <p className="text-sm text-gray-600">Download your timetable in various formats</p>
+                <p className="text-sm text-green-700">Download your timetable in various formats</p>
               </div>
               <Button variant="outline">
                 <Download className="w-4 h-4 mr-2" />
@@ -293,7 +293,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">My Teaching Schedule</h3>
-                <p className="text-sm text-gray-600">View and manage your classes</p>
+                <p className="text-sm text-green-700">View and manage your classes</p>
               </div>
               <Button>
                 <Calendar className="w-4 h-4 mr-2" />
@@ -304,7 +304,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Workload Analysis</h3>
-                <p className="text-sm text-gray-600">Check your teaching hours</p>
+                <p className="text-sm text-green-700">Check your teaching hours</p>
               </div>
               <Button variant="outline">
                 <BarChart3 className="w-4 h-4 mr-2" />
@@ -315,7 +315,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Schedule Requests</h3>
-                <p className="text-sm text-gray-600">Request schedule changes</p>
+                <p className="text-sm text-green-700">Request schedule changes</p>
               </div>
               <Button variant="outline" disabled={!hasPermission('canRequestSwaps')}>
                 <Edit className="w-4 h-4 mr-2" />
@@ -326,7 +326,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Availability Settings</h3>
-                <p className="text-sm text-gray-600">Set your availability preferences</p>
+                <p className="text-sm text-green-700">Set your availability preferences</p>
               </div>
               <Button variant="outline">
                 <Settings className="w-4 h-4 mr-2" />
@@ -376,7 +376,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Timetable Management</h3>
-                <p className="text-sm text-gray-600">Full CRUD operations</p>
+                <p className="text-sm text-green-700">Full CRUD operations</p>
               </div>
               <Button>
                 <Edit className="w-4 h-4 mr-2" />
@@ -387,7 +387,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Smart Optimization</h3>
-                <p className="text-sm text-gray-600">AI-powered scheduling</p>
+                <p className="text-sm text-green-700">AI-powered scheduling</p>
               </div>
               <Button variant="outline" disabled={!hasPermission('canRunOptimization')}>
                 <Zap className="w-4 h-4 mr-2" />
@@ -398,7 +398,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Analytics Dashboard</h3>
-                <p className="text-sm text-gray-600">Comprehensive reports</p>
+                <p className="text-sm text-green-700">Comprehensive reports</p>
               </div>
               <Button variant="outline" disabled={!hasPermission('canViewAnalytics')}>
                 <BarChart3 className="w-4 h-4 mr-2" />
@@ -409,7 +409,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-yellow-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">User Management</h3>
-                <p className="text-sm text-gray-600">Manage roles and permissions</p>
+                <p className="text-sm text-green-700">Manage roles and permissions</p>
               </div>
               <Button variant="outline" disabled={!hasPermission('canManageUsers')}>
                 <Users className="w-4 h-4 mr-2" />
@@ -420,7 +420,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">System Settings</h3>
-                <p className="text-sm text-gray-600">Configure constraints</p>
+                <p className="text-sm text-green-700">Configure constraints</p>
               </div>
               <Button variant="outline" disabled={!hasPermission('canManageConstraints')}>
                 <Settings className="w-4 h-4 mr-2" />
@@ -431,7 +431,7 @@ export default function RoleBasedTimetableAccess() {
             <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg">
               <div>
                 <h3 className="font-semibold">Bulk Operations</h3>
-                <p className="text-sm text-gray-600">Import/Export schedules</p>
+                <p className="text-sm text-green-700">Import/Export schedules</p>
               </div>
               <Button variant="outline">
                 <Upload className="w-4 h-4 mr-2" />
@@ -541,7 +541,7 @@ export default function RoleBasedTimetableAccess() {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Timetable Access Control
           </h1>
-          <p className="text-gray-600 mt-1">Role-based permissions and features</p>
+          <p className="text-green-700 mt-1">Role-based permissions and features</p>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -561,10 +561,10 @@ export default function RoleBasedTimetableAccess() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold">{currentUser.full_name}</h2>
-              <p className="text-gray-600">{currentUser.role} • {currentUser.department}</p>
+              <p className="text-green-700">{currentUser.role} • {currentUser.department}</p>
             </div>
             <div className="flex items-center space-x-2">
-              <Shield className="w-5 h-5 text-blue-600" />
+              <Shield className="w-5 h-5 text-green-600" />
               <span className="text-sm font-medium">
                 {currentUser.role === 'admin' ? 'Full Access' : 
                  currentUser.role === 'faculty' ? 'Limited Access' : 'View Only'}

@@ -418,7 +418,7 @@ export default function QRAttendanceSystem() {
                         📱 {/* Replace with actual QR code */}
                       </div>
                     </div>
-                    <p className="mt-2 text-sm text-gray-600">Students scan this QR code</p>
+                    <p className="mt-2 text-sm text-green-700">Students scan this QR code</p>
                     <div className="flex items-center justify-center gap-4 mt-2">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
@@ -440,7 +440,7 @@ export default function QRAttendanceSystem() {
                     <CardContent className="pt-6">
                       <div className="text-center">
                         <div className="text-3xl font-bold text-green-600">{liveCount}</div>
-                        <div className="text-sm text-gray-600">Students Present</div>
+                        <div className="text-sm text-green-700">Students Present</div>
                       </div>
                     </CardContent>
                   </Card>

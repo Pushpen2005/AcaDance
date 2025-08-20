@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, Calendar, AlertTriangle, Clock, BookOpen, GraduationCap, Target } from "lucide-react"
 import Skeleton from "@/app/htbyjn/components/skeleton"
 import { supabase } from "@/lib/supabaseClient"
+import { useHighlight } from "@/hooks/use-highlight"
 import TimetableManagement from "./timetable-management"
 import EnhancedInteractiveDashboard from "./EnhancedInteractiveDashboard"
 
@@ -24,7 +25,7 @@ function ClientDateTime() {
 
   return (
     <>
-      <div className="flex items-center space-x-2 text-sm text-gray-500">
+      <div className="flex items-center space-x-2 text-sm text-green-600">
         <Clock className="w-4 h-4" />
         <span>{currentTime.toLocaleDateString()}</span>
       </div>
@@ -34,38 +35,40 @@ function ClientDateTime() {
 }
 
 export default function Dashboard() {
+  const { identify, trackAcademic, reportError } = useHighlight()
+
   const metrics = [
     {
       label: "Total Classes Scheduled",
       value: "24",
       icon: Calendar,
-      color: "from-blue-500 to-blue-600",
-      bgColor: "bg-blue-50",
-      textColor: "text-blue-600",
-    },
-    {
-      label: "Overall Attendance Rate",
-      value: "87%",
-      icon: TrendingUp,
       color: "from-green-500 to-green-600",
       bgColor: "bg-green-50",
       textColor: "text-green-600",
     },
     {
+      label: "Overall Attendance Rate",
+      value: "87%",
+      icon: TrendingUp,
+      color: "from-green-600 to-green-700",
+      bgColor: "bg-green-50",
+      textColor: "text-green-700",
+    },
+    {
       label: "Active Teachers",
       value: "12",
       icon: GraduationCap,
-      color: "from-purple-500 to-purple-600",
-      bgColor: "bg-purple-50",
-      textColor: "text-purple-600",
+      color: "from-green-400 to-green-500",
+      bgColor: "bg-green-50",
+      textColor: "text-green-600",
     },
     {
       label: "Student Groups",
       value: "8",
       icon: Users,
-      color: "from-orange-500 to-orange-600",
-      bgColor: "bg-orange-50",
-      textColor: "text-orange-600",
+      color: "from-green-500 to-green-600",
+      bgColor: "bg-green-50",
+      textColor: "text-green-600",
     },
   ]
 
@@ -117,13 +120,30 @@ export default function Dashboard() {
             'Get Alerts',
           ])
         }
+
+        // Track user identification with Highlight.io
+        if (data?.id) {
+          identify(data.id, {
+            email: data.email,
+            full_name: data.full_name,
+            role: data.role,
+            department: data.department
+          })
+        }
       }
       setLoadingProfile(false)
     }
-    fetchProfile()
-  }, [])
+    fetchProfile().catch(error => {
+      reportError(error, { component: 'Dashboard', action: 'fetchProfile' })
+    })
+  }, [identify, reportError])
 
   useEffect(() => {
+    // Track dashboard view when profile is loaded
+    if (profile?.id && profile?.role) {
+      trackAcademic.dashboardViewed(profile.id, profile.role, 'main-dashboard')
+    }
+    
     // Show welcome tour only on first login (simple localStorage check)
     if (!tourShownRef.current && profile?.id && !localStorage.getItem("welcomeTourShown")) {
       setShowTour(true)
@@ -146,7 +166,7 @@ export default function Dashboard() {
         { type: "alert", message: "Attendance below 75% for some students.", role: "admin" },
       ])
     }
-  }, [profile])
+  }, [profile, trackAcademic])
 
   // If user has a profile, show the new role-based dashboard
   if (profile) {
@@ -175,14 +195,14 @@ export default function Dashboard() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-gradient-x">
             {profile?.role ? `${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)} Dashboard` : 'Dashboard'}
           </h1>
-          <p className="text-gray-600 mt-2">Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}! Here's what's happening today.</p>
+          <p className="text-green-700 mt-2">Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}! Here's what's happening today.</p>
         </div>
         <div className="text-right glass-effect p-4 rounded-xl hover-lift">
           <ClientDateTime />
         </div>
       </div>
       <div className="flex flex-col lg:flex-row gap-6">
-        <aside className="w-full lg:w-64 bg-white/80 dark:bg-gray-800 rounded-xl shadow p-4 mb-6 lg:mb-0">
+        <aside className="w-full lg:w-64 bg-green-50/80 dark:bg-green-900/20 rounded-xl shadow p-4 mb-6 lg:mb-0 border border-green-200 dark:border-green-800">
           <h2 className="font-semibold text-lg mb-4">Menu</h2>
           {loadingProfile ? (
             <Skeleton className="h-32 w-full" />
@@ -202,13 +222,13 @@ export default function Dashboard() {
             <Card className="mb-6">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center space-x-2 text-lg">
-                  <Clock className="w-5 h-5 text-blue-600" />
+                  <Clock className="w-5 h-5 text-green-600" />
                   <span>Recent Activity</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="mb-2 text-sm text-gray-600">Last Login: {recentActivity.lastLogin}</div>
-                <div className="mb-2 text-sm text-gray-600">Classes Today:</div>
+                <div className="mb-2 text-sm text-green-700">Last Login: {recentActivity.lastLogin}</div>
+                <div className="mb-2 text-sm text-green-700">Classes Today:</div>
                 <ul className="list-disc pl-6">
                   {recentActivity.classesToday.map((cls: any, idx: number) => (
                     <li key={idx}>{cls.name} - {cls.time}</li>
@@ -240,7 +260,7 @@ export default function Dashboard() {
               <Card className="mb-8">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2 text-lg">
-                    <Calendar className="w-5 h-5 text-blue-600" />
+                    <Calendar className="w-5 h-5 text-green-600" />
                     <span>Timetable Management</span>
                   </CardTitle>
                 </CardHeader>
@@ -260,7 +280,7 @@ export default function Dashboard() {
                       return (
                         <Card
                           key={index}
-                          className="relative overflow-hidden hover-lift perspective-card group cursor-pointer transition-all duration-300 hover:shadow-xl border-0 bg-white/80 backdrop-blur-sm"
+                          className="relative overflow-hidden hover-lift perspective-card group cursor-pointer transition-all duration-300 hover:shadow-xl border-0 bg-green-50/80 backdrop-blur-sm"
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
                           <div
@@ -280,7 +300,7 @@ export default function Dashboard() {
                             >
                               {metric.value}
                             </div>
-                            <div className="text-sm text-gray-600 mt-2 group-hover:text-gray-700 transition-colors">
+                            <div className="text-sm text-green-700 mt-2 group-hover:text-gray-700 transition-colors">
                               {metric.label}
                             </div>
                           </CardContent>
@@ -290,7 +310,7 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-                <Card className="hover-lift border-0 bg-white/80 backdrop-blur-sm shadow-lg">
+                <Card className="hover-lift border-0 bg-green-50/80 backdrop-blur-sm shadow-lg">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center space-x-2 text-xl">
                       <BookOpen className="w-5 h-5 text-green-600" />
@@ -301,14 +321,14 @@ export default function Dashboard() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:shadow-md transition-all duration-300 hover:scale-[1.02] group">
                         <div>
-                          <div className="font-semibold text-blue-900 group-hover:text-blue-700">Mathematics - Group A</div>
-                          <div className="text-sm text-blue-600 flex items-center space-x-1 mt-1">
+                          <div className="font-semibold text-green-800 group-hover:text-green-700">Mathematics - Group A</div>
+                          <div className="text-sm text-green-600 flex items-center space-x-1 mt-1">
                             <span>Room 101</span>
                             <span>•</span>
                             <span>Prof. Smith</span>
                           </div>
                         </div>
-                        <div className="text-sm font-bold text-blue-600 bg-blue-200 px-3 py-1 rounded-full">9:00 AM</div>
+                        <div className="text-sm font-bold text-green-600 bg-green-200 px-3 py-1 rounded-full">9:00 AM</div>
                       </div>
                       <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:shadow-md transition-all duration-300 hover:scale-[1.02] group">
                         <div>
@@ -338,7 +358,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="hover-lift border-0 bg-white/80 backdrop-blur-sm shadow-lg">
+                <Card className="hover-lift border-0 bg-green-50/80 backdrop-blur-sm shadow-lg">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center space-x-2 text-xl">
                       <AlertTriangle className="w-5 h-5 text-amber-600" />
@@ -396,7 +416,7 @@ export default function Dashboard() {
                       return (
                         <Card
                           key={index}
-                          className="relative overflow-hidden hover-lift perspective-card group cursor-pointer transition-all duration-300 hover:shadow-xl border-0 bg-white/80 backdrop-blur-sm"
+                          className="relative overflow-hidden hover-lift perspective-card group cursor-pointer transition-all duration-300 hover:shadow-xl border-0 bg-green-50/80 backdrop-blur-sm"
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
                           <div
@@ -416,7 +436,7 @@ export default function Dashboard() {
                             >
                               {metric.value}
                             </div>
-                            <div className="text-sm text-gray-600 mt-2 group-hover:text-gray-700 transition-colors">
+                            <div className="text-sm text-green-700 mt-2 group-hover:text-gray-700 transition-colors">
                               {metric.label}
                             </div>
                           </CardContent>
@@ -426,7 +446,7 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-                <Card className="hover-lift border-0 bg-white/80 backdrop-blur-sm shadow-lg">
+                <Card className="hover-lift border-0 bg-green-50/80 backdrop-blur-sm shadow-lg">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center space-x-2 text-xl">
                       <BookOpen className="w-5 h-5 text-green-600" />
@@ -437,14 +457,14 @@ export default function Dashboard() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:shadow-md transition-all duration-300 hover:scale-[1.02] group">
                         <div>
-                          <div className="font-semibold text-blue-900 group-hover:text-blue-700">Mathematics - Group A</div>
-                          <div className="text-sm text-blue-600 flex items-center space-x-1 mt-1">
+                          <div className="font-semibold text-green-800 group-hover:text-green-700">Mathematics - Group A</div>
+                          <div className="text-sm text-green-600 flex items-center space-x-1 mt-1">
                             <span>Room 101</span>
                             <span>•</span>
                             <span>Prof. Smith</span>
                           </div>
                         </div>
-                        <div className="text-sm font-bold text-blue-600 bg-blue-200 px-3 py-1 rounded-full">9:00 AM</div>
+                        <div className="text-sm font-bold text-green-600 bg-green-200 px-3 py-1 rounded-full">9:00 AM</div>
                       </div>
                       <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:shadow-md transition-all duration-300 hover:scale-[1.02] group">
                         <div>
@@ -474,7 +494,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="hover-lift border-0 bg-white/80 backdrop-blur-sm shadow-lg">
+                <Card className="hover-lift border-0 bg-green-50/80 backdrop-blur-sm shadow-lg">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center space-x-2 text-xl">
                       <AlertTriangle className="w-5 h-5 text-amber-600" />
@@ -532,7 +552,7 @@ export default function Dashboard() {
                       return (
                         <Card
                           key={index}
-                          className="relative overflow-hidden hover-lift perspective-card group cursor-pointer transition-all duration-300 hover:shadow-xl border-0 bg-white/80 backdrop-blur-sm"
+                          className="relative overflow-hidden hover-lift perspective-card group cursor-pointer transition-all duration-300 hover:shadow-xl border-0 bg-green-50/80 backdrop-blur-sm"
                           style={{ animationDelay: `${index * 0.1}s` }}
                         >
                           <div
@@ -552,7 +572,7 @@ export default function Dashboard() {
                             >
                               {metric.value}
                             </div>
-                            <div className="text-sm text-gray-600 mt-2 group-hover:text-gray-700 transition-colors">
+                            <div className="text-sm text-green-700 mt-2 group-hover:text-gray-700 transition-colors">
                               {metric.label}
                             </div>
                           </CardContent>
@@ -562,7 +582,7 @@ export default function Dashboard() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-fade-in-up" style={{ animationDelay: "0.4s" }}>
-                <Card className="hover-lift border-0 bg-white/80 backdrop-blur-sm shadow-lg">
+                <Card className="hover-lift border-0 bg-green-50/80 backdrop-blur-sm shadow-lg">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center space-x-2 text-xl">
                       <BookOpen className="w-5 h-5 text-green-600" />
@@ -573,14 +593,14 @@ export default function Dashboard() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:shadow-md transition-all duration-300 hover:scale-[1.02] group">
                         <div>
-                          <div className="font-semibold text-blue-900 group-hover:text-blue-700">Mathematics - Group A</div>
-                          <div className="text-sm text-blue-600 flex items-center space-x-1 mt-1">
+                          <div className="font-semibold text-green-800 group-hover:text-green-700">Mathematics - Group A</div>
+                          <div className="text-sm text-green-600 flex items-center space-x-1 mt-1">
                             <span>Room 101</span>
                             <span>•</span>
                             <span>Prof. Smith</span>
                           </div>
                         </div>
-                        <div className="text-sm font-bold text-blue-600 bg-blue-200 px-3 py-1 rounded-full">9:00 AM</div>
+                        <div className="text-sm font-bold text-green-600 bg-green-200 px-3 py-1 rounded-full">9:00 AM</div>
                       </div>
                       <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:shadow-md transition-all duration-300 hover:scale-[1.02] group">
                         <div>
@@ -610,7 +630,7 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="hover-lift border-0 bg-white/80 backdrop-blur-sm shadow-lg">
+                <Card className="hover-lift border-0 bg-green-50/80 backdrop-blur-sm shadow-lg">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center space-x-2 text-xl">
                       <AlertTriangle className="w-5 h-5 text-amber-600" />
