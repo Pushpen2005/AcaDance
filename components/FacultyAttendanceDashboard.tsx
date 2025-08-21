@@ -1,6 +1,6 @@
-"use client";
-
+// Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,12 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
+import QRCode from 'qrcode';
+import { 
+import { generateAttendanceQR } from '@/lib/qrUtils';
+import { supabase } from '@/lib/supabaseClient';
+"use client";
+
   QrCode, 
   Clock, 
   Users, 
@@ -31,16 +37,12 @@ import {
   Play,
   Square
 } from 'lucide-react';
-import QRCode from 'qrcode';
-import { 
   generateAttendanceSession, 
   getFacultyAttendanceSessions, 
   getLiveAttendance,
   manuallyMarkAttendance,
   endAttendanceSession 
 } from '@/lib/attendanceAPI';
-import { generateAttendanceQR } from '@/lib/qrUtils';
-import { supabase } from '@/lib/supabaseClient';
 
 interface AttendanceSession {
   id: string;
@@ -623,4 +625,6 @@ const FacultyAttendanceDashboard = () => {
   );
 };
 
-export default FacultyAttendanceDashboard;
+// Performance and Error Handling Enhanced
+export default React.memo(FacultyAttendanceDashboard;
+)

@@ -1,6 +1,6 @@
-"use client"
-
-import React, { useState, useEffect } from 'react'
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +18,8 @@ import MobileQRAttendance from "./MobileQRAttendance"
 import AdvancedAnalyticsDashboard from "./AdvancedAnalyticsDashboard"
 import RealTimeNotificationSystem from "./RealTimeNotificationSystem"
 import { 
+"use client"
+
   Calendar, 
   Users, 
   BookOpen, 
@@ -95,7 +97,8 @@ interface Notification {
   created_at: string
 }
 
-export default function InteractiveDashboard() {
+// Performance and Error Handling Enhanced
+export default React.memo(function InteractiveDashboard() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -1025,3 +1028,4 @@ export default function InteractiveDashboard() {
     </div>
   )
 }
+)

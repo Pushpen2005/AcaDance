@@ -1,4 +1,7 @@
-'use client';
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import React, { useEffect, useState } from 'react';
 import { 

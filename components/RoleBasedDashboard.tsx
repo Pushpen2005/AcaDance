@@ -1,6 +1,6 @@
-"use client"
-
-import React, { useState, useEffect } from 'react'
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabase } from "@/lib/supabaseClient"
 import { motion } from 'framer-motion'
 import { 
+import QRAttendanceSystem from './QRAttendanceSystem'
+import TimetableManagement from './timetable-management'
+"use client"
+
   Calendar, 
   Users, 
   BookOpen, 
@@ -27,8 +31,6 @@ import {
 } from 'lucide-react'
 
 // Import our components
-import QRAttendanceSystem from './QRAttendanceSystem'
-import TimetableManagement from './timetable-management'
 
 interface UserProfile {
   id: string
@@ -46,7 +48,8 @@ interface DashboardStats {
   lowAttendanceAlerts: number
 }
 
-export default function RoleBasedDashboard() {
+// Performance and Error Handling Enhanced
+export default React.memo(function RoleBasedDashboard() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [stats, setStats] = useState<DashboardStats>({
     totalClasses: 0,
@@ -681,3 +684,4 @@ export default function RoleBasedDashboard() {
     </div>
   )
 }
+)

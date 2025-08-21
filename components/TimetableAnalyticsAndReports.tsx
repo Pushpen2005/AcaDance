@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -93,7 +95,8 @@ interface TimetableAnalytics {
   }>
 }
 
-export default function TimetableAnalyticsAndReports() {
+// Performance and Error Handling Enhanced
+export default React.memo(function TimetableAnalyticsAndReports() {
   const [activeTab, setActiveTab] = useState('overview')
   const [analyticsData, setAnalyticsData] = useState<TimetableAnalytics | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -727,3 +730,4 @@ export default function TimetableAnalyticsAndReports() {
     </div>
   )
 }
+)

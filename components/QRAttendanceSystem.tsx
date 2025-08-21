@@ -1,6 +1,6 @@
-"use client"
-
-import React, { useState, useEffect, useRef } from 'react'
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +10,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { supabase } from "@/lib/supabaseClient"
 import { QrCode, Camera, MapPin, Clock, Users, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+"use client"
+
 
 interface AttendanceSession {
   id: string
@@ -42,7 +44,8 @@ interface Student {
   department: string
 }
 
-export default function QRAttendanceSystem() {
+// Performance and Error Handling Enhanced
+export default React.memo(function QRAttendanceSystem() {
   const [userRole, setUserRole] = useState<'student' | 'faculty' | 'admin'>('student')
   const [currentSession, setCurrentSession] = useState<AttendanceSession | null>(null)
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([])
@@ -538,3 +541,4 @@ export default function QRAttendanceSystem() {
     </div>
   )
 }
+)

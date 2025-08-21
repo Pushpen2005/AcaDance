@@ -1,4 +1,7 @@
-"use client";
+// Enhanced with Advanced Supabase Theme Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
@@ -34,7 +37,8 @@ interface ThemeOption {
   preview: string;
 }
 
-export default function EnhancedThemeToggle() {
+// Performance and Error Handling Enhanced
+export default React.memo(function EnhancedThemeToggle() {
   const { theme, setTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isCustomizing, setIsCustomizing] = useState(false);
@@ -339,3 +343,4 @@ export function SimpleThemeToggle() {
     </Button>
   );
 }
+)

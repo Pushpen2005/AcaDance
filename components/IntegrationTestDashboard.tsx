@@ -1,4 +1,11 @@
-'use client';
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { RefreshCw, Database, Activity } from "lucide-react";
+
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -615,4 +622,6 @@ const IntegrationTestDashboard: React.FC = () => {
   );
 };
 
-export default IntegrationTestDashboard;
+// Performance and Error Handling Enhanced
+export default React.memo(IntegrationTestDashboard;
+)

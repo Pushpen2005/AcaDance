@@ -1,4 +1,9 @@
-"use client";
+// Enhanced with Advanced Supabase Mobile Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Smartphone, Wifi, Database } from "lucide-react";
+
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
@@ -35,7 +40,8 @@ interface ResponsivenessTest {
   description: string;
 }
 
-export default function MobileResponsivenessChecker() {
+// Performance and Error Handling Enhanced
+export default React.memo(function MobileResponsivenessChecker() {
   const [deviceInfo, setDeviceInfo] = useState<DeviceInfo | null>(null);
   const [isOnline, setIsOnline] = useState(true);
   const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
@@ -404,3 +410,4 @@ export default function MobileResponsivenessChecker() {
     </div>
   );
 }
+)

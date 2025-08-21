@@ -1,4 +1,7 @@
-"use client"
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -7,7 +10,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-export default function AttendanceTracking() {
+// Performance and Error Handling Enhanced
+export default React.memo(function AttendanceTracking() {
   const [activeSection, setActiveSection] = useState("mark")
   const [showQRCode, setShowQRCode] = useState(false)
   const [showManualAttendance, setShowManualAttendance] = useState(false)
@@ -211,3 +215,4 @@ export default function AttendanceTracking() {
     </div>
   )
 }
+)

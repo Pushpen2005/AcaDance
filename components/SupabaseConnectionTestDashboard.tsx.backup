@@ -1,0 +1,290 @@
+'use client'
+
+import { useState } from 'react'
+import { SupabaseConnectionTester } from '@/lib/supabase-test'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { AlertCircle, CheckCircle, XCircle, Play, RefreshCw } from 'lucide-react'
+
+interface TestResult {
+  feature: string
+  status: 'pass' | 'fail' | 'warning'
+  message: string
+  details?: any
+}
+
+export default function SupabaseConnectionTestDashboard() {
+  const [testResults, setTestResults] = useState<TestResult[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [testReport, setTestReport] = useState<string>('')
+
+  const runTests = async () => {
+    setIsLoading(true)
+    setTestResults([])
+    setTestReport('')
+
+    try {
+      const tester = new SupabaseConnectionTester()
+      const results = await tester.runAllTests()
+      const report = tester.generateReport()
+      
+      setTestResults(results)
+      setTestReport(report)
+    } catch (error) {
+      console.error('Test execution failed:', error)
+      setTestResults([{
+        feature: 'Test Runner',
+        status: 'fail',
+        message: `Failed to execute tests: ${error}`
+      }])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pass':
+        return <CheckCircle className="h-4 w-4 text-green-500" />
+      case 'fail':
+        return <XCircle className="h-4 w-4 text-red-500" />
+      case 'warning':
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />
+      default:
+        return null
+    }
+  }
+
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      pass: 'bg-green-100 text-green-800',
+      fail: 'bg-red-100 text-red-800',
+      warning: 'bg-yellow-100 text-yellow-800'
+    }
+    
+    return (
+      <Badge className={variants[status as keyof typeof variants]}>
+        {status.toUpperCase()}
+      </Badge>
+    )
+  }
+
+  const passCount = testResults.filter(r => r.status === 'pass').length
+  const failCount = testResults.filter(r => r.status === 'fail').length
+  const warningCount = testResults.filter(r => r.status === 'warning').length
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* Header */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Play className="h-6 w-6" />
+              Supabase Connection Test Dashboard
+            </CardTitle>
+            <CardDescription>
+              Test all Supabase integrations in your Academic System to ensure everything is connected properly.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={runTests} 
+              disabled={isLoading}
+              className="w-full sm:w-auto"
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Running Tests...
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4 mr-2" />
+                  Run Supabase Tests
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Test Summary */}
+        {testResults.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Tests</p>
+                    <p className="text-2xl font-bold">{testResults.length}</p>
+                  </div>
+                  <Play className="h-8 w-8 text-blue-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Passed</p>
+                    <p className="text-2xl font-bold text-green-600">{passCount}</p>
+                  </div>
+                  <CheckCircle className="h-8 w-8 text-green-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Warnings</p>
+                    <p className="text-2xl font-bold text-yellow-600">{warningCount}</p>
+                  </div>
+                  <AlertCircle className="h-8 w-8 text-yellow-500" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Failed</p>
+                    <p className="text-2xl font-bold text-red-600">{failCount}</p>
+                  </div>
+                  <XCircle className="h-8 w-8 text-red-500" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Test Results */}
+        {testResults.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Test Results</CardTitle>
+              <CardDescription>
+                Detailed results for each Supabase integration test
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {testResults.map((result, index) => (
+                  <div 
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      {getStatusIcon(result.status)}
+                      <div>
+                        <p className="font-medium">{result.feature}</p>
+                        <p className="text-sm text-gray-600">{result.message}</p>
+                      </div>
+                    </div>
+                    {getStatusBadge(result.status)}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Test Report */}
+        {testReport && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Full Test Report</CardTitle>
+              <CardDescription>
+                Complete analysis and recommendations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <pre className="whitespace-pre-wrap text-sm bg-gray-100 p-4 rounded-lg overflow-auto max-h-96">
+                {testReport}
+              </pre>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Feature Categories */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Feature Categories in Your Academic System</CardTitle>
+            <CardDescription>
+              All major features and their Supabase integration status
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { name: 'Authentication & User Management', status: 'Fully Connected', color: 'green' },
+                { name: 'Attendance System', status: 'Fully Connected', color: 'green' },
+                { name: 'Timetable Management', status: 'Fully Connected', color: 'green' },
+                { name: 'Real-time Notifications', status: 'Fully Connected', color: 'green' },
+                { name: 'Analytics Dashboard', status: 'Partially Connected', color: 'yellow' },
+                { name: 'Mobile QR Attendance', status: 'Fully Connected', color: 'green' },
+                { name: 'AI Face Detection', status: 'UI Only', color: 'blue' },
+                { name: 'Admin Management', status: 'Partially Connected', color: 'yellow' },
+                { name: 'Theme System', status: 'UI Only', color: 'blue' },
+                { name: 'Security & Audit Logs', status: 'Fully Connected', color: 'green' },
+                { name: 'Database Optimization', status: 'Fully Connected', color: 'green' },
+                { name: 'Edge Functions', status: 'Deployed', color: 'green' },
+              ].map((feature, index) => (
+                <div key={index} className="p-3 border rounded-lg bg-white">
+                  <p className="font-medium text-sm">{feature.name}</p>
+                  <Badge 
+                    className={`mt-1 ${
+                      feature.color === 'green' ? 'bg-green-100 text-green-800' :
+                      feature.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-blue-100 text-blue-800'
+                    }`}
+                  >
+                    {feature.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>
+              Common actions to verify your Supabase setup
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium">Manual Verification Steps:</h4>
+                <ul className="text-sm space-y-1 text-gray-600">
+                  <li>• Check Supabase dashboard for active connections</li>
+                  <li>• Test user authentication flows</li>
+                  <li>• Verify attendance marking works</li>
+                  <li>• Check real-time notifications</li>
+                  <li>• Test timetable CRUD operations</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium">Database Health:</h4>
+                <ul className="text-sm space-y-1 text-gray-600">
+                  <li>• 10 tables defined with proper schema</li>
+                  <li>• Row Level Security (RLS) enabled</li>
+                  <li>• 5 Edge functions deployed</li>
+                  <li>• Database triggers and functions active</li>
+                  <li>• Performance optimizations in place</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}

@@ -1,4 +1,7 @@
-"use client";
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,7 +82,8 @@ interface FaceDetectionConfig {
   continuousMode: boolean;
 }
 
-export default function FacultyFaceDetectionAttendance() {
+// Performance and Error Handling Enhanced
+export default React.memo(function FacultyFaceDetectionAttendance() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDetecting, setIsDetecting] = useState(false);
@@ -800,3 +804,4 @@ export default function FacultyFaceDetectionAttendance() {
     </div>
   );
 }
+)

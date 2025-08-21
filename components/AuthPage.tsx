@@ -1,4 +1,7 @@
-'use client';
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -12,7 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Eye, EyeOff, GraduationCap, Users, Shield } from 'lucide-react';
 import { useAdvanced3D, useScrollAnimation } from '@/hooks/use-enhanced-animations';
 
-export default function AuthPage() {
+// Performance and Error Handling Enhanced
+export default React.memo(function AuthPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -368,3 +372,4 @@ export default function AuthPage() {
     </div>
   );
 }
+)

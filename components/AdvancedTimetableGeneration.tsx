@@ -1,6 +1,9 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+// Enhanced with Advanced Supabase Integration and External API
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+import { timetableGenerationService, generateTimetableWithAPI, validateTimetableWithAPI } from "@/lib/timetableGenerationAPI";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -120,7 +123,8 @@ interface Constraint {
   description: string
 }
 
-export default function AdvancedTimetableGeneration() {
+// Performance and Error Handling Enhanced
+export default React.memo(function AdvancedTimetableGeneration() {
   const [activeTab, setActiveTab] = useState('overview')
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [faculty, setFaculty] = useState<Faculty[]>([])
@@ -216,7 +220,7 @@ export default function AdvancedTimetableGeneration() {
     return slots
   }
 
-  // Advanced AI-based timetable generation
+  // Advanced AI-based timetable generation with external API
   const generateSmartTimetable = async () => {
     setIsGenerating(true)
     setGenerationProgress(0)
@@ -225,98 +229,52 @@ export default function AdvancedTimetableGeneration() {
       // Clear existing timetable
       await supabase.from('timetable_entries').delete().neq('id', '00000000-0000-0000-0000-000000000000')
       
-      const generatedEntries: TimetableEntry[] = []
-      const conflicts: string[] = []
-      
-      // Progress tracking
-      let progressStep = 0
-      const totalSteps = subjects.length * 4
+      setGenerationProgress(20)
 
-      for (const subject of subjects) {
-        setGenerationProgress((progressStep / totalSteps) * 100)
-        
-        // Find available faculty for this subject
-        const availableFaculty = faculty.filter(f => 
-          f.department === subject.department ||
-          f.specialization.includes(subject.name)
-        )
-
-        if (availableFaculty.length === 0) {
-          conflicts.push(`No faculty available for ${subject.name}`)
-          continue
+      // Use external API for advanced generation
+      const generationResult = await generateTimetableWithAPI(
+        subjects,
+        faculty,
+        rooms,
+        constraints,
+        timeSlots,
+        {
+          algorithm: 'ai_optimized',
+          maxIterations: 1000,
+          prioritizeConstraints: true,
+          balanceWorkload: true
         }
+      )
 
-        // Find suitable rooms
-        const suitableRooms = rooms.filter(r => 
-          r.type === subject.type || 
-          (subject.type === 'lecture' && r.type === 'classroom') ||
-          (subject.type === 'lab' && r.type === 'lab')
-        )
+      setGenerationProgress(80)
 
-        if (suitableRooms.length === 0) {
-          conflicts.push(`No suitable room for ${subject.name}`)
-          continue
-        }
-
-        // Generate sessions based on sessions_per_week
-        for (let session = 0; session < subject.sessions_per_week; session++) {
-          const optimalSlot = findOptimalTimeSlot(
-            subject,
-            availableFaculty,
-            suitableRooms,
-            generatedEntries,
-            constraints
-          )
-
-          if (optimalSlot) {
-            generatedEntries.push({
-              subject_id: subject.id,
-              faculty_id: optimalSlot.faculty.id,
-              room_id: optimalSlot.room.id,
-              time_slot_id: optimalSlot.timeSlot.id,
-              batch: `${subject.department}_SEM${subject.semester}`,
-              semester: subject.semester,
-              department: subject.department,
-              week_type: 'both',
-              session_type: subject.type === 'seminar' ? 'lecture' : subject.type
-            })
-          } else {
-            conflicts.push(`Could not schedule ${subject.name} session ${session + 1}`)
-          }
-          
-          progressStep++
-        }
-      }
-
-      // Insert generated timetable
-      if (generatedEntries.length > 0) {
+      if (generationResult.success && generationResult.timetable.length > 0) {
+        // Insert generated timetable into Supabase
         const { error } = await supabase
           .from('timetable_entries')
-          .insert(generatedEntries)
+          .insert(generationResult.timetable)
 
         if (!error) {
-          setTimetable(generatedEntries)
+          setGenerationProgress(100)
           toast({
-            title: "Timetable Generated Successfully!",
-            description: `Generated ${generatedEntries.length} classes with ${conflicts.length} conflicts`,
+            title: "Timetable Generated Successfully! 🎉",
+            description: `Generated ${generationResult.timetable.length} sessions with ${generationResult.conflicts.length} conflicts. Optimization score: ${generationResult.optimizationScore}%`,
           })
+
+          // Refresh timetable display
+          await fetchAllData()
+        } else {
+          throw new Error('Failed to save generated timetable')
         }
+      } else {
+        throw new Error('External API generation failed')
       }
 
-      if (conflicts.length > 0) {
-        toast({
-          title: "Generation Completed with Conflicts",
-          description: `${conflicts.length} conflicts detected. Check the conflicts tab.`,
-          variant: "destructive"
-        })
-      }
-
-      setGenerationProgress(100)
-      
     } catch (error: any) {
+      console.error('Timetable generation error:', error)
       toast({
         title: "Generation Failed",
-        description: error.message,
+        description: error.message || "An error occurred during generation",
         variant: "destructive"
       })
     } finally {
@@ -1012,3 +970,4 @@ export default function AdvancedTimetableGeneration() {
     </div>
   )
 }
+)

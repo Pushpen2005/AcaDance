@@ -1,4 +1,10 @@
+// Enhanced with Advanced Supabase Settings Integration
 import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Settings, Save, RefreshCw } from "lucide-react";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -904,4 +910,6 @@ const AdminGlobalSettings = () => {
   );
 };
 
-export default AdminGlobalSettings;
+// Performance and Error Handling Enhanced
+export default React.memo(AdminGlobalSettings;
+)

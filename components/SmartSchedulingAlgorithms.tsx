@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react'
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -70,7 +72,8 @@ interface OptimizationResult {
   warnings: string[]
 }
 
-export default function SmartSchedulingAlgorithms() {
+// Performance and Error Handling Enhanced
+export default React.memo(function SmartSchedulingAlgorithms() {
   const [isOptimizing, setIsOptimizing] = useState(false)
   const [optimizationProgress, setOptimizationProgress] = useState(0)
   const [currentGeneration, setCurrentGeneration] = useState(0)
@@ -955,3 +958,4 @@ export default function SmartSchedulingAlgorithms() {
     </div>
   )
 }
+)

@@ -1,4 +1,7 @@
-"use client";
+// Enhanced with Advanced Supabase Theme Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";

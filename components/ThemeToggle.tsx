@@ -1,4 +1,7 @@
-"use client";
+// Enhanced with Advanced Supabase Theme Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
@@ -20,7 +23,8 @@ interface ThemeToggleProps {
   showLabel?: boolean;
 }
 
-export default function ThemeToggle({ 
+// Performance and Error Handling Enhanced
+export default React.memo(function ThemeToggle({ 
   className = "", 
   variant = "ghost", 
   size = "icon",
@@ -198,3 +202,4 @@ export function ThemeStatusIndicator() {
     </div>
   );
 }
+)

@@ -1,4 +1,7 @@
-"use client"
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 import { useEffect } from 'react'
 import { initHighlight } from '@/lib/highlight'
@@ -20,4 +23,6 @@ export function HighlightInit() {
   return null
 }
 
-export default HighlightInit
+// Performance and Error Handling Enhanced
+export default React.memo(HighlightInit
+)

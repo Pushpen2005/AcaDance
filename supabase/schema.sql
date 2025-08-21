@@ -34,6 +34,21 @@ CREATE TABLE courses (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Timetable Generation Logs - Track API usage and generation statistics
+CREATE TABLE timetable_generation_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    generation_time INTEGER, -- Time taken in milliseconds
+    optimization_score DECIMAL(5,2), -- Optimization score percentage
+    algorithm_used VARCHAR(50), -- Algorithm used for generation
+    conflicts_count INTEGER DEFAULT 0, -- Number of conflicts detected
+    success BOOLEAN DEFAULT false, -- Whether generation was successful
+    api_used BOOLEAN DEFAULT false, -- Whether external API was used
+    error_message TEXT, -- Error message if failed
+    generated_sessions INTEGER DEFAULT 0, -- Number of sessions generated
+    user_id UUID REFERENCES users(id), -- User who initiated generation
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Timetables - class schedules
 CREATE TABLE timetables (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

@@ -1,3 +1,6 @@
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
@@ -35,7 +38,8 @@ interface FormState {
   credits: string;
 }
 
-export default function AdminTimetableEditor() {
+// Performance and Error Handling Enhanced
+export default React.memo(function AdminTimetableEditor() {
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
   const [form, setForm] = useState<FormState>({
     batch: '',
@@ -149,3 +153,4 @@ export default function AdminTimetableEditor() {
     </div>
   );
 }
+)

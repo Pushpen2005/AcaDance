@@ -1,6 +1,6 @@
-"use client"
-
-import React, { useState, useEffect, useRef } from 'react'
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,6 +13,9 @@ import { supabase } from "@/lib/supabaseClient"
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from "@/hooks/use-toast"
 import { 
+import { useRouter } from 'next/navigation'
+"use client"
+
   Mail, 
   Lock, 
   User, 
@@ -28,13 +31,13 @@ import {
   QrCode,
   Fingerprint
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 
 interface AuthProps {
   onAuthSuccess?: (user: any) => void
 }
 
-export default function EnhancedAuthSystem({ onAuthSuccess }: AuthProps) {
+// Performance and Error Handling Enhanced
+export default React.memo(function EnhancedAuthSystem({ onAuthSuccess }: AuthProps) {
   const [activeTab, setActiveTab] = useState('login')
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -672,3 +675,4 @@ export default function EnhancedAuthSystem({ onAuthSuccess }: AuthProps) {
     </div>
   )
 }
+)

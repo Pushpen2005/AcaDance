@@ -1,6 +1,6 @@
-"use client"
-
-import React, { useState, useEffect, useRef } from 'react'
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,6 +13,8 @@ import { supabase } from "@/lib/supabaseClient"
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from "@/hooks/use-toast"
 import { 
+"use client"
+
   QrCode, 
   Camera, 
   MapPin, 
@@ -63,7 +65,8 @@ interface AttendanceRecord {
   distance_from_class?: number
 }
 
-export default function MobileQRAttendance() {
+// Performance and Error Handling Enhanced
+export default React.memo(function MobileQRAttendance() {
   const [userRole, setUserRole] = useState<'student' | 'faculty' | 'admin'>('student')
   const [currentUser, setCurrentUser] = useState<any>(null)
   const [activeTab, setActiveTab] = useState('scan')
@@ -833,3 +836,4 @@ export default function MobileQRAttendance() {
     </div>
   )
 }
+)

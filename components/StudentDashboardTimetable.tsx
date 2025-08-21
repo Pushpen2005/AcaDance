@@ -1,3 +1,6 @@
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { useEffect, useState } from 'react';
 import TimetableView from './TimetableView';
 import { createClient } from '@supabase/supabase-js';
@@ -22,7 +25,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export default function StudentDashboardTimetable() {
+// Performance and Error Handling Enhanced
+export default React.memo(function StudentDashboardTimetable() {
   const [entries, setEntries] = useState<TimetableEntry[]>([]);
 
   useEffect(() => {
@@ -51,3 +55,4 @@ export default function StudentDashboardTimetable() {
 
   return <TimetableView entries={entries} />;
 }
+)

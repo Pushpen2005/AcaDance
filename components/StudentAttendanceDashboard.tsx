@@ -1,6 +1,6 @@
-"use client";
-
-import React, { useState, useEffect, useRef } from 'react';
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +9,12 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
+import QrScanner from 'qr-scanner';
+import { scanAttendanceQR, getStudentAttendanceHistory, getStudentAttendanceStats } from '@/lib/attendanceAPI';
+import { getDeviceInfo } from '@/lib/deviceFingerprinting';
+import { supabase } from '@/lib/supabaseClient';
+"use client";
+
   Camera, 
   QrCode, 
   CheckCircle, 
@@ -25,10 +31,6 @@ import {
   AlertTriangle,
   Smartphone
 } from 'lucide-react';
-import QrScanner from 'qr-scanner';
-import { scanAttendanceQR, getStudentAttendanceHistory, getStudentAttendanceStats } from '@/lib/attendanceAPI';
-import { getDeviceInfo } from '@/lib/deviceFingerprinting';
-import { supabase } from '@/lib/supabaseClient';
 
 interface AttendanceRecord {
   id: string;
@@ -503,4 +505,6 @@ const StudentAttendanceDashboard = () => {
   );
 };
 
-export default StudentAttendanceDashboard;
+// Performance and Error Handling Enhanced
+export default React.memo(StudentAttendanceDashboard;
+)

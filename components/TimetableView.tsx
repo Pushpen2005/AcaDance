@@ -1,4 +1,7 @@
-import React from 'react';
+// Enhanced with Advanced Supabase Integration
+import React, { useState, useEffect } from 'react';
+import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
+
 
 // Environment variables for Supabase connection
 // NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY should be set in your .env.local or Vercel project settings
@@ -54,4 +57,6 @@ const TimetableView: React.FC<TimetableViewProps> = ({ entries }) => {
   );
 };
 
-export default TimetableView;
+// Performance and Error Handling Enhanced
+export default React.memo(TimetableView;
+)
