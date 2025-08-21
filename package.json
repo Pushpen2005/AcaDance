@@ -12,6 +12,10 @@
     "docker:build": "docker build -t academic-system .",
     "docker:run": "docker run -p 3006:3000 academic-system",
     "deploy:vercel": "vercel --prod",
+    "deploy:database": "./deploy-database.sh",
+    "validate:deployment": "./validate-deployment.sh",
+    "db:backup": "supabase db dump --db-url $SUPABASE_PROJECT_URL > backup_$(date +%Y%m%d_%H%M%S).sql",
+    "db:setup": "supabase db push --file minimal-profiles-timetables-setup.sql",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {

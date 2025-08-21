@@ -1,9 +1,9 @@
-import RealtimeTestingDashboard from '@/components/RealtimeTestingDashboard';
+import RealtimeTestPage from '@/components/RealtimeTestPage';
 
-export default function RealtimeTestPage() {
+export default function RealtimeTestPageRoute() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <RealtimeTestingDashboard />
+      <RealtimeTestPage />
     </div>
   );
 }

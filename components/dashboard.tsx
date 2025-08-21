@@ -1,15 +1,19 @@
 "use client"
 
-// Enhanced with Advanced Supabase Integration
+// Enhanced with Advanced Supabase Integration + Real-time Updates
 import React, { useState, useEffect, useRef } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, Calendar, AlertTriangle, Clock, BookOpen, GraduationCap, Target } from "lucide-react"
 import Skeleton from "@/app/htbyjn/components/skeleton"
-import { supabase } from "@/lib/supabaseClient"
+import { supabase, Profile } from "@/lib/supabaseClient"
 import { useHighlight } from "@/hooks/use-highlight"
 import TimetableManagement from "./timetable-management"
 import EnhancedInteractiveDashboard from "./EnhancedInteractiveDashboard"
+import { useRealtimeDashboard } from "@/hooks/useRealtimeDashboard"
+import RealtimeStatus from "./RealtimeStatus"
+import RealtimeNotifications from "./RealtimeNotifications"
+import RealtimeAttendanceDashboard from "./RealtimeAttendanceDashboard"
 
 function ClientDateTime() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
@@ -76,13 +80,19 @@ export default React.memo(function Dashboard() {
   ]
 
   const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<any>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
   const [sidebarItems, setSidebarItems] = useState<string[]>([])
   const [loadingProfile, setLoadingProfile] = useState(true)
   const [showTour, setShowTour] = useState(false)
   const [recentActivity, setRecentActivity] = useState<any>(null)
   const [notifications, setNotifications] = useState<any[]>([])
   const tourShownRef = useRef(false)
+
+  // Real-time dashboard hook
+  const realtimeDashboard = useRealtimeDashboard({
+    user: profile,
+    enabled: !!profile
+  })
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500)
@@ -99,7 +109,7 @@ export default React.memo(function Dashboard() {
           .select('*')
           .eq('id', user.data.user.id)
           .single()
-        setProfile(data)
+        setProfile(data as Profile | null)
         // Set sidebar items based on role
         if (data?.role === 'admin') {
           setSidebarItems([
@@ -198,10 +208,22 @@ export default React.memo(function Dashboard() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-gradient-x">
             {profile?.role ? `${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)} Dashboard` : 'Dashboard'}
           </h1>
-          <p className="text-green-700 mt-2">Welcome back{profile?.full_name ? `, ${profile.full_name}` : ''}! Here's what's happening today.</p>
+          <p className="text-green-700 mt-2">Welcome back{profile?.name ? `, ${profile.name}` : ''}! Here's what's happening today.</p>
         </div>
-        <div className="text-right glass-effect p-4 rounded-xl hover-lift">
-          <ClientDateTime />
+        <div className="flex items-center space-x-4">
+          {/* Real-time Status */}
+          <RealtimeStatus 
+            isConnected={realtimeDashboard.isConnected}
+            connectionStatus={realtimeDashboard.connectionStatus}
+            errors={realtimeDashboard.errors.filter(Boolean) as string[]}
+          />
+          
+          {/* Real-time Notifications */}
+          {profile && <RealtimeNotifications userId={profile.id} />}
+          
+          <div className="text-right glass-effect p-4 rounded-xl hover-lift">
+            <ClientDateTime />
+          </div>
         </div>
       </div>
       <div className="flex flex-col lg:flex-row gap-6">
@@ -404,7 +426,15 @@ export default React.memo(function Dashboard() {
             </div>
           )}
           {profile?.role === 'faculty' && (
-            <div>
+            <div className="space-y-6">
+              {/* Real-time Attendance Dashboard for Faculty */}
+              {profile && (
+                <RealtimeAttendanceDashboard 
+                  user={profile}
+                  className="mb-8"
+                />
+              )}
+              
               {/* Faculty widgets: Assigned Classes, Attendance Session, etc. */}
               <div
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up"
