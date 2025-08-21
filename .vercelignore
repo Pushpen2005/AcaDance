@@ -1,0 +1,8 @@
+# Vercel ignore patterns for cleaner builds
+.next/
+.vercel/
+node_modules/
+.env.local
+.git/
+*.log
+.DS_Store
