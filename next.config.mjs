@@ -11,8 +11,9 @@ const nextConfig = {
     domains: ['lcykmahapztccjkxrwsc.supabase.co'],
   },
   experimental: {
-    serverComponentsExternalPackages: ['@supabase/supabase-js'],
+    // serverComponentsExternalPackages: ['@supabase/supabase-js'], // Removed as it's moved to serverExternalPackages
   },
+  serverExternalPackages: ['@supabase/supabase-js'],
   output: 'standalone',
   poweredByHeader: false,
   compress: true,

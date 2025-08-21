@@ -3,10 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Settings, Save, RefreshCw } from "lucide-react";
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -911,5 +907,4 @@ const AdminGlobalSettings = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(AdminGlobalSettings;
-)
+export default React.memo(AdminGlobalSettings);

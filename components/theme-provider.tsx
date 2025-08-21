@@ -1,10 +1,10 @@
+'use client'
+
 // Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
-
-
 import { ThemeProvider as NextThemesProvider, type ThemeProviderProps } from "next-themes"
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext } from "react"
 
 interface ThemeContextType {
   theme: string;
@@ -36,4 +36,3 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     </NextThemesProvider>
   )
 }
-)

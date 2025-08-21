@@ -4,13 +4,8 @@ import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advance
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Database, Activity } from "lucide-react";
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Users, BarChart3, Clock, CheckCircle, AlertTriangle, QrCode } from "lucide-react";
+import { Calendar, Users, BarChart3, Clock, CheckCircle, AlertTriangle, QrCode, RefreshCw, Database, Activity } from "lucide-react";
 import ColorCodedTimetableView from './ColorCodedTimetableView';
 
 const FacultyDashboard = () => {

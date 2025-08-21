@@ -1,7 +1,8 @@
+"use client"
+
 // Enhanced with Advanced Supabase Integration
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
-import { useEffect, useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, Calendar, AlertTriangle, Clock, BookOpen, GraduationCap, Target } from "lucide-react"
 import Skeleton from "@/app/htbyjn/components/skeleton"
@@ -9,8 +10,6 @@ import { supabase } from "@/lib/supabaseClient"
 import { useHighlight } from "@/hooks/use-highlight"
 import TimetableManagement from "./timetable-management"
 import EnhancedInteractiveDashboard from "./EnhancedInteractiveDashboard"
-"use client"
-
 
 function ClientDateTime() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null)

@@ -1,20 +1,15 @@
+"use client"
+
 // Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Database, Activity } from "lucide-react";
-
-
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { 
   Play, 
   CheckCircle, 
@@ -25,7 +20,9 @@ import {
   UserCheck, 
   BarChart3,
   Users,
-  Bell
+  Bell,
+  RefreshCw,
+  Activity
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/lib/notifications';
@@ -623,5 +620,4 @@ const IntegrationTestDashboard: React.FC = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(IntegrationTestDashboard;
-)
+export default React.memo(IntegrationTestDashboard);

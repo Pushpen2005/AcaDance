@@ -2,26 +2,74 @@ import { H } from '@highlight-run/next/client'
 
 export const HIGHLIGHT_PROJECT_ID = process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID || 'demo'
 
-// Initialize Highlight.io
+// Clear any corrupted Highlight session data
+const clearHighlightSession = () => {
+  try {
+    // Clear localStorage entries that might contain corrupted session data
+    const keysToRemove = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && (
+        key.includes('highlight') || 
+        key.includes('sessionData_') || 
+        key.includes('highlightSession')
+      )) {
+        keysToRemove.push(key)
+      }
+    }
+    
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key)
+      console.log(`Cleared potentially corrupted session key: ${key}`)
+    })
+  } catch (error) {
+    console.warn('Failed to clear highlight session data:', error)
+  }
+}
+
+// Initialize Highlight.io with enhanced error handling
 export const initHighlight = () => {
-  H.init(HIGHLIGHT_PROJECT_ID, {
-    environment: process.env.NODE_ENV,
-    enableCanvasRecording: false,
-    enablePerformanceRecording: true,
-    serviceName: 'academic-system',
-    tracingOrigins: true,
-    networkRecording: {
-      enabled: true,
-      recordHeadersAndBody: true,
-      urlBlocklist: [
-        // Block sensitive URLs from being recorded
-        'https://api.stripe.com',
-        'https://api.paypal.com'
-      ]
-    },
-    backendUrl: process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL,
-    debug: process.env.NODE_ENV === 'development'
-  })
+  try {
+    // Clear any existing corrupted session data first
+    clearHighlightSession()
+    
+    H.init(HIGHLIGHT_PROJECT_ID, {
+      environment: process.env.NODE_ENV,
+      enableCanvasRecording: false,
+      enablePerformanceRecording: true,
+      serviceName: 'academic-system',
+      tracingOrigins: true,
+      networkRecording: {
+        enabled: true,
+        recordHeadersAndBody: true,
+        urlBlocklist: [
+          // Block sensitive URLs from being recorded
+          'https://api.stripe.com',
+          'https://api.paypal.com'
+        ]
+      },
+      backendUrl: process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL,
+      debug: process.env.NODE_ENV === 'development',
+      // Add session configuration to prevent corrupted sessions
+      sessionShortcut: false
+    })
+  } catch (error) {
+    console.error('Failed to initialize Highlight.io:', error)
+    // If initialization fails, clear session data and try once more
+    try {
+      clearHighlightSession()
+      H.init(HIGHLIGHT_PROJECT_ID, {
+        environment: process.env.NODE_ENV,
+        enableCanvasRecording: false,
+        enablePerformanceRecording: false, // Disable performance recording on retry
+        serviceName: 'academic-system',
+        debug: false // Disable debug on retry
+      })
+    } catch (retryError) {
+      console.error('Highlight.io initialization failed even after retry:', retryError)
+      throw retryError
+    }
+  }
 }
 
 // Error identification and user tracking

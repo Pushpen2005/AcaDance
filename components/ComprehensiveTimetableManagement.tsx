@@ -627,5 +627,4 @@ const ComprehensiveTimetableManagement = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(ComprehensiveTimetableManagement;
-)
+export default React.memo(ComprehensiveTimetableManagement);

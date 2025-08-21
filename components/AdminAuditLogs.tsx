@@ -467,5 +467,4 @@ const AdminAuditLogs = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(AdminAuditLogs;
-)
+export default React.memo(AdminAuditLogs);

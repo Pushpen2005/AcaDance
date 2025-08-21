@@ -1,3 +1,5 @@
+"use client"
+
 // Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
@@ -18,8 +20,6 @@ import MobileQRAttendance from "./MobileQRAttendance"
 import AdvancedAnalyticsDashboard from "./AdvancedAnalyticsDashboard"
 import RealTimeNotificationSystem from "./RealTimeNotificationSystem"
 import { 
-"use client"
-
   Calendar, 
   Users, 
   BookOpen, 

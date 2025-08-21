@@ -1,4 +1,5 @@
-// Enhanced with Advanced Supabase Integration
+"use client"
+
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,10 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabase } from "@/lib/supabaseClient"
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from "@/hooks/use-toast"
-import { 
 import { useRouter } from 'next/navigation'
-"use client"
-
+import {
   Mail, 
   Lock, 
   User, 

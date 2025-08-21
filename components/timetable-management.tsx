@@ -1,16 +1,14 @@
+"use client"
+
 // Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
-import type React from "react"
-import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { supabase } from "@/lib/supabaseClient"
-"use client"
-
-
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { AlertCircle, Database, RefreshCw } from "lucide-react"
 
 // Performance and Error Handling Enhanced
 export default React.memo(function TimetableManagement() {
@@ -25,103 +23,233 @@ export default React.memo(function TimetableManagement() {
 
   // Timetable Generation State
   const [generatedTimetable, setGeneratedTimetable] = useState<any[]>([]);
+  
+  // Error and Loading States
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch data from Supabase on mount
   useEffect(() => {
     async function fetchData() {
       try {
+        setIsLoading(true);
+        setError(null);
+        
+        // Use advancedSupabase for better error handling
+        const supabase = advancedSupabase.getClient();
+        
         const { data: subjectsData, error: subjectsError } = await supabase.from("subjects").select("*");
-        if (subjectsError) throw subjectsError;
-        setSubjects(subjectsData || []);
+        if (subjectsError) {
+          console.warn('Subjects table not found or error:', subjectsError);
+          setSubjects([]);
+        } else {
+          setSubjects(subjectsData || []);
+        }
         
         const { data: teachersData, error: teachersError } = await supabase.from("teachers").select("*");
-        if (teachersError) throw teachersError;
-        setTeachers(teachersData || []);
+        if (teachersError) {
+          console.warn('Teachers table not found or error:', teachersError);
+          setTeachers([]);
+        } else {
+          setTeachers(teachersData || []);
+        }
         
         const { data: constraintsData, error: constraintsError } = await supabase.from("constraints").select("*");
-        if (constraintsError) throw constraintsError;
-        setConstraints(constraintsData || []);
+        if (constraintsError) {
+          console.warn('Constraints table not found or error:', constraintsError);
+          setConstraints([]);
+        } else {
+          setConstraints(constraintsData || []);
+        }
         
         const { data: timetableData, error: timetableError } = await supabase.from("timetables").select("*");
-        if (timetableError) throw timetableError;
-        setGeneratedTimetable(timetableData || []);
+        if (timetableError) {
+          console.warn('Timetables table not found or error:', timetableError);
+          setGeneratedTimetable([]);
+        } else {
+          setGeneratedTimetable(timetableData || []);
+        }
+        
       } catch (error) {
         console.error('Error fetching data:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred while fetching data';
+        setError(errorMessage);
+        
+        // Initialize with demo data when database is not available
+        initializeDemoData();
+      } finally {
+        setIsLoading(false);
       }
     }
     fetchData();
   }, []);
+  
+  // Initialize demo data when database is not available
+  const initializeDemoData = () => {
+    if (subjects.length === 0) {
+      setSubjects([
+        { id: 1, name: "Mathematics", code: "MATH101", credits: 3, duration: 60 },
+        { id: 2, name: "Physics", code: "PHY101", credits: 4, duration: 90 },
+        { id: 3, name: "Computer Science", code: "CS101", credits: 3, duration: 60 }
+      ]);
+    }
+    
+    if (teachers.length === 0) {
+      setTeachers([
+        { id: 1, name: "Dr. Smith", specialization: "Mathematics", maxHours: 20 },
+        { id: 2, name: "Dr. Johnson", specialization: "Physics", maxHours: 18 },
+        { id: 3, name: "Prof. Davis", specialization: "Computer Science", maxHours: 22 }
+      ]);
+    }
+    
+    if (constraints.length === 0) {
+      setConstraints([
+        { id: 1, type: "time", value: "9:00-17:00" },
+        { id: 2, type: "room", value: "max-capacity-50" }
+      ]);
+    }
+  };
 
   // Add Subject (Supabase)
   const addSubject = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const subject = {
-      name: formData.get("subjectName"),
-      code: formData.get("subjectCode"),
-      credits: formData.get("subjectCredits"),
-      duration: formData.get("subjectDuration"),
-    };
-    const { data, error } = await supabase.from("subjects").insert([subject]).select();
-    if (!error && data && data.length > 0) setSubjects((prev) => [...prev, { ...subject, id: data[0].id }]);
-    (e.target as HTMLFormElement).reset();
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const subject = {
+        name: formData.get("subjectName"),
+        code: formData.get("subjectCode"),
+        credits: formData.get("subjectCredits"),
+        duration: formData.get("subjectDuration"),
+      };
+      
+      const supabase = advancedSupabase.getClient();
+      const { data, error } = await supabase.from("subjects").insert([subject]).select();
+      
+      if (!error && data && data.length > 0) {
+        setSubjects((prev) => [...prev, { ...subject, id: data[0].id }]);
+        (e.target as HTMLFormElement).reset();
+      } else {
+        console.warn('Error adding subject:', error);
+      }
+    } catch (error) {
+      console.error('Failed to add subject:', error);
+    }
   };
 
   // Remove Subject (Supabase)
   const removeSubject = async (id: number) => {
-    await supabase.from("subjects").delete().eq("id", id);
-    setSubjects(subjects.filter((s) => s.id !== id));
+    try {
+      const supabase = advancedSupabase.getClient();
+      await supabase.from("subjects").delete().eq("id", id);
+      setSubjects(subjects.filter((s) => s.id !== id));
+    } catch (error) {
+      console.error('Failed to remove subject:', error);
+    }
   };
 
   // Add Teacher (Supabase)
   const addTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const teacher = {
-      name: formData.get("teacherName"),
-      specialization: formData.get("teacherSpecialization"),
-      maxHours: formData.get("teacherMaxHours"),
-    };
-    const { data, error } = await supabase.from("teachers").insert([teacher]).select();
-    if (!error && data && data.length > 0) setTeachers((prev) => [...prev, { ...teacher, id: data[0].id }]);
-    (e.target as HTMLFormElement).reset();
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const teacher = {
+        name: formData.get("teacherName"),
+        specialization: formData.get("teacherSpecialization"),
+        maxHours: formData.get("teacherMaxHours"),
+      };
+      
+      const supabase = advancedSupabase.getClient();
+      const { data, error } = await supabase.from("teachers").insert([teacher]).select();
+      
+      if (!error && data && data.length > 0) {
+        setTeachers((prev) => [...prev, { ...teacher, id: data[0].id }]);
+        (e.target as HTMLFormElement).reset();
+      } else {
+        console.warn('Error adding teacher:', error);
+      }
+    } catch (error) {
+      console.error('Failed to add teacher:', error);
+    }
   };
 
   // Remove Teacher (Supabase)
   const removeTeacher = async (id: number) => {
-    await supabase.from("teachers").delete().eq("id", id);
-    setTeachers(teachers.filter((t) => t.id !== id));
+    try {
+      const supabase = advancedSupabase.getClient();
+      await supabase.from("teachers").delete().eq("id", id);
+      setTeachers(teachers.filter((t) => t.id !== id));
+    } catch (error) {
+      console.error('Failed to remove teacher:', error);
+    }
   };
 
   // Add Constraint (Supabase)
   const addConstraint = async (e: React.FormEvent) => {
     e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
-    const constraint = {
-      type: formData.get("constraintType"),
-      value: formData.get("constraintValue"),
-    };
-    const { data, error } = await supabase.from("constraints").insert([constraint]).select();
-    if (!error && data && data.length > 0) setConstraints((prev) => [...prev, { ...constraint, id: data[0].id }]);
-    (e.target as HTMLFormElement).reset();
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const constraint = {
+        type: formData.get("constraintType"),
+        value: formData.get("constraintValue"),
+      };
+      
+      const supabase = advancedSupabase.getClient();
+      const { data, error } = await supabase.from("constraints").insert([constraint]).select();
+      
+      if (!error && data && data.length > 0) {
+        setConstraints((prev) => [...prev, { ...constraint, id: data[0].id }]);
+        (e.target as HTMLFormElement).reset();
+      } else {
+        console.warn('Error adding constraint:', error);
+      }
+    } catch (error) {
+      console.error('Failed to add constraint:', error);
+    }
   };
 
   // Remove Constraint (Supabase)
   const removeConstraint = async (id: number) => {
-    await supabase.from("constraints").delete().eq("id", id);
-    setConstraints(constraints.filter((c) => c.id !== id));
+    try {
+      const supabase = advancedSupabase.getClient();
+      await supabase.from("constraints").delete().eq("id", id);
+      setConstraints(constraints.filter((c) => c.id !== id));
+    } catch (error) {
+      console.error('Failed to remove constraint:', error);
+    }
   };
 
   // Timetable Generation (Supabase)
   const generateTimetable = async () => {
-    const timetable = subjects.map((subject, idx) => ({
-      subject: subject.name,
-      teacher: teachers[idx % teachers.length]?.name || "Unassigned",
-      slot: `Day ${1 + (idx % 5)}, 10:00-11:00`,
-    }));
-    const { data, error } = await supabase.from("timetables").insert(timetable).select();
-    if (!error && data) setGeneratedTimetable(data);
-    setActiveSection("view");
+    try {
+      const timetable = subjects.map((subject, idx) => ({
+        subject: subject.name,
+        teacher: teachers[idx % teachers.length]?.name || "Unassigned",
+        slot: `Day ${1 + (idx % 5)}, 10:00-11:00`,
+      }));
+      
+      const supabase = advancedSupabase.getClient();
+      const { data, error } = await supabase.from("timetables").insert(timetable).select();
+      
+      if (!error && data) {
+        setGeneratedTimetable(data);
+        setActiveSection("view");
+      } else {
+        console.warn('Error generating timetable:', error);
+        // Fallback to local generation if database insert fails
+        setGeneratedTimetable(timetable);
+        setActiveSection("view");
+      }
+    } catch (error) {
+      console.error('Failed to generate timetable:', error);
+      // Fallback to local generation
+      const timetable = subjects.map((subject, idx) => ({
+        subject: subject.name,
+        teacher: teachers[idx % teachers.length]?.name || "Unassigned",
+        slot: `Day ${1 + (idx % 5)}, 10:00-11:00`,
+      }));
+      setGeneratedTimetable(timetable);
+      setActiveSection("view");
+    }
   };
 
   // Section definition
@@ -134,9 +262,46 @@ export default React.memo(function TimetableManagement() {
 
   return (
     <div className="space-y-6">
+      {/* Error Alert */}
+      {error && (
+        <Alert className="border-red-200 bg-red-50">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800">
+            <strong>Database Error:</strong> {error}
+            <br />
+            <span className="text-sm text-red-600">
+              This may be due to missing database tables. The timetable management will work in demo mode.
+            </span>
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {/* Loading State */}
+      {isLoading && (
+        <Alert className="border-blue-200 bg-blue-50">
+          <RefreshCw className="h-4 w-4 text-blue-600 animate-spin" />
+          <AlertDescription className="text-blue-800">
+            Loading timetable data...
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-green-800 dark:text-green-200">Timetable Management</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700" onClick={generateTimetable}>Generate Timetable</Button>
+        <Button 
+          className="bg-blue-600 hover:bg-blue-700" 
+          onClick={generateTimetable}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <>
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            'Generate Timetable'
+          )}
+        </Button>
       </div>
 
       {/* Section Tabs */}

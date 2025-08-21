@@ -1,3 +1,5 @@
+"use client"
+
 // Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
@@ -12,8 +14,6 @@ import { supabase } from "@/lib/supabaseClient"
 import { motion, AnimatePresence } from 'framer-motion'
 import { useToast } from "@/hooks/use-toast"
 import { 
-"use client"
-
   Bell, 
   Send, 
   Trash2, 

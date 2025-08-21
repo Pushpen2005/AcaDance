@@ -1,13 +1,13 @@
+'use client'
+
 // Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
-import { useState } from 'react'
 import { SupabaseConnectionTester } from '@/lib/supabase-test'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertCircle, CheckCircle, XCircle, Play, RefreshCw } from 'lucide-react'
-'use client'
 
 
 interface TestResult {

@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 
-
-import React, { useEffect, useState } from 'react';
 import { 
   useAdvanced3D, 
   useScrollAnimation, 

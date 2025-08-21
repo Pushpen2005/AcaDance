@@ -1,9 +1,8 @@
+'use client'
+
 // Enhanced with Advanced Supabase Theme Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
-
-
-import React, { useState, useEffect } from 'react';
 import { useTheme } from 'next-themes';
 import { Button } from "@/components/ui/button";
 import { 
@@ -312,7 +311,7 @@ export default React.memo(function EnhancedThemeToggle() {
       </AnimatePresence>
     </div>
   );
-}
+});
 
 // Simple theme toggle for basic usage
 export function SimpleThemeToggle() {
@@ -343,4 +342,3 @@ export function SimpleThemeToggle() {
     </Button>
   );
 }
-)
