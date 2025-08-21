@@ -44,5 +44,27 @@
       "source": "/healthz",
       "destination": "/api/health"
     }
+  ],
+  "routes": [
+    {
+      "src": "/auth/(.*)",
+      "dest": "/auth/$1"
+    },
+    {
+      "src": "/student-dashboard/(.*)",
+      "dest": "/student-dashboard/$1"
+    },
+    {
+      "src": "/faculty-dashboard/(.*)",
+      "dest": "/faculty-dashboard/$1"
+    },
+    {
+      "src": "/admin-dashboard/(.*)",
+      "dest": "/admin-dashboard/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
   ]
 }

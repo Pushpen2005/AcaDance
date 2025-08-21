@@ -7,19 +7,42 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
     domains: ['lcykmahapztccjkxrwsc.supabase.co'],
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
   },
   experimental: {
-    // serverComponentsExternalPackages: ['@supabase/supabase-js'], // Removed as it's moved to serverExternalPackages
+    optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react'],
   },
   serverExternalPackages: ['@supabase/supabase-js'],
-  output: 'standalone',
   poweredByHeader: false,
   compress: true,
-  generateEtags: false,
-  httpAgentOptions: {
-    keepAlive: true,
+  // Vercel-optimized settings
+  trailingSlash: false,
+  // Add proper redirects for SPA-like behavior
+  async rewrites() {
+    return [
+      {
+        source: '/healthz',
+        destination: '/api/health',
+      },
+    ];
+  },
+  // Add proper redirects for authentication routes
+  async redirects() {
+    return [
+      {
+        source: '/',
+        has: [
+          {
+            type: 'cookie',
+            key: 'supabase-auth-token',
+          },
+        ],
+        destination: '/student-dashboard',
+        permanent: false,
+      },
+    ];
   },
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,

@@ -191,7 +191,7 @@ const RealtimeTestPage: React.FC<RealtimeTestPageProps> = ({ className = '' }) =
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center space-x-3">
-              {attendance.isConnected ? (
+              {smartAttendance.isConnected ? (
                 <CheckCircle className="w-8 h-8 text-green-500" />
               ) : (
                 <AlertCircle className="w-8 h-8 text-red-500" />
@@ -199,10 +199,10 @@ const RealtimeTestPage: React.FC<RealtimeTestPageProps> = ({ className = '' }) =
               <div>
                 <h3 className="font-semibold">Attendance</h3>
                 <p className="text-sm text-gray-600">
-                  {attendance.isConnected ? 'Connected' : 'Disconnected'}
+                  {smartAttendance.isConnected ? 'Connected' : 'Disconnected'}
                 </p>
-                {attendance.error && (
-                  <p className="text-xs text-red-500">{attendance.error}</p>
+                {smartAttendance.error && (
+                  <p className="text-xs text-red-500">{smartAttendance.error}</p>
                 )}
               </div>
             </div>
@@ -310,15 +310,15 @@ const RealtimeTestPage: React.FC<RealtimeTestPageProps> = ({ className = '' }) =
             <CardTitle className="flex items-center space-x-2">
               <Users className="w-5 h-5" />
               <span>Real-time Attendance</span>
-              <Badge variant="secondary">{attendance.attendanceRecords.length}</Badge>
+              <Badge variant="secondary">{smartAttendance.attendanceRecords.length}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {attendance.attendanceRecords.length === 0 ? (
+            {smartAttendance.attendanceRecords.length === 0 ? (
               <p className="text-gray-500 text-center py-4">No attendance records yet</p>
             ) : (
               <div className="space-y-2 max-h-60 overflow-y-auto">
-                {attendance.attendanceRecords.slice(-5).map((record) => (
+                {smartAttendance.attendanceRecords.slice(-5).map((record) => (
                   <div key={record.id} className="p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">Student: {record.student_id}</span>
@@ -371,19 +371,19 @@ const RealtimeTestPage: React.FC<RealtimeTestPageProps> = ({ className = '' }) =
       </div>
 
       {/* Recent Updates */}
-      {(attendance.lastUpdate || timetable.lastUpdate || notifications.lastNotification) && (
+      {(smartAttendance.lastUpdate || timetable.lastUpdate || notifications.lastNotification) && (
         <Card>
           <CardHeader>
             <CardTitle>Recent Real-time Updates</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {attendance.lastUpdate && (
+            {smartAttendance.lastUpdate && (
               <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <div>
                   <p className="font-medium">Attendance Update</p>
                   <p className="text-sm text-gray-600">
-                    {attendance.lastUpdate.type} - {attendance.lastUpdate.timestamp.toLocaleString()}
+                    {smartAttendance.lastUpdate.type} - {smartAttendance.lastUpdate.timestamp.toLocaleString()}
                   </p>
                 </div>
               </div>

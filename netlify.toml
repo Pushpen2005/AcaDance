@@ -1,0 +1,65 @@
+[build]
+  publish = ".next"
+  command = "npm run build"
+
+[build.environment]
+  NPM_FLAGS = "--prefix=/opt/buildhome/cache/node_modules/.bin/"
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Handle client-side routing (SPA behavior)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin", "student", "faculty"]}
+
+# Handle authentication routes
+[[redirects]]
+  from = "/auth/*"
+  to = "/auth/:splat"
+  status = 200
+
+# Handle dashboard routes
+[[redirects]]
+  from = "/student-dashboard/*"
+  to = "/student-dashboard/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/faculty-dashboard/*"
+  to = "/faculty-dashboard/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/admin-dashboard/*"
+  to = "/admin-dashboard/:splat"
+  status = 200
+
+# Default fallback for all other routes
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = ".netlify/functions"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
