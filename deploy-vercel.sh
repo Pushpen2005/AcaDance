@@ -216,9 +216,14 @@ fi
 
 echo "✅ Clean state for deployment"
 
-# Deploy to Vercel with unique project name
+# Deploy to Vercel with unique project name (compliant with Vercel naming rules)
 RANDOM_SUFFIX=$(openssl rand -hex 3)
-PROJECT_NAME="academic-system-$(date +%Y%m%d)-${RANDOM_SUFFIX}"
+DATE_SUFFIX=$(date +%Y%m%d)
+PROJECT_NAME="academic-system-${DATE_SUFFIX}-${RANDOM_SUFFIX}"
+
+# Ensure project name is lowercase and within 100 character limit
+PROJECT_NAME=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | cut -c1-100)
+
 echo ""
 echo "🚀 Deploying to Vercel with project name: $PROJECT_NAME..."
 
