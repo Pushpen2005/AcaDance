@@ -58,5 +58,4 @@ const TimetableView: React.FC<TimetableViewProps> = ({ entries }) => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(TimetableView;
-)
+export default React.memo(TimetableView);

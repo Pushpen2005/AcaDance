@@ -1,17 +1,17 @@
 // Enhanced with Advanced Supabase Integration
+"use client"
+
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabase } from "@/lib/supabaseClient"
-import { motion } from 'framer-motion'
-import { 
+import { motion, AnimatePresence } from 'framer-motion'
 import QRAttendanceSystem from './QRAttendanceSystem'
 import TimetableManagement from './timetable-management'
-"use client"
-
+import { 
   Calendar, 
   Users, 
   BookOpen, 

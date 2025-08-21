@@ -346,5 +346,4 @@ const StudentDashboard = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(StudentDashboard;
-)
+export default React.memo(StudentDashboard);

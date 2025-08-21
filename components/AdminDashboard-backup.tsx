@@ -328,5 +328,4 @@ const AdminDashboard = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(AdminDashboard;
-)
+export default React.memo(AdminDashboard);

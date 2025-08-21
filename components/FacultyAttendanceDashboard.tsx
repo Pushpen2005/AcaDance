@@ -1,4 +1,6 @@
 // Enhanced with Advanced Supabase Integration
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,13 +14,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
 import QRCode from 'qrcode';
-import { 
 import { generateAttendanceQR } from '@/lib/qrUtils';
 import { supabase } from '@/lib/supabaseClient';
-"use client";
-
+import { 
   QrCode, 
   Clock, 
   Users, 
@@ -37,6 +36,7 @@ import { supabase } from '@/lib/supabaseClient';
   Play,
   Square
 } from 'lucide-react';
+import { 
   generateAttendanceSession, 
   getFacultyAttendanceSessions, 
   getLiveAttendance,
@@ -626,5 +626,4 @@ const FacultyAttendanceDashboard = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(FacultyAttendanceDashboard;
-)
+export default React.memo(FacultyAttendanceDashboard);

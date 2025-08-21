@@ -1,5 +1,7 @@
 // Enhanced with Advanced Supabase Integration
-import React, { useState, useEffect } from 'react';
+"use client";
+
+import React, { useState, useEffect, useRef } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,13 +10,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
 import QrScanner from 'qr-scanner';
 import { scanAttendanceQR, getStudentAttendanceHistory, getStudentAttendanceStats } from '@/lib/attendanceAPI';
 import { getDeviceInfo } from '@/lib/deviceFingerprinting';
 import { supabase } from '@/lib/supabaseClient';
-"use client";
-
+import { 
   Camera, 
   QrCode, 
   CheckCircle, 
@@ -506,5 +506,4 @@ const StudentAttendanceDashboard = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(StudentAttendanceDashboard;
-)
+export default React.memo(StudentAttendanceDashboard);

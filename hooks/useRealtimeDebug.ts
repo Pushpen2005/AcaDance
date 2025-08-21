@@ -51,8 +51,8 @@ export function useRealtimeDebug() {
   }, []);
 }
 
-// Component for adding debug info to any page
-export const RealtimeDebugPanel: React.FC = () => {
+// Hook for debug logging
+export const useRealtimeDebugLogs = () => {
   const [logs, setLogs] = React.useState<string[]>([]);
   
   React.useEffect(() => {
@@ -69,18 +69,12 @@ export const RealtimeDebugPanel: React.FC = () => {
     };
   }, []);
 
-  return (
-    <div className="fixed bottom-4 right-4 w-80 bg-black/90 text-green-400 p-4 rounded-lg text-xs font-mono max-h-60 overflow-y-auto">
-      <div className="font-bold text-green-300 mb-2">🔴 Realtime Debug</div>
-      {logs.length === 0 ? (
-        <div className="text-gray-400">Waiting for realtime events...</div>
-      ) : (
-        logs.map((log, i) => (
-          <div key={i} className="mb-1 break-words">
-            {log}
-          </div>
-        ))
-      )}
-    </div>
-  );
+  const addLog = (message: string) => {
+    setLogs(prev => [...prev.slice(-49), `${new Date().toLocaleTimeString()}: ${message}`]);
+  };
+
+  return {
+    logs,
+    addLog
+  };
 };
