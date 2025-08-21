@@ -18,8 +18,7 @@
     "validate:deployment": "./validate-deployment.sh",
     "db:backup": "supabase db dump --db-url $SUPABASE_PROJECT_URL > backup_$(date +%Y%m%d_%H%M%S).sql",
     "db:setup": "supabase db push --file minimal-profiles-timetables-setup.sql",
-    "test": "echo \"No tests specified\" && exit 0",
-    "postbuild": "next-sitemap"
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
