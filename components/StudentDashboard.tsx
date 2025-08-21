@@ -1,3 +1,5 @@
+'use client';
+
 // Enhanced with Advanced Supabase Integration
 import React, { useState, useEffect } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
@@ -5,17 +7,116 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Database, Activity } from "lucide-react";
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Users, BarChart3, Clock, CheckCircle, AlertTriangle, QrCode, Bell, BookOpen } from "lucide-react";
 import ColorCodedTimetableView from './ColorCodedTimetableView';
+import StudentAttendanceSystem from './StudentAttendanceSystem';
+import SimpleAttendanceDemo from './SimpleAttendanceDemo';
 
 const StudentDashboard = () => {
-  const [activeView, setActiveView] = useState<'overview' | 'timetable' | 'attendance'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'timetable' | 'attendance' | 'demo'>('overview');
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Get current user
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      try {
+        const { data: { user } } = await advancedSupabase.getClient().auth.getUser();
+        
+        if (user) {
+          // Get user profile from database
+          const { data: profile } = await advancedSupabase.query('users', {
+            filter: { id: user.id }
+          });
+          
+          setUser(profile?.[0] || { id: user.id, email: user.email, role: 'student' });
+        }
+      } catch (error) {
+        console.error('Error getting user:', error);
+        // Set mock user for development
+        setUser({ 
+          id: '550e8400-e29b-41d4-a716-446655440001', 
+          email: 'john.doe@student.edu', 
+          name: 'John Doe',
+          role: 'student' 
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getCurrentUser();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <RefreshCw className="w-6 h-6 animate-spin mr-2" />
+        Loading dashboard...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="text-center p-8">
+        <h1 className="text-2xl font-bold mb-4">Please log in to access your dashboard</h1>
+      </div>
+    );
+  }
+
+  if (activeView === 'timetable') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="outline" 
+            onClick={() => setActiveView('overview')}
+            className="mb-4"
+          >
+            ← Back to Dashboard
+          </Button>
+        </div>
+        <ColorCodedTimetableView />
+      </div>
+    );
+  }
+
+  if (activeView === 'attendance') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="outline" 
+            onClick={() => setActiveView('overview')}
+            className="mb-4"
+          >
+            ← Back to Dashboard
+          </Button>
+        </div>
+        <StudentAttendanceSystem studentId={user.id} />
+      </div>
+    );
+  }
+
+  if (activeView === 'demo') {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="outline" 
+            onClick={() => setActiveView('overview')}
+            className="mb-4"
+          >
+            ← Back to Dashboard
+          </Button>
+        </div>
+        <SimpleAttendanceDemo />
+      </div>
+    );
+  }
 
   const todayClasses = [
     { time: '09:00 AM', subject: 'Computer Science 101', faculty: 'Dr. Smith', room: 'Room A-205', status: 'upcoming' },
@@ -43,23 +144,6 @@ const StudentDashboard = () => {
     { type: 'warning', message: 'Attendance shortage in Database Systems (75%)', time: '2 hours ago' },
     { type: 'info', message: 'Timetable updated for next week', time: '1 day ago' },
   ];
-
-  if (activeView === 'timetable') {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button 
-            variant="outline" 
-            onClick={() => setActiveView('overview')}
-            className="mb-4"
-          >
-            ← Back to Dashboard
-          </Button>
-        </div>
-        <ColorCodedTimetableView />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
@@ -196,9 +280,13 @@ const StudentDashboard = () => {
               <Calendar className="w-4 h-4 mr-2" />
               Export Schedule to Calendar
             </Button>
-            <Button variant="outline" className="w-full justify-start">
+            <Button variant="outline" className="w-full justify-start" onClick={() => setActiveView('attendance')}>
               <BarChart3 className="w-4 h-4 mr-2" />
-              View Detailed Attendance History
+              View Live Attendance System
+            </Button>
+            <Button variant="outline" className="w-full justify-start" onClick={() => setActiveView('demo')}>
+              <QrCode className="w-4 h-4 mr-2" />
+              Simple Attendance Demo
             </Button>
             <Button variant="outline" className="w-full justify-start">
               <BookOpen className="w-4 h-4 mr-2" />
@@ -346,5 +434,4 @@ const StudentDashboard = () => {
 };
 
 // Performance and Error Handling Enhanced
-export default React.memo(StudentDashboard;
-)
+export default React.memo(StudentDashboard);

@@ -5,7 +5,7 @@
 
 echo "🔍 Academic System - Supabase Integration Analysis"
 echo "=================================================="
-echo ""
+echo ""`
 
 # Check environment configuration
 echo "📋 Environment Configuration:"

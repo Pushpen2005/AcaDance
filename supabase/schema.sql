@@ -3,7 +3,26 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis"; -- For GPS/location features
 
--- Users table with device fingerprinting
+-- Simple students table as described in requirements
+CREATE TABLE students (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    department TEXT NOT NULL,
+    role TEXT DEFAULT 'student' CHECK (role = 'student'),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Simple attendance table as described in requirements  
+CREATE TABLE attendance (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    student_id UUID REFERENCES students(id) ON DELETE CASCADE,
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    status TEXT CHECK (status IN ('present', 'absent')) DEFAULT 'present',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Users table with device fingerprinting (extended system)
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -185,11 +204,63 @@ CREATE INDEX idx_enrollments_student ON enrollments(student_id);
 CREATE INDEX idx_enrollments_course ON enrollments(course_id);
 
 -- Row Level Security (RLS) Policies
+ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+ALTER TABLE attendance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE attendance_sessions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE attendance_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE alerts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
+
+-- Simple RLS policies for students table
+-- Students can only see their own record
+CREATE POLICY "Students can view own profile" ON students
+    FOR SELECT USING (auth.uid() = id);
+
+-- Faculty/Admin can see all students
+CREATE POLICY "Faculty/Admin can view all students" ON students
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role IN ('faculty', 'admin')
+        )
+    );
+
+-- Faculty/Admin can insert students
+CREATE POLICY "Faculty/Admin can insert students" ON students
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role IN ('faculty', 'admin')
+        )
+    );
+
+-- Simple RLS policies for attendance table
+-- Students can only see their own attendance
+CREATE POLICY "Students view own attendance" ON attendance
+    FOR SELECT USING (auth.uid() = student_id);
+
+-- Faculty/Admin can see all attendance
+CREATE POLICY "Faculty/Admin view all attendance" ON attendance
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role IN ('faculty', 'admin')
+        )
+    );
+
+-- Faculty/Admin can mark attendance
+CREATE POLICY "Faculty/Admin can mark attendance" ON attendance
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE users.id = auth.uid() 
+            AND users.role IN ('faculty', 'admin')
+        )
+    );
 
 -- Users can only see/edit their own data
 CREATE POLICY "Users can view own profile" ON users
@@ -337,6 +408,21 @@ CREATE TRIGGER attendance_statistics_trigger
     FOR EACH ROW EXECUTE FUNCTION update_attendance_statistics();
 
 -- Sample data for testing
+-- Sample students
+INSERT INTO students (id, name, email, department, role) VALUES
+    ('550e8400-e29b-41d4-a716-446655440001', 'John Doe', 'john.doe@student.edu', 'Computer Science', 'student'),
+    ('550e8400-e29b-41d4-a716-446655440002', 'Jane Smith', 'jane.smith@student.edu', 'Computer Science', 'student'),
+    ('550e8400-e29b-41d4-a716-446655440011', 'Alice Johnson', 'alice.johnson@student.edu', 'Computer Science', 'student'),
+    ('550e8400-e29b-41d4-a716-446655440012', 'Bob Wilson', 'bob.wilson@student.edu', 'Mathematics', 'student');
+
+-- Sample attendance records
+INSERT INTO attendance (student_id, date, status) VALUES
+    ('550e8400-e29b-41d4-a716-446655440001', CURRENT_DATE, 'present'),
+    ('550e8400-e29b-41d4-a716-446655440002', CURRENT_DATE, 'present'),
+    ('550e8400-e29b-41d4-a716-446655440011', CURRENT_DATE, 'absent'),
+    ('550e8400-e29b-41d4-a716-446655440001', CURRENT_DATE - INTERVAL '1 day', 'present'),
+    ('550e8400-e29b-41d4-a716-446655440002', CURRENT_DATE - INTERVAL '1 day', 'absent');
+
 INSERT INTO users (id, email, name, role, department, student_id) VALUES
     ('550e8400-e29b-41d4-a716-446655440001', 'john.doe@student.edu', 'John Doe', 'student', 'Computer Science', 'CS2024001'),
     ('550e8400-e29b-41d4-a716-446655440002', 'jane.smith@student.edu', 'Jane Smith', 'student', 'Computer Science', 'CS2024002'),
