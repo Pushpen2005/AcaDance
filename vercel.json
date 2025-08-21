@@ -1,5 +1,17 @@
 {
   "version": 2,
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://lcykmahapztccjkxrwsc.supabase.co",
+    "SUPABASE_URL": "https://lcykmahapztccjkxrwsc.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjeWttYWhhcHp0Y2Nqa3hyd3NjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1NDg2MTAsImV4cCI6MjA3MTEyNDYxMH0.kezwJLUTQH_wiJ9BmDd_S86kRdjzGrCyu0fYpiln25Q",
+    "SUPABASE_SERVICE_ROLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjeWttYWhhcHp0Y2Nqa3hyd3NjIiwicm9zZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTU0ODYxMCwiZXhwIjoyMDcxMTI0NjEwfQ.YpKGtUWuJZqxnlJi1qHHgE8CHCEJHM7_H4Df_HRDc00",
+    "NEXT_PUBLIC_SITE_URL": "https://your-app.vercel.app",
+    "TIMETABLE_GENERATION_API_KEY": "ttm_3494337cd17c0f1a94c8f0f6c14ddc073578aeb6020449f483d9dda8479c8e40",
+    "NEXT_PUBLIC_TIMETABLE_API_ENDPOINT": "https://api.timetablemaker.com/v1",
+    "NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID": "demo",
+    "NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL": "https://pub.highlight.io",
+    "NEXT_PUBLIC_DISABLE_HIGHLIGHT": "false"
+  },
   "headers": [
     {
       "source": "/api/(.*)",
