@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { ThemeProvider } from "@/components/theme-provider"
 import { ErrorBoundary } from "@/lib/error-boundary"
 import { NotificationProvider } from "@/lib/notifications"
+import { AuthProvider } from "@/lib/auth-context"
 import { Toaster } from "@/components/ui/toaster"
 import { HighlightInit } from "@/components/HighlightInit"
 import "./globals.css"
@@ -50,12 +51,14 @@ html {
       <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased`}>
         <HighlightInit />
         <ErrorBoundary>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <NotificationProvider>
-              {children}
-              <Toaster />
-            </NotificationProvider>
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              <NotificationProvider>
+                {children}
+                <Toaster />
+              </NotificationProvider>
+            </ThemeProvider>
+          </AuthProvider>
         </ErrorBoundary>
         
         {/* Enhanced Animations Scripts */}

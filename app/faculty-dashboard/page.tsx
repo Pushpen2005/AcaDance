@@ -1,507 +1,530 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { motion } from 'framer-motion';
+import { useAuth, ProtectedRoute } from '../../lib/auth-context';
+import { supabase } from '../../lib/supabaseClient';
+import { QRGenerator } from '../../lib/qr-generator';
 import { 
+  QrCode, 
   Calendar, 
   Clock, 
-  QrCode, 
   Users, 
-  Bell, 
-  User, 
-  TrendingUp,
+  BookOpen, 
+  TrendingUp, 
+  AlertCircle,
   CheckCircle,
-  XCircle,
-  AlertTriangle,
-  BarChart3,
-  FileText,
-  Settings,
   Plus,
-  Monitor
+  FileText,
+  Bell,
+  Settings,
+  LogOut,
+  User,
+  Monitor,
+  Play,
+  Square
 } from 'lucide-react';
-import { supabase } from '../../lib/supabaseClient';
-import { useAdvanced3D, useScrollAnimation } from '@/hooks/use-enhanced-animations';
 
-export default function FacultyDashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
+function FacultyDashboardContent() {
+  const { user, profile, signOut } = useAuth();
   const [activeSessions, setActiveSessions] = useState<any[]>([]);
   const [todayClasses, setTodayClasses] = useState<any[]>([]);
+  const [courseStats, setCourseStats] = useState<any[]>([]);
   const [recentAttendance, setRecentAttendance] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>({});
+  const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
-
-  // Animation refs
-  const headerRef = useAdvanced3D({ tiltIntensity: 5 });
-  const statsRef = useScrollAnimation('fadeInUp');
-  const classesRef = useScrollAnimation('slideInLeft');
 
   useEffect(() => {
-    loadFacultyData();
-  }, []);
+    if (user) {
+      loadDashboardData();
+      setupRealtimeSubscriptions();
+    }
+  }, [user]);
 
-  const loadFacultyData = async () => {
+  const loadDashboardData = async () => {
     try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        router.push('/auth');
-        return;
-      }
-
-      setUser(user);
-
-      // Load profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (!profileData || profileData.role !== 'faculty') {
-        router.push('/setup-profile');
-        return;
-      }
-
-      setProfile(profileData);
-
-      // Load active attendance sessions
-      const { data: sessionsData } = await supabase
-        .from('attendance_sessions')
-        .select('*')
-        .eq('faculty_id', user.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-
-      setActiveSessions(sessionsData || []);
-
-      // Load today's classes from timetable
-      const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-      const { data: classesData } = await supabase
-        .from('timetables')
-        .select('*')
-        .eq('faculty_id', user.id)
-        .eq('day', today)
-        .order('start_time');
-
-      setTodayClasses(classesData || []);
-
-      // Load recent attendance records
-      const { data: attendanceData } = await supabase
-        .from('attendance_records')
-        .select(`
-          *,
-          attendance_sessions!inner(
-            class_id,
-            faculty_id
-          ),
-          profiles!attendance_records_student_id_fkey(
-            full_name
-          )
-        `)
-        .eq('attendance_sessions.faculty_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      setRecentAttendance(attendanceData || []);
-
-      // Calculate stats
-      const totalSessions = await supabase
-        .from('attendance_sessions')
-        .select('id', { count: 'exact' })
-        .eq('faculty_id', user.id);
-
-      const todaySessionsCount = await supabase
-        .from('attendance_sessions')
-        .select('id', { count: 'exact' })
-        .eq('faculty_id', user.id)
-        .gte('created_at', new Date().toISOString().split('T')[0]);
-
-      const totalStudentsInSessions = await supabase
-        .from('attendance_records')
-        .select('student_id', { count: 'exact' })
-        .in('session_id', (sessionsData || []).map(s => s.id));
-
-      setStats({
-        totalSessions: totalSessions.count || 0,
-        todaySessions: todaySessionsCount.count || 0,
-        activeNow: sessionsData?.length || 0,
-        totalStudents: totalStudentsInSessions.count || 0
-      });
-
+      await Promise.all([
+        loadActiveSessions(),
+        loadTodayClasses(),
+        loadCourseStats(),
+        loadRecentAttendance()
+      ]);
     } catch (error) {
-      console.error('Error loading faculty data:', error);
+      console.error('Error loading dashboard data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const createAttendanceSession = () => {
-    router.push('/faculty/create-session');
+  const loadActiveSessions = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('attendance_sessions')
+        .select(`
+          *,
+          timetable:timetables(
+            *,
+            course:courses(*)
+          )
+        `)
+        .eq('faculty_id', user.id)
+        .in('session_status', ['scheduled', 'active'])
+        .order('start_time', { ascending: true });
+
+      if (error) throw error;
+      setActiveSessions(data || []);
+    } catch (error) {
+      console.error('Error loading active sessions:', error);
+    }
   };
 
-  const viewLiveMonitor = () => {
-    router.push('/faculty/live-monitor');
+  const loadTodayClasses = async () => {
+    if (!user) return;
+
+    try {
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+      const { data, error } = await supabase
+        .from('timetables')
+        .select(`
+          *,
+          course:courses(*)
+        `)
+        .eq('faculty_id', user.id)
+        .eq('day_of_week', dayOfWeek === 0 ? 7 : dayOfWeek) // Convert to 1-7 format
+        .eq('is_active', true)
+        .order('start_time', { ascending: true });
+
+      if (error) throw error;
+      setTodayClasses(data || []);
+    } catch (error) {
+      console.error('Error loading today classes:', error);
+    }
   };
 
-  const viewReports = () => {
-    router.push('/faculty/reports');
+  const loadCourseStats = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('timetables')
+        .select(`
+          course_id,
+          course:courses(course_name, course_code),
+          attendance_sessions(
+            id,
+            total_enrolled,
+            total_present,
+            attendance_percentage
+          )
+        `)
+        .eq('faculty_id', user.id)
+        .eq('is_active', true);
+
+      if (error) throw error;
+
+      // Group by course and calculate stats
+      const courseStatsMap = new Map();
+      
+      data?.forEach((timetable: any) => {
+        const courseId = timetable.course_id;
+        if (!courseStatsMap.has(courseId)) {
+          courseStatsMap.set(courseId, {
+            course: timetable.course,
+            totalSessions: 0,
+            totalEnrolled: 0,
+            totalPresent: 0,
+            averageAttendance: 0
+          });
+        }
+
+        const stats = courseStatsMap.get(courseId);
+        timetable.attendance_sessions?.forEach((session: any) => {
+          stats.totalSessions++;
+          stats.totalEnrolled += session.total_enrolled || 0;
+          stats.totalPresent += session.total_present || 0;
+        });
+
+        if (stats.totalEnrolled > 0) {
+          stats.averageAttendance = Math.round((stats.totalPresent / stats.totalEnrolled) * 100);
+        }
+      });
+
+      setCourseStats(Array.from(courseStatsMap.values()));
+    } catch (error) {
+      console.error('Error loading course stats:', error);
+    }
   };
 
-  const manageClasses = () => {
-    router.push('/faculty/classes');
+  const loadRecentAttendance = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('attendance_sessions')
+        .select(`
+          *,
+          timetable:timetables(
+            *,
+            course:courses(*)
+          ),
+          attendance_records(count)
+        `)
+        .eq('faculty_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) throw error;
+      setRecentAttendance(data || []);
+    } catch (error) {
+      console.error('Error loading recent attendance:', error);
+    }
+  };
+
+  const setupRealtimeSubscriptions = () => {
+    if (!user) return;
+
+    // Subscribe to attendance session updates
+    const sessionSubscription = supabase
+      .channel(`faculty-sessions-${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'attendance_sessions',
+          filter: `faculty_id=eq.${user.id}`
+        },
+        () => {
+          loadActiveSessions();
+          loadRecentAttendance();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      sessionSubscription.unsubscribe();
+    };
+  };
+
+  const startAttendanceSession = async (timetableId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('attendance_sessions')
+        .insert({
+          timetable_id: timetableId,
+          faculty_id: user?.id,
+          session_date: new Date().toISOString().split('T')[0],
+          start_time: new Date().toISOString(),
+          session_status: 'active',
+          total_enrolled: 50, // This should come from enrollment data
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setSelectedSession(data.id);
+      loadActiveSessions();
+    } catch (error) {
+      console.error('Error starting session:', error);
+    }
+  };
+
+  const endAttendanceSession = async (sessionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('attendance_sessions')
+        .update({
+          session_status: 'completed',
+          end_time: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', sessionId);
+
+      if (error) throw error;
+      
+      setSelectedSession(null);
+      loadActiveSessions();
+    } catch (error) {
+      console.error('Error ending session:', error);
+    }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900 flex items-center justify-center">
-        <div className="loading-animation text-blue-600">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-blue-900">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div ref={headerRef as React.RefObject<HTMLDivElement>} className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Welcome, {profile?.full_name?.split(' ')[0]}!
-              </h1>
-              <p className="text-gray-600 dark:text-gray-300 mt-2">
-                {profile?.department} • Faculty Dashboard
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <Button
-                onClick={createAttendanceSession}
-                className="magnetic-button flex items-center gap-2"
-                size="lg"
-              >
-                <Plus className="w-5 h-5" />
-                Create Session
-              </Button>
-              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
                 <User className="w-6 h-6 text-white" />
               </div>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  Prof. {profile?.name}
+                </h1>
+                <p className="text-sm text-gray-600">
+                  {profile?.department} • {profile?.employee_id}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <button className="p-2 text-gray-400 hover:text-gray-600">
+                <Bell className="w-6 h-6" />
+              </button>
+              <button className="p-2 text-gray-400 hover:text-gray-600">
+                <Settings className="w-6 h-6" />
+              </button>
+              <button 
+                onClick={signOut}
+                className="p-2 text-gray-400 hover:text-gray-600"
+              >
+                <LogOut className="w-6 h-6" />
+              </button>
             </div>
           </div>
         </div>
+      </header>
 
-        {/* Stats Overview */}
-        <div ref={statsRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {/* Total Sessions */}
-          <Card className="glass-card animated-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                Total Sessions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">
-                    {stats.totalSessions}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
-                    All time
-                  </div>
-                </div>
-                <QrCode className="w-8 h-8 text-blue-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Today's Sessions */}
-          <Card className="glass-card animated-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                Today's Sessions
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-green-600">
-                    {stats.todaySessions}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
-                    Created today
-                  </div>
-                </div>
-                <Calendar className="w-8 h-8 text-green-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Active Sessions */}
-          <Card className="glass-card animated-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                Active Now
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-orange-600">
-                    {stats.activeNow}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
-                    Live sessions
-                  </div>
-                </div>
-                <Monitor className="w-8 h-8 text-orange-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Total Students */}
-          <Card className="glass-card animated-border">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                Students Tracked
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">
-                    {stats.totalStudents}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
-                    All sessions
-                  </div>
-                </div>
-                <Users className="w-8 h-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Today's Classes */}
-          <div className="lg:col-span-2">
-            <Card ref={classesRef as React.RefObject<HTMLDivElement>} className="glass-card animated-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="w-5 h-5" />
-                    Today's Classes
-                  </CardTitle>
-                  <Button variant="outline" onClick={manageClasses}>
-                    Manage Classes
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {todayClasses.length > 0 ? (
-                    todayClasses.map((classItem, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                        <div className="flex items-center gap-4">
-                          <div className="w-2 h-12 bg-blue-500 rounded"></div>
-                          <div>
-                            <h3 className="font-semibold">{classItem.subject}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                              {classItem.batch} • {classItem.room}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-medium">{classItem.start_time} - {classItem.end_time}</div>
-                          <div className="flex gap-2 mt-2">
-                            <Button size="sm" onClick={createAttendanceSession}>
-                              <QrCode className="w-4 h-4 mr-1" />
-                              Create QR
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      No classes scheduled for today
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
+          
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            
             {/* Active Sessions */}
-            {activeSessions.length > 0 && (
-              <Card className="glass-card animated-border mt-6">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Monitor className="w-5 h-5" />
-                    Active Sessions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {activeSessions.map((session, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                        <div className="flex items-center gap-4">
-                          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                          <div>
-                            <h3 className="font-semibold">{session.class_id}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                              Started: {new Date(session.start_time).toLocaleTimeString()}
-                            </p>
-                          </div>
+            {selectedSession && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-xl shadow-sm p-6"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <QrCode className="w-6 h-6 text-green-600" />
+                    Active QR Session
+                  </h2>
+                  <button
+                    onClick={() => endAttendanceSession(selectedSession)}
+                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    <Square className="w-4 h-4" />
+                    End Session
+                  </button>
+                </div>
+                
+                <QRGenerator 
+                  sessionId={selectedSession}
+                  onAttendanceUpdate={(count) => {
+                    // Handle attendance updates
+                  }}
+                />
+              </motion.div>
+            )}
+
+            {/* Today's Classes */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-xl shadow-sm p-6"
+            >
+              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Calendar className="w-6 h-6 text-green-600" />
+                Today's Classes
+              </h2>
+              
+              <div className="space-y-4">
+                {todayClasses.length === 0 ? (
+                  <p className="text-gray-500 text-center py-8">No classes scheduled for today</p>
+                ) : (
+                  todayClasses.map((timetable: any) => (
+                    <div key={timetable.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                          <BookOpen className="w-6 h-6 text-green-600" />
                         </div>
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={viewLiveMonitor}>
-                            <Monitor className="w-4 h-4 mr-1" />
-                            Monitor
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <QrCode className="w-4 h-4 mr-1" />
-                            Show QR
-                          </Button>
+                        <div>
+                          <h3 className="font-semibold text-gray-900">
+                            {timetable.course?.course_name}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {timetable.start_time} - {timetable.end_time}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {timetable.room} • {timetable.building}
+                          </p>
                         </div>
                       </div>
-                    ))}
+                      
+                      <div className="flex gap-2">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => startAttendanceSession(timetable.id)}
+                          disabled={selectedSession !== null}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <Play className="w-4 h-4" />
+                          Start Session
+                        </motion.button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
+
+            {/* Course Statistics */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-xl shadow-sm p-6"
+            >
+              <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <TrendingUp className="w-6 h-6 text-green-600" />
+                Course Statistics
+              </h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {courseStats.map((course: any, index: number) => (
+                  <div key={index} className="p-4 border border-gray-200 rounded-lg">
+                    <h3 className="font-semibold text-gray-900 mb-2">
+                      {course.course?.course_name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-3">
+                      {course.course?.course_code}
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Sessions</span>
+                        <span className="font-medium">{course.totalSessions}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600">Avg. Attendance</span>
+                        <span className={`font-medium ${
+                          course.averageAttendance >= 75 ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {course.averageAttendance}%
+                        </span>
+                      </div>
+                      
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className={`h-2 rounded-full ${
+                            course.averageAttendance >= 75 ? 'bg-green-500' : 'bg-red-500'
+                          }`}
+                          style={{ width: `${course.averageAttendance}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                ))}
+              </div>
+            </motion.div>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar */}
+          <div className="space-y-8">
+            
             {/* Quick Actions */}
-            <Card className="glass-card animated-border">
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button
-                  onClick={createAttendanceSession}
-                  className="w-full justify-start liquid-button"
-                >
-                  <QrCode className="w-4 h-4 mr-2" />
-                  Create QR Session
-                </Button>
-                <Button
-                  onClick={viewLiveMonitor}
-                  className="w-full justify-start magnetic-button"
-                  variant="outline"
-                >
-                  <Monitor className="w-4 h-4 mr-2" />
-                  Live Monitor
-                </Button>
-                <Button
-                  onClick={viewReports}
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  View Reports
-                </Button>
-                <Button
-                  onClick={manageClasses}
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Manage Classes
-                </Button>
-                <Button
-                  onClick={() => router.push('/faculty/profile')}
-                  className="w-full justify-start"
-                  variant="outline"
-                >
-                  <Settings className="w-4 h-4 mr-2" />
-                  Profile Settings
-                </Button>
-              </CardContent>
-            </Card>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-white rounded-xl shadow-sm p-6"
+            >
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+              
+              <div className="space-y-3">
+                <button className="w-full flex items-center gap-3 p-3 text-left bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
+                  <Plus className="w-5 h-5 text-green-600" />
+                  <span className="font-medium text-green-700">Create Session</span>
+                </button>
+                
+                <button className="w-full flex items-center gap-3 p-3 text-left bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                  <span className="font-medium text-blue-700">View Reports</span>
+                </button>
+                
+                <button className="w-full flex items-center gap-3 p-3 text-left bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors">
+                  <Monitor className="w-5 h-5 text-purple-600" />
+                  <span className="font-medium text-purple-700">Analytics</span>
+                </button>
+              </div>
+            </motion.div>
 
             {/* Recent Attendance */}
-            <Card className="glass-card animated-border">
-              <CardHeader>
-                <CardTitle className="text-lg">Recent Attendance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3 max-h-64 overflow-y-auto">
-                  {recentAttendance.length > 0 ? (
-                    recentAttendance.slice(0, 5).map((record, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg">
-                        <div className="flex items-center gap-3">
-                          {record.status === 'present' ? (
-                            <CheckCircle className="w-4 h-4 text-green-600" />
-                          ) : (
-                            <XCircle className="w-4 h-4 text-red-600" />
-                          )}
-                          <div>
-                            <h4 className="font-medium text-sm">{record.profiles?.full_name}</h4>
-                            <p className="text-xs text-gray-600 dark:text-gray-300">
-                              {record.attendance_sessions?.class_id}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {new Date(record.created_at).toLocaleTimeString()}
-                        </div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-xl shadow-sm p-6"
+            >
+              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5" />
+                Recent Sessions
+              </h3>
+              
+              <div className="space-y-3">
+                {recentAttendance.length === 0 ? (
+                  <p className="text-gray-500 text-sm">No recent sessions</p>
+                ) : (
+                  recentAttendance.map((session: any) => (
+                    <div key={session.id} className="p-3 border border-gray-200 rounded-lg">
+                      <p className="font-medium text-gray-900 text-sm">
+                        {session.timetable?.course?.course_name}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {new Date(session.session_date).toLocaleDateString()}
+                      </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-gray-500">
+                          {session.total_present}/{session.total_enrolled} present
+                        </span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          session.session_status === 'completed' 
+                            ? 'bg-green-100 text-green-800'
+                            : session.session_status === 'active'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {session.session_status}
+                        </span>
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-4 text-gray-500 text-sm">
-                      No recent attendance
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Today's Summary */}
-            <Card className="glass-card animated-border">
-              <CardHeader>
-                <CardTitle className="text-lg">Today's Summary</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Classes Scheduled</span>
-                    <Badge variant="outline">
-                      {todayClasses.length}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Sessions Created</span>
-                    <Badge className="bg-blue-100 text-blue-800">
-                      {stats.todaySessions}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Active Now</span>
-                    <Badge className="bg-green-100 text-green-800">
-                      {stats.activeNow}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Attendance Marked</span>
-                    <Badge className="bg-purple-100 text-purple-800">
-                      {recentAttendance.filter(r => 
-                        new Date(r.created_at).toDateString() === new Date().toDateString()
-                      ).length}
-                    </Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                  ))
+                )}
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function FacultyDashboardPage() {
+  return (
+    <ProtectedRoute allowedRoles={['faculty']}>
+      <FacultyDashboardContent />
+    </ProtectedRoute>
   );
 }
