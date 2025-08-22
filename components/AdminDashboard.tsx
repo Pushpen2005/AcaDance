@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, Calendar, Users, Settings, BookOpen, Clock, AlertCircle, Shield, Globe, RefreshCw, Database, Activity } from "lucide-react";
+import { BarChart3, Calendar, Users, Settings, BookOpen, Clock, AlertCircle, Shield, Globe, RefreshCw, Database, Activity, Menu } from "lucide-react";
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import AdvancedTimetableGeneration from './AdvancedTimetableGeneration';
 import TimetableAnalyticsAndReports from './TimetableAnalyticsAndReports';
@@ -14,6 +14,9 @@ import ComprehensiveTimetableManagement from './ComprehensiveTimetableManagement
 import AdminAuditLogs from './AdminAuditLogs';
 import AdminSystemAnalytics from './AdminSystemAnalytics';
 import AdminGlobalSettings from './AdminGlobalSettings';
+import { useIsMobile } from "@/components/ui/use-mobile";
+import { MobileCard, MobileCardHeader, MobileGrid } from "@/components/ui/mobile-card";
+import { ResponsiveGrid, ResponsiveStack } from "@/components/ui/responsive";
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState<'overview' | 'timetable-generator' | 'analytics' | 'smart-scheduling' | 'access-control' | 'color-view' | 'crud-management' | 'audit-logs' | 'system-analytics' | 'global-settings'>('overview');

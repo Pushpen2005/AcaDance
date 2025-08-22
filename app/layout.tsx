@@ -40,6 +40,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="stylesheet" href="/styles/login-3d.css" />
+        <link rel="stylesheet" href="/styles/dashboard-3d.css" />
         <style>{`
 html {
   font-family: ${GeistSans.style.fontFamily};
@@ -61,7 +63,9 @@ html {
           </AuthProvider>
         </ErrorBoundary>
         
-        {/* Enhanced Animations Scripts */}
+        {/* Enhanced 3D Effects Scripts */}
+        <script src="/js/effects-3d.js" defer></script>
+        <script src="/js/login-3d.js" defer></script>
         <script src="/init-animations.js" defer></script>
       </body>
     </html>

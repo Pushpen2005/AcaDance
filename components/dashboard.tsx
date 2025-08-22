@@ -1,6 +1,6 @@
 "use client"
 
-// Enhanced with Advanced Supabase Integration + Real-time Updates
+// Enhanced with Advanced Supabase Integration + Real-time Updates + Responsive Design
 import React, { useState, useEffect, useRef } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,6 +14,7 @@ import { useRealtimeDashboard } from "@/hooks/useRealtimeDashboard"
 import RealtimeStatus from "./RealtimeStatus"
 import RealtimeNotifications from "./RealtimeNotifications"
 import RealtimeAttendanceDashboard from "./RealtimeAttendanceDashboard"
+import { useIsMobile } from "@/components/ui/use-mobile"
 
 function ClientDateTime() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
@@ -31,11 +32,11 @@ function ClientDateTime() {
 
   return (
     <>
-      <div className="flex items-center space-x-2 text-sm text-green-600">
-        <Clock className="w-4 h-4" />
+      <div className="flex items-center space-x-2 text-xs sm:text-sm text-green-600">
+        <Clock className="w-3 sm:w-4 h-3 sm:h-4" />
         <span>{currentTime.toLocaleDateString()}</span>
       </div>
-      <div className="text-xl font-bold text-green-600 animate-pulse">{currentTime.toLocaleTimeString()}</div>
+      <div className="text-lg sm:text-xl font-bold text-green-600 animate-pulse">{currentTime.toLocaleTimeString()}</div>
     </>
   )
 }
@@ -203,14 +204,14 @@ export default React.memo(function Dashboard() {
           </div>
         </div>
       )}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center animate-fade-in-up">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-gradient-x">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center animate-fade-in-up gap-4">
+        <div className="w-full xl:w-auto">
+          <h1 className="text-2xl sm:text-3xl xl:text-4xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-gradient-x">
             {profile?.role ? `${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)} Dashboard` : 'Dashboard'}
           </h1>
-          <p className="text-green-700 mt-2">Welcome back{profile?.name ? `, ${profile.name}` : ''}! Here's what's happening today.</p>
+          <p className="text-green-700 mt-2 text-sm sm:text-base">Welcome back! Here's what's happening today.</p>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full xl:w-auto">
           {/* Real-time Status */}
           <RealtimeStatus 
             isConnected={realtimeDashboard.isConnected}
@@ -221,27 +222,27 @@ export default React.memo(function Dashboard() {
           {/* Real-time Notifications */}
           {profile && <RealtimeNotifications userId={profile.id} />}
           
-          <div className="text-right glass-effect p-4 rounded-xl hover-lift">
+          <div className="text-left sm:text-right glass-effect p-3 sm:p-4 rounded-xl hover-lift w-full sm:w-auto">
             <ClientDateTime />
           </div>
         </div>
       </div>
-      <div className="flex flex-col lg:flex-row gap-6">
-        <aside className="w-full lg:w-64 bg-green-50/80 dark:bg-green-900/20 rounded-xl shadow p-4 mb-6 lg:mb-0 border border-green-200 dark:border-green-800">
-          <h2 className="font-semibold text-lg mb-4">Menu</h2>
+      <div className="flex flex-col xl:flex-row gap-4 lg:gap-6">
+        <aside className="w-full xl:w-64 bg-green-50/80 dark:bg-green-900/20 rounded-xl shadow p-3 sm:p-4 border border-green-200 dark:border-green-800 order-2 xl:order-1">
+          <h2 className="font-semibold text-base lg:text-lg mb-3 lg:mb-4">Menu</h2>
           {loadingProfile ? (
             <Skeleton className="h-32 w-full" />
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-1 lg:space-y-2">
               {sidebarItems.map(item => (
-                <li key={item} className="py-2 px-3 rounded hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors">
+                <li key={item} className="py-1.5 lg:py-2 px-2 lg:px-3 rounded hover:bg-blue-100 dark:hover:bg-blue-900 cursor-pointer transition-colors text-sm lg:text-base">
                   {item}
                 </li>
               ))}
             </ul>
           )}
         </aside>
-        <main className="flex-1 space-y-8">
+        <main className="flex-1 space-y-4 lg:space-y-8 order-1 xl:order-2">
           {/* Recent Activity Widget */}
           {recentActivity && (
             <Card className="mb-6">
@@ -295,7 +296,7 @@ export default React.memo(function Dashboard() {
                 </CardContent>
               </Card>
               {/* Existing Admin widgets: Timetable CRUD, Attendance Reports, etc. */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
                 {loading
                   ? Array.from({ length: 4 }).map((_, i) => (
                       <Skeleton key={i} className="h-40 w-full" />
