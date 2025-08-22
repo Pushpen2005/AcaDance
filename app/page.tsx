@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { BarChart3, Calendar, Users, FileText, Settings, GraduationCap, BookOpen } from "lucide-react"
-import Dashboard from "@/components/dashboard"
+import Dashboard from "@/components/dashboard-simplified"
 import TimetableManagement from "@/components/timetable-management"
 import AttendanceTracking from "@/components/attendance-tracking"
 import Reports from "@/components/reports"

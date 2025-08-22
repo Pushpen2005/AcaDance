@@ -5,8 +5,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { advancedSupabase, useSupabaseQuery, supabaseUtils } from "@/lib/advancedSupabase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Users, Calendar, AlertTriangle, Clock, BookOpen, GraduationCap, Target } from "lucide-react"
-import Skeleton from "@/app/htbyjn/components/skeleton"
-import { supabase, Profile } from "@/lib/supabaseClient"
+import { supabase } from "@/lib/supabaseClient"
+import type { Profile } from "@/lib/supabaseClient"
 import { useHighlight } from "@/hooks/use-highlight"
 import TimetableManagement from "./timetable-management"
 import EnhancedInteractiveDashboard from "./EnhancedInteractiveDashboard"
@@ -15,6 +15,11 @@ import RealtimeStatus from "./RealtimeStatus"
 import RealtimeNotifications from "./RealtimeNotifications"
 import RealtimeAttendanceDashboard from "./RealtimeAttendanceDashboard"
 import { useIsMobile } from "@/components/ui/use-mobile"
+
+// Simple inline skeleton component to replace the missing import
+const Skeleton = ({ className = "" }: { className?: string }) => (
+  <div className={`animate-pulse bg-gray-200 rounded ${className}`} />
+);
 
 function ClientDateTime() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null)
@@ -88,6 +93,9 @@ export default React.memo(function Dashboard() {
   const [recentActivity, setRecentActivity] = useState<any>(null)
   const [notifications, setNotifications] = useState<any[]>([])
   const tourShownRef = useRef(false)
+
+  // Type guard for profile
+  const hasProfile = (p: Profile | null): p is Profile => p !== null
 
   // Real-time dashboard hook
   const realtimeDashboard = useRealtimeDashboard({
@@ -207,7 +215,7 @@ export default React.memo(function Dashboard() {
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center animate-fade-in-up gap-4">
         <div className="w-full xl:w-auto">
           <h1 className="text-2xl sm:text-3xl xl:text-4xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent animate-gradient-x">
-            {profile?.role ? `${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)} Dashboard` : 'Dashboard'}
+            {hasProfile(profile) ? `${profile.role.charAt(0).toUpperCase() + profile.role.slice(1)} Dashboard` : 'Dashboard'}
           </h1>
           <p className="text-green-700 mt-2 text-sm sm:text-base">Welcome back! Here's what's happening today.</p>
         </div>
@@ -220,7 +228,7 @@ export default React.memo(function Dashboard() {
           />
           
           {/* Real-time Notifications */}
-          {profile && <RealtimeNotifications userId={profile.id} />}
+          {hasProfile(profile) && <RealtimeNotifications userId={profile.id} />}
           
           <div className="text-left sm:text-right glass-effect p-3 sm:p-4 rounded-xl hover-lift w-full sm:w-auto">
             <ClientDateTime />
