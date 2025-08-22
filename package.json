@@ -1,5 +1,5 @@
 {
-  "name": "academic-system",
+  "name": "acadance",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,8 +9,8 @@
     "start": "next start -p 3006",
     "type-check": "tsc --noEmit",
     "export": "next export",
-    "docker:build": "docker build -t academic-system .",
-    "docker:run": "docker run -p 3006:3000 academic-system",
+    "docker:build": "docker build -t acadance .",
+    "docker:run": "docker run -p 3006:3000 acadance",
     "deploy:vercel": "vercel --prod",
     "deploy:vercel:preview": "vercel",
     "deploy:vercel:script": "./deploy-vercel.sh",

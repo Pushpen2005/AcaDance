@@ -1,4 +1,4 @@
-# Academic System - Production Dockerfile
+# AcaDance - Production Dockerfile
 FROM node:18-alpine AS base
 
 # Install dependencies only when needed

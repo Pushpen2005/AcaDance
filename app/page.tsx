@@ -135,7 +135,7 @@ export default function AcademicSystem() {
               </div>
               <div className="text-center lg:text-left">
                 <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-100 to-white bg-clip-text text-transparent">
-                  HH310 Academic System
+                  AcaDance
                 </h2>
                 <div className="flex items-center justify-center lg:justify-start gap-3 mt-1">
                   <p className="text-xs sm:text-sm text-green-100 hidden sm:block">Modern Education Management</p>

@@ -1,4 +1,4 @@
-# Academic System - Complete QR Attendance & Management Platform
+# AcaDance - Complete QR Attendance & Management Platform
 
 A comprehensive full-stack academic management system built with Next.js, Supabase, and advanced animations. Features QR code-based attendance tracking, role-based dashboards, real-time monitoring, and responsive design with beautiful 3D animations.
 

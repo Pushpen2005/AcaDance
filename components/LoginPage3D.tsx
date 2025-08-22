@@ -115,7 +115,7 @@ const LoginPage3D: React.FC<LoginPageProps> = ({ onLogin, onRegister }) => {
             </div>
           </motion.div>
           
-          <h1 className="login-title-3d">Academic System</h1>
+          <h1 className="login-title-3d">AcaDance</h1>
           <p className="login-subtitle-3d">Modern Education Management Platform</p>
         </div>
 

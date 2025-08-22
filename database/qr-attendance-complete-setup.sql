@@ -352,7 +352,7 @@ SELECT
   p.id,
   'info', 
   'Welcome', 
-  'Welcome to the Academic System!'
+  'Welcome to AcaDance!'
 FROM profiles p 
 WHERE p.role = 'student' 
 LIMIT 1;
